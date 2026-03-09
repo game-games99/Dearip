@@ -5,11 +5,11 @@
     <title>NECRAI - Necromancer RPG</title>
     <style>
         body { background: #1a1a1a; color: #eee; font-family: sans-serif; padding: 20px; }
-        .container { max-width: 800px; margin: auto; }
+        .container { max-width: 900px; margin: auto; }
         .card { border: 1px solid #444; padding: 15px; margin-bottom: 10px; background: #2a2a2a; }
-        button { cursor: pointer; padding: 10px; margin-top: 5px; background: #550000; color: white; border: none; }
-        .inventory-list { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; }
-        .slot { border: 1px solid #333; padding: 5px; font-size: 12px; height: 50px; background: #222; }
+        button { cursor: pointer; padding: 10px; margin: 5px; background: #550000; color: white; border: none; }
+        .inventory-list { display: grid; grid-template-columns: repeat(10, 1fr); gap: 2px; }
+        .slot { border: 1px solid #333; padding: 2px; font-size: 10px; background: #222; }
     </style>
 </head>
 <body>
@@ -18,28 +18,49 @@
         
         <div class="card">
             <h2>主人公ステータス</h2>
-            <div id="player-status">Lv: 1 | クラス: 駆け出しの死霊術師 | ATK: 10 | HP: 100</div>
+            <div id="player-status"></div>
+            <button onclick="saveGame()">データをセーブ</button>
+            <button onclick="loadGame()">データをロード</button>
         </div>
 
         <div class="card">
-            <h2>軍団インベントリ (残り枠: <span id="slots-left">100</span>/100)</h2>
+            <h2>軍団リスト (残り: <span id="slots-left"></span>/100)</h2>
             <div id="inventory" class="inventory-list"></div>
         </div>
 
-        <div class="card">
-            <h2>敵生成</h2>
-            <button onclick="generateEnemy()">敵を索敵する</button>
-            <div id="enemy-display"></div>
+        <div class="card" id="dungeon-area">
+            <h2>ダンジョン攻略</h2>
+            <p id="dungeon-info">拠点未選択</p>
+            <button onclick="exploreDungeon()">階層を進む</button>
         </div>
     </div>
 
     <script>
-        const player = { level: 1, class: '駆け出しの死霊術師', atk: 10, hp: 100 };
-        const army = [];
+        let player = { level: 1, atk: 10, hp: 100, occupiedCount: 0 };
+        let army = [];
+        let currentDungeon = null;
         const MAX_SLOTS = 100;
 
+        // セーブ・ロード機能
+        function saveGame() {
+            const data = { player, army };
+            localStorage.setItem('necrai_save', JSON.stringify(data));
+            alert('セーブ完了');
+        }
+
+        function loadGame() {
+            const data = JSON.parse(localStorage.getItem('necrai_save'));
+            if(data) {
+                player = data.player;
+                army = data.army;
+                updateUI();
+                alert('ロード完了');
+            }
+        }
+
         function updateUI() {
-            document.getElementById('player-status').innerText = `Lv: ${player.level} | クラス: ${player.class} | ATK: ${player.atk} | HP: ${player.hp}`;
+            document.getElementById('player-status').innerText = 
+                `Lv: ${player.level} | ATK: ${player.atk} | HP: ${player.hp} | 総占領数: ${player.occupiedCount}`;
             document.getElementById('slots-left').innerText = MAX_SLOTS - army.length;
             
             const invDiv = document.getElementById('inventory');
@@ -47,43 +68,27 @@
             army.forEach((unit, index) => {
                 const slot = document.createElement('div');
                 slot.className = 'slot';
-                slot.innerHTML = `${unit.title}${unit.job}<br><button onclick="absorb(${index})">吸収</button>`;
+                slot.innerHTML = `${unit.job}<br><button onclick="absorb(${index})">吸</button>`;
                 invDiv.appendChild(slot);
             });
         }
 
-        function generateEnemy() {
-            const jobs = ['村人', '兵士', '騎士', '魔法使い', '僧侶', '勇者'];
-            const titles = ['伝説の', '早い', '飢えた', '呪われし', '深淵の'];
-            const enemy = {
-                job: jobs[Math.floor(Math.random() * jobs.length)],
-                title: titles[Math.floor(Math.random() * titles.length)],
-                atk: Math.floor(Math.random() * 20) + 5
-            };
-            
-            document.getElementById('enemy-display').innerHTML = `
-                <div class="card">
-                    <strong>${enemy.title}${enemy.job}</strong>を発見！<br>
-                    <button onclick="addArmy(${JSON.stringify(enemy).replace(/"/g, '&quot;')})">ゾンビ化して編入</button>
-                </div>
-            `;
-        }
-
-        function addArmy(unit) {
-            if (army.length < MAX_SLOTS) {
-                army.push(unit);
-                updateUI();
-                document.getElementById('enemy-display').innerHTML = '';
+        function exploreDungeon() {
+            // 階層進行ロジック（簡易版）
+            if(Math.random() < 0.1) {
+                alert('ボス出現！');
+            } else if(Math.random() < 0.3) {
+                alert('中ボス出現！');
             } else {
-                alert('インベントリが満杯です！');
+                const job = ['村人', '兵士', '騎士', '魔法使い', '勇者'][Math.floor(Math.random()*5)];
+                army.push({job, atk: 5});
+                updateUI();
             }
         }
 
         function absorb(index) {
             const unit = army.splice(index, 1)[0];
             player.atk += Math.floor(unit.atk * 0.5);
-            player.hp += 5;
-            alert(`${unit.title}${unit.job}を吸収しました！`);
             updateUI();
         }
 
