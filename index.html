@@ -2,107 +2,78 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dearip</title>
+    <title>Dearip v1.4.0</title>
     <style>
-        :root { --bg: #050505; --card: #161616; --text: #e0e0e0; --accent: #ff3e3e; }
-        body { background: var(--bg); color: var(--text); font-family: sans-serif; margin: 0; padding: 0; }
-        .header { background: #000; padding: 15px; border-bottom: 1px solid #333; }
-        .tabs { display: flex; background: #000; border-bottom: 1px solid #333; }
-        .tab-btn { flex: 1; padding: 15px; border: none; background: transparent; color: #666; font-weight: bold; cursor: pointer; }
-        .tab-btn.active { color: var(--accent); border-bottom: 2px solid var(--accent); }
-        .content { padding: 15px; }
-        .card { background: var(--card); border: 1px solid #333; padding: 15px; margin-bottom: 15px; border-radius: 8px; }
-        input[type="number"] { width: 60px; background: #222; color: #fff; border: 1px solid #444; padding: 5px; }
-        .btn-main { width: 100%; padding: 15px; background: var(--accent); border: none; color: white; font-weight: bold; cursor: pointer; }
-        .footer-title { position: fixed; bottom: 10px; right: 10px; font-size: 0.6rem; color: #333; }
+        :root { --bg: #050505; --card: #121212; --text: #d0d0d0; }
+        body { background: var(--bg); color: var(--text); font-family: sans-serif; margin: 0; padding: 10px; }
+        .card { background: var(--card); border: 1px solid #333; padding: 15px; border-radius: 8px; margin-bottom: 10px; }
+        .btn-main { width: 100%; padding: 15px; background: #ff3e3e; color: white; border: none; font-weight: bold; cursor: pointer; }
+        #log { height: 150px; overflow-y: auto; background: #000; padding: 10px; font-size: 0.8rem; border: 1px solid #333; }
     </style>
 </head>
 <body>
-    <div class="header">
-        HP: <span id="hp">100</span> | SEED: <span id="seed">5</span>
+    <div class="card">
+        HP: <span id="hp">100</span> | SEED: <span id="seed">10</span>
     </div>
-    <div class="tabs">
-        <button class="tab-btn active" onclick="switchTab('battle', this)">討伐</button>
-        <button class="tab-btn" onclick="switchTab('base', this)">拠点</button>
-        <button class="tab-btn" onclick="switchTab('detail', this)">詳細</button>
+    
+    <div id="battle-area" class="card">
+        <h3 id="dungeon-name">未侵攻</h3>
+        <div id="log"></div>
+        <button class="btn-main" onclick="handleAction()">侵攻 / 攻撃</button>
     </div>
-
-    <div class="content">
-        <div id="battle" class="tab-content">
-            <div class="card" id="dungeon-info"><h3>ダンジョン未生成</h3></div>
-            <div id="log" style="height:120px; overflow-y:auto; font-size:0.8rem; color:#aaa;"></div>
-            <button class="btn-main" onclick="handleAction()">探索/攻撃</button>
-        </div>
-        <div id="base" class="tab-content" style="display:none;">
-            <div class="card">
-                <h3>ダンジョン生成</h3>
-                投入シード (1-100): <input type="number" id="seed-input" value="1" min="1" max="100">
-                <button class="btn-main" onclick="generateDungeon()">生成して突入</button>
-            </div>
-        </div>
-        <div id="detail" class="tab-content" style="display:none;">
-            <div class="card"><h3>戦歴</h3><p id="stats-text"></p></div>
-        </div>
-    </div>
-    <div class="footer-title">Dearip v1.2.1</div>
 
     <script>
+        const RANKS = [
+            { name: "", color: "#ffffff", mult: 1.0 },
+            { name: "熟練の", color: "#00ff41", mult: 1.5 },
+            { name: "覚醒した", color: "#007fff", mult: 2.5 },
+            { name: "神の", color: "#ffd700", mult: 5.0 }
+        ];
+        const ADJ = ["俊敏な", "暗黒の", "狂気の", "老練な", "神速の", "不滅の"];
+        const JOB = ["騎士", "村人", "神官", "弓兵", "魔導師", "暗殺者", "英雄", "狂戦士"];
+        const PRE = ["混沌の", "寂れた", "天空の", "禁断の", "忘れ去られた", "要塞化された"];
+        const LOC = ["村", "街", "城", "砦", "神殿", "学園", "領域", "浮遊城"];
+
         let G = {
-            player: { hp: 100, atk: 10, seed: 10, clears: 0 },
-            dungeon: { active: false, name: "", level: 0, enemy: null }
+            player: { hp: 100, atk: 15, seed: 20 },
+            dungeon: { active: false, name: "", floor: 1, enemy: null }
         };
 
-        function switchTab(id, el) {
-            document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
-            document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
-            document.getElementById(id).style.display = 'block';
-            el.classList.add('active');
-        }
-
         function generateDungeon() {
-            let input = parseInt(document.getElementById('seed-input').value);
-            if (G.player.seed <= input) return alert("シードが足りません");
-            G.player.seed -= input;
-            
-            const prefixes = ["混沌の", "寂れた", "深淵の", "呪われし"];
-            const locations = ["村", "遺跡", "塔", "廃坑"];
-            G.dungeon = {
-                active: true,
-                name: prefixes[Math.floor(Math.random()*prefixes.length)] + locations[Math.floor(Math.random()*locations.length)],
-                level: input,
-                enemy: { name: "彷徨う異形", hp: 100 + (input * 50) }
+            G.dungeon = { 
+                active: true, 
+                name: PRE[Math.floor(Math.random()*PRE.length)] + LOC[Math.floor(Math.random()*LOC.length)], 
+                floor: 1, 
+                enemy: null 
             };
-            document.getElementById('dungeon-info').innerHTML = `<h3>${G.dungeon.name}</h3><p>Lv.${G.dungeon.level}</p>`;
-            switchTab('battle', document.querySelector('.tab-btn'));
-            log("ダンジョン生成完了。探索を開始する。");
-            updateUI();
+            document.getElementById('dungeon-name').innerText = G.dungeon.name;
+            log(`『${G.dungeon.name}』へ侵攻を開始した。`);
         }
 
         function handleAction() {
-            if (!G.dungeon.active) return alert("拠点で生成してください");
-            let e = G.dungeon.enemy;
-            e.hp -= G.player.atk;
-            log(`${e.name} に ${G.player.atk} のダメージ！`);
-            
-            if (e.hp <= 0) {
-                log("ボス撃破！シードとレアパーツを獲得した。");
-                G.player.seed += 1;
-                G.player.clears++;
-                G.dungeon.active = false;
-                G.dungeon.enemy = null;
+            if (!G.dungeon.active) return generateDungeon();
+            if (!G.dungeon.enemy) {
+                const r = RANKS[Math.floor(Math.random()*RANKS.length)];
+                const a = ADJ[Math.floor(Math.random()*ADJ.length)];
+                const j = JOB[Math.floor(Math.random()*JOB.length)];
+                G.dungeon.enemy = { 
+                    name: `${r.name}${a}${j}`, 
+                    color: r.color, 
+                    hp: Math.floor(100 * r.mult) 
+                };
+                log(`敵：<span style="color:${G.dungeon.enemy.color}">${G.dungeon.enemy.name}</span> が現れた！`);
+            } else {
+                G.dungeon.enemy.hp -= G.player.atk;
+                log(`${G.dungeon.enemy.name} にダメージ！ HP:${G.dungeon.enemy.hp}`);
+                if (G.dungeon.enemy.hp <= 0) {
+                    log("撃破。");
+                    G.dungeon.enemy = null;
+                    if (++G.dungeon.floor > 30) { G.dungeon.active = false; log("制覇完了。"); }
+                }
             }
-            updateUI();
         }
 
-        function log(m) { const l = document.getElementById('log'); l.innerHTML += `<div>${m}</div>`; l.scrollTop = l.scrollHeight; }
-
-        function updateUI() {
-            document.getElementById('hp').innerText = G.player.hp;
-            document.getElementById('seed').innerText = G.player.seed;
-            document.getElementById('stats-text').innerText = `制覇数: ${G.player.clears}回`;
-        }
-        updateUI();
+        function log(m) { const l = document.getElementById('log'); l.innerHTML += `<div>> ${m}</div>`; l.scrollTop = l.scrollHeight; }
     </script>
 </body>
 </html>
