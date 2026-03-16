@@ -2,115 +2,120 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>Dearip v1.2.0</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dearip</title>
     <style>
-        :root { --bg: #050505; --panel: #121212; --text: #d0d0d0; --accent: #ff3e3e; }
-        body { background: var(--bg); color: var(--text); font-family: sans-serif; margin: 0; padding: 10px; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-        .tabs { display: flex; gap: 5px; margin-bottom: 10px; }
-        .tab-btn { background: #222; border: 1px solid #444; padding: 10px; cursor: pointer; color: #fff; flex: 1; }
-        .tab-btn.active { background: #444; }
-        .panel { border: 1px solid #333; padding: 15px; background: var(--panel); margin-bottom: 10px; }
-        .title-footer { position: fixed; bottom: 5px; right: 5px; font-size: 0.6rem; color: #444; }
-        #log { height: 120px; overflow-y: auto; background: #000; font-size: 0.8rem; padding: 10px; margin-bottom: 10px; }
-        .btn-main { width: 100%; padding: 15px; cursor: pointer; font-weight: bold; }
+        :root { --bg: #0a0a0a; --card: #161616; --text: #e0e0e0; --accent: #ff3e3e; }
+        body { background: var(--bg); color: var(--text); font-family: sans-serif; margin: 0; padding: 0; }
+        
+        /* ヘッダー統計エリア */
+        .header-stats { background: #000; padding: 15px; border-bottom: 1px solid #333; display: flex; justify-content: space-between; font-size: 0.9rem; }
+        
+        /* タブ */
+        .tabs { display: flex; background: #000; border-bottom: 1px solid #333; }
+        .tab-btn { flex: 1; padding: 15px; border: none; background: transparent; color: #666; font-weight: bold; }
+        .tab-btn.active { color: var(--accent); border-bottom: 2px solid var(--accent); }
+        
+        .content { padding: 15px; }
+        .card { background: var(--card); border: 1px solid #333; padding: 15px; margin-bottom: 15px; border-radius: 8px; }
+        
+        .btn-main { width: 100%; padding: 18px; border: none; border-radius: 6px; background: var(--accent); color: white; font-weight: bold; font-size: 1rem; margin-top: 10px; }
+        
+        .footer-title { position: fixed; bottom: 10px; right: 10px; font-size: 0.6rem; color: #333; pointer-events: none; }
     </style>
 </head>
 <body>
+
+    <div class="header-stats">
+        <span>HP: <span id="hp-display">100</span></span>
+        <span>SEED: <span id="seed-count">0</span></span>
+    </div>
+
     <div class="tabs">
-        <button class="tab-btn active" onclick="showTab('battle')">討伐</button>
-        <button class="tab-btn" onclick="showTab('base')">拠点</button>
-        <button class="tab-btn" onclick="showTab('detail')">詳細</button>
+        <button class="tab-btn active" onclick="showTab('battle', this)">討伐</button>
+        <button class="tab-btn" onclick="showTab('base', this)">拠点</button>
+        <button class="tab-btn" onclick="showTab('detail', this)">詳細</button>
     </div>
 
-    <div id="battle" class="tab-content active">
-        <div class="panel">
-            <div id="hp-display">HP: ---</div>
-            <div id="enemy-display">---</div>
+    <div class="content">
+        <div id="battle" class="tab-content">
+            <div class="card" id="enemy-card">
+                <h3 id="enemy-name">探索中...</h3>
+                <p id="enemy-hp"></p>
+            </div>
+            <div id="log" style="height:150px; overflow-y:auto; font-size:0.8rem; color:#aaa;"></div>
+            <button class="btn-main" id="battle-btn" onclick="handleBattle()">すすむ</button>
         </div>
-        <div id="log"></div>
-        <button id="battle-btn" class="btn-main" onclick="handleBattle()">探索</button>
-    </div>
 
-    <div id="base" class="tab-content">
-        <div class="panel">
-            <p>所持シード: <span id="seed-count">0</span></p>
-            <button class="btn-main" onclick="startDungeon(false)">はじまりの洞窟（消費なし）</button>
-            <button class="btn-main" onclick="startDungeon(true)">通常ダンジョン（シード消費）</button>
+        <div id="base" class="tab-content" style="display:none;">
+            <div class="card">
+                <h3>ダンジョン生成</h3>
+                <button class="btn-main" onclick="startDungeon(false)">はじまりの洞窟</button>
+                <button class="btn-main" style="background:#444;" onclick="startDungeon(true)">通常ダンジョン (シード消費)</button>
+            </div>
+        </div>
+
+        <div id="detail" class="tab-content" style="display:none;">
+            <div class="card">
+                <h3>ステータス</h3>
+                <p>累計制覇: <span id="clear-count">0</span></p>
+                <p>ATK: <span id="atk-stat">10</span></p>
+            </div>
         </div>
     </div>
 
-    <div id="detail" class="tab-content">
-        <div class="panel">
-            <p>累計制覇数: <span id="clear-count">0</span></p>
-            <p>ベースATK: <span id="atk-stat">0</span></p>
-        </div>
-    </div>
-
-    <div class="title-footer">Dearip v1.2.0</div>
+    <div class="footer-title">Dearip v1.2.0</div>
 
     <script>
-        let game = {
-            player: { hp: 100, baseAtk: 10, seed: 5, clears: 0 },
-            dungeon: { active: false, type: '', enemy: null },
-            log: []
-        };
+        let game = { player: { hp: 100, baseAtk: 10, seed: 5, clears: 0 }, dungeon: { active: false, enemy: null } };
 
-        function showTab(id) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        function showTab(id, el) {
+            document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
             document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            event.target.classList.add('active');
+            document.getElementById(id).style.display = 'block';
+            el.classList.add('active');
         }
 
-        function save() { localStorage.setItem('dearip_data', JSON.stringify(game)); }
-        
         function log(msg) {
             const l = document.getElementById('log');
-            l.innerHTML += `<div>> ${msg}</div>`;
+            l.innerHTML += `<div>${msg}</div>`;
             l.scrollTop = l.scrollHeight;
         }
 
         function startDungeon(useSeed) {
-            if (useSeed && game.player.seed <= 1) { alert("シードは最低1つ残す必要があります"); return; }
+            if (useSeed && game.player.seed <= 1) return alert("シードは1つ残してください");
             if (useSeed) game.player.seed--;
             game.dungeon.active = true;
-            game.dungeon.type = useSeed ? "normal" : "start";
-            log("ダンジョンへ突入した");
-            save();
+            log("ダンジョン突入");
             updateUI();
         }
 
         function handleBattle() {
-            if (!game.dungeon.active) { alert("拠点でダンジョンを選択してください"); return; }
+            if (!game.dungeon.active) return alert("拠点でダンジョンへ突入してください");
             if (!game.dungeon.enemy) {
                 game.dungeon.enemy = { name: "異形", hp: 100 };
                 log("敵が現れた");
             } else {
                 game.dungeon.enemy.hp -= game.player.baseAtk;
-                log("こうげき！");
                 if (game.dungeon.enemy.hp <= 0) {
-                    log("撃破！");
+                    log("撃破！シード獲得");
                     game.player.seed++;
                     game.player.clears++;
                     game.dungeon.enemy = null;
-                    game.dungeon.active = false;
                 }
             }
-            save();
             updateUI();
         }
 
         function updateUI() {
-            document.getElementById('hp-display').innerText = `HP: ${game.player.hp}`;
+            document.getElementById('hp-display').innerText = game.player.hp;
             document.getElementById('seed-count').innerText = game.player.seed;
             document.getElementById('clear-count').innerText = game.player.clears;
-            document.getElementById('atk-stat').innerText = game.player.baseAtk;
-            document.getElementById('enemy-display').innerText = game.dungeon.enemy ? `敵: ${game.dungeon.enemy.name} (HP:${game.dungeon.enemy.hp})` : "探索中...";
-            document.getElementById('battle-btn').innerText = game.dungeon.enemy ? "こうげき" : "すすむ";
+            const enemy = game.dungeon.enemy;
+            document.getElementById('enemy-name').innerText = enemy ? enemy.name : "探索中";
+            document.getElementById('enemy-hp').innerText = enemy ? `HP: ${enemy.hp}` : "敵の気配なし";
+            document.getElementById('battle-btn').innerText = enemy ? "こうげき" : "すすむ";
         }
-
         updateUI();
     </script>
 </body>
