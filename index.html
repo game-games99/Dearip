@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DeaRip - v0.44 (Tab UI & Log Cleaned)</title>
+    <title>DeaRip - v0.45 (Initial Equip & Clean Log)</title>
     <style>
         :root { 
             --bg: #050505; 
@@ -99,7 +99,7 @@
         .tab-content { 
             display: none; 
             padding: 12px; 
-            height: 120px; 
+            height: 130px; 
             font-size: 0.75rem; 
             overflow-y: auto; 
         }
@@ -117,7 +117,6 @@
             cursor: pointer;
         }
 
-        /* 装備リスト用 */
         .equip-slot {
             display: flex;
             justify-content: space-between;
@@ -125,7 +124,7 @@
             padding: 6px 0;
             border-bottom: 1px solid #222;
         }
-        .equip-name { color: #ccc; }
+        .equip-name { color: #ccc; flex: 1; margin-left: 10px; }
         .equip-val { color: #8af; font-size: 0.65rem; }
 
         #controls { 
@@ -193,7 +192,7 @@
                 <span>Soul Point: <span id="p-sp" style="color:var(--sp)">0</span></span>
                 <span id="p-exp" style="color:#555">Next: 100 exp</span>
             </div>
-            <div id="stat-list" style="margin: 8px 0; line-height: 1.4;">
+            <div id="stat-list" style="margin: 8px 0; line-height: 1.5;">
                 </div>
             <div class="growth-grid">
                 <button class="growth-btn" onclick="game.grow('atk')">力(ATK)+</button>
@@ -227,8 +226,8 @@
 <script>
 class DeaRip {
     constructor() {
-        this.VERSION = "0.44";
-        this.SAVE_KEY = "DEARIP_SAVE_DATA_V044";
+        this.VERSION = "0.45";
+        this.SAVE_KEY = "DEARIP_SAVE_DATA_V045";
         
         this.jobs = [
             {n:"村人", p:"素朴な", s:{h:1.0, a:1.0}}, {n:"兵士", p:"軍属の", s:{h:1.2, a:1.1}}, {n:"騎士", p:"高潔な", s:{h:1.5, a:1.3}}, {n:"魔導師", p:"叡智の", s:{h:0.8, a:1.8}}, {n:"暗殺者", p:"潜伏者の", s:{h:0.7, a:2.0}},
@@ -272,7 +271,12 @@ class DeaRip {
                 lv: 1, exp: 0, next: 100, sp: 0,
                 baseHp: 100, baseAtk: 15, baseDef: 5, baseSpd: 10,
                 hp: 100, plusAtk: 0, plusHp: 0, plusSpd: 0,
-                eq: { head: null, body: null, arm: null, leg: null }
+                eq: { 
+                    head: { name: "忘却のボロ布", def: 2 },
+                    body: { name: "忘却の骸殻", hp: 30 },
+                    arm: { name: "忘却の錆びた腕", atk: 3, skill: "微かな火花" },
+                    leg: { name: "忘却の足枷", spd: 2 }
+                }
             };
             this.seed = null; 
             this.floor = 1;
@@ -431,7 +435,6 @@ class DeaRip {
         document.getElementById('p-exp').innerText = `Next: ${Math.max(0, this.p.next - this.p.exp)} exp`;
         document.getElementById('p-sp').innerText = this.p.sp;
         
-        // ステータスタブ詳細表示
         document.getElementById('stat-list').innerHTML = `
             <div>攻撃力: ${s.total.atk} <span style="color:#555; font-size:0.6rem;">(素:${s.base.atk} + 装備:${s.bonus.atk})</span></div>
             <div>防御力: ${s.total.def} <span style="color:#555; font-size:0.6rem;">(素:${s.base.def} + 装備:${s.bonus.def})</span></div>
@@ -441,7 +444,6 @@ class DeaRip {
         document.getElementById('enemy-name').innerText = this.enemy ? this.enemy.name : "---";
         document.getElementById('e-hp-bar').style.width = this.enemy ? `${(this.enemy.hp/this.enemy.maxHp)*100}%` : "0%";
         
-        // 装備タブの更新
         const slots = ["head", "body", "arm", "leg"];
         slots.forEach(slot => {
             const item = this.p.eq[slot];
