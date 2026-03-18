@@ -3,91 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DeaRip - Alpha v0.31 (UI Refined)</title>
+    <title>DeaRip - v0.32 (Tabbed UI)</title>
     <style>
         :root { --bg: #050505; --panel: #121212; --accent: #dcdcdc; --danger: #b30000; --win: #ffffff; --skill: #0077be; --sp: #ffcc00; }
-        * { box-sizing: border-box; }
-        body { background: var(--bg); color: var(--accent); font-family: 'Hiragino Mincho ProN', 'serif'; margin: 0; display: flex; justify-content: center; align-items: flex-start; height: 100vh; overflow: hidden; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--bg); color: var(--accent); font-family: 'Hiragino Mincho ProN', 'serif'; margin: 0; display: flex; justify-content: center; height: 100vh; overflow: hidden; }
         
-        /* 画面に収めるためのメインコンテナ */
-        #game-container { width: 100%; max-width: 480px; height: 100%; max-height: 900px; display: flex; flex-direction: column; background: var(--panel); position: relative; }
+        #game-container { width: 100%; max-width: 480px; height: 100%; display: flex; flex-direction: column; background: var(--panel); position: relative; }
         
-        /* ヘッダー：コンパクト化 */
-        #header { padding: 10px 15px; border-bottom: 1px solid #333; background: #000; flex-shrink: 0; }
-        .status-row { display: flex; justify-content: space-between; font-size: 0.75rem; color: #888; }
-        .hp-bar-container { width: 100%; height: 6px; background: #222; margin: 5px 0; border-radius: 3px; overflow: hidden; }
+        /* ヘッダー：さらに薄く */
+        #header { padding: 8px 15px; border-bottom: 1px solid #333; background: #000; flex-shrink: 0; }
+        .status-row { display: flex; justify-content: space-between; font-size: 0.7rem; color: #888; }
+        .hp-bar-container { width: 100%; height: 5px; background: #222; margin: 4px 0; border-radius: 2px; overflow: hidden; }
         .hp-bar { height: 100%; background: #2a2; transition: width 0.3s; }
         .e-hp-bar { background: var(--danger); }
         
-        /* 敵表示エリア：大幅に圧縮 */
-        #display { padding: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 1; min-height: 120px; border-bottom: 1px solid #222; }
-        #enemy-phase { font-size: 0.5rem; color: #444; letter-spacing: 3px; margin-bottom: 2px; }
-        #enemy-name { font-size: 1rem; margin-top: 2px; }
-        #enemy-sprite { font-size: 1.1rem; margin: 5px 0; color: #aaa; text-align: center; }
-        
-        /* スキルツリーパネル：横並びを最適化 */
-        #soul-panel { padding: 8px; background: #0a0a0a; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; font-size: 0.7rem; flex-shrink: 0; }
-        .sp-text { color: var(--sp); font-weight: bold; margin-right: 5px; }
-        .growth-btn { background: #1a1a1a; border: 1px solid #333; color: #888; padding: 6px 4px; cursor: pointer; border-radius: 2px; flex: 1; margin: 0 2px; font-size: 0.65rem; }
+        /* 敵表示エリア：さらにコンパクトに */
+        #display { padding: 5px; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0; min-height: 90px; }
+        #enemy-name { font-size: 0.9rem; margin-bottom: 2px; }
+        #enemy-sprite { font-size: 1rem; color: #888; margin: 2px 0; }
 
-        /* 装備パネル：2列構成のままフォントサイズ調整 */
-        #equipment-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; padding: 4px; background: #000; font-size: 0.65rem; flex-shrink: 0; }
-        .part-slot { border: 1px solid #1a1a1a; padding: 4px; color: #444; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .part-active { color: #888; }
+        /* タブシステム：ここが今回の肝 */
+        #tab-container { flex-shrink: 0; background: #0a0a0a; border-top: 1px solid #222; border-bottom: 1px solid #222; }
+        .tab-buttons { display: flex; border-bottom: 1px solid #222; }
+        .tab-btn { flex: 1; padding: 8px; background: #111; border: none; color: #555; font-size: 0.7rem; cursor: pointer; border-right: 1px solid #222; }
+        .tab-btn.active { background: #1a1a1a; color: var(--accent); border-bottom: 2px solid var(--accent); }
+        .tab-content { display: none; padding: 8px; height: 80px; overflow-y: auto; font-size: 0.7rem; }
+        .tab-content.active { display: block; }
 
-        /* ログ：高さを自動調整 */
-        #log { flex: 1; overflow-y: auto; font-size: 0.75rem; padding: 10px; background: #000; color: #666; border-top: 1px solid #222; line-height: 1.3; }
+        /* ステ振りボタン */
+        .growth-grid { display: flex; gap: 4px; align-items: center; }
+        .growth-btn { flex: 1; background: #1a1a1a; border: 1px solid #333; color: #888; padding: 10px 2px; font-size: 0.65rem; border-radius: 3px; }
+
+        /* ログ：メイン操作のために高さを確保しつつスクロール */
+        #log { flex: 1; overflow-y: auto; font-size: 0.75rem; padding: 8px; background: #000; color: #555; line-height: 1.2; }
         
-        /* 操作系：最下部に固定し、押しやすく */
-        #controls { padding: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; background: #080808; border-top: 1px solid #333; flex-shrink: 0; }
+        /* 操作系：画面下部にボタンをまとめ、押しやすく */
+        #controls { padding: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; background: #080808; border-top: 1px solid #333; flex-shrink: 0; padding-bottom: calc(10px + env(safe-area-inset-bottom)); }
         
-        button { background: #1a1a1a; color: #ccc; border: 1px solid #333; padding: 14px 5px; cursor: pointer; transition: 0.2s; font-family: inherit; border-radius: 4px; font-size: 0.9rem; }
+        button { background: #1a1a1a; color: #ccc; border: 1px solid #333; padding: 16px 5px; cursor: pointer; transition: 0.2s; font-family: inherit; border-radius: 4px; font-size: 0.9rem; }
         button:hover:not(:disabled) { background: #2a2a2a; color: #fff; }
         button:disabled { opacity: 0.1; }
         .btn-skill { border-color: var(--skill); color: #8af; }
-
-        /* Animations */
-        .released { animation: releaseAnim 1s forwards; text-shadow: 0 0 15px #fff; color: #fff; }
-        @keyframes releaseAnim { 0% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: translateY(-30px); } }
-        .shake { animation: shake 0.2s; }
-        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
     </style>
 </head>
 <body>
 
 <div id="game-container">
     <div id="header">
-        <div id="area-title" style="font-size: 0.8rem; color:#666;">---</div>
+        <div id="area-title" style="font-size: 0.65rem; color:#555;">---</div>
         <div class="status-row">
             <span id="p-lv">Soul Lv.1</span>
             <span id="p-hp-text">HP: 100/100</span>
         </div>
         <div class="hp-bar-container"><div id="p-hp-bar" class="hp-bar"></div></div>
-        <div style="display:flex; justify-content: space-between; font-size: 0.65rem; color: #555;">
-            <span id="p-stats">ATK: 0 / DEF: 0 / SPD: 0</span>
+        <div style="display:flex; justify-content: space-between; font-size: 0.6rem; color: #444;">
+            <span id="p-stats">A:15 / D:5 / S:10</span>
             <span id="p-exp">Next: 100 exp</span>
         </div>
     </div>
 
     <div id="display">
-        <div id="enemy-phase">PURIFICATION TARGET</div>
         <div id="enemy-name">---</div>
-        <div id="enemy-sprite"></div>
-        <div class="hp-bar-container" style="width: 90%;"><div id="e-hp-bar" class="hp-bar e-hp-bar"></div></div>
+        <div id="enemy-sprite">【 彷 徨 う 魂 】</div>
+        <div class="hp-bar-container" style="width: 80%;"><div id="e-hp-bar" class="hp-bar e-hp-bar"></div></div>
     </div>
 
-    <div id="soul-panel">
-        <div>SP:<span id="p-sp" class="sp-text">0</span></div>
-        <button class="growth-btn" onclick="game.grow('atk')">力(ATK)+</button>
-        <button class="growth-btn" onclick="game.grow('hp')">器(HP)+</button>
-        <button class="growth-btn" onclick="game.grow('spd')">迅(SPD)+</button>
-    </div>
-
-    <div id="equipment-grid">
-        <div class="part-slot" id="slot-head">頭: <span>未装備</span></div>
-        <div class="part-slot" id="slot-arm">腕: <span>未装備</span></div>
-        <div class="part-slot" id="slot-body">体: <span>未装備</span></div>
-        <div class="part-slot" id="slot-leg">脚: <span>未装備</span></div>
+    <div id="tab-container">
+        <div class="tab-buttons">
+            <button class="tab-btn active" onclick="game.switchTab(0)">ステータス</button>
+            <button class="tab-btn" onclick="game.switchTab(1)">装備</button>
+            <button class="tab-btn" onclick="game.switchTab(2)">スキル</button>
+        </div>
+        <div id="tab-growth" class="tab-content active">
+            <div style="margin-bottom:5px;">Soul Point: <span id="p-sp" class="sp-text">0</span></div>
+            <div class="growth-grid">
+                <button class="growth-btn" onclick="game.grow('atk')">力(ATK)+</button>
+                <button class="growth-btn" onclick="game.grow('hp')">器(HP)+</button>
+                <button class="growth-btn" onclick="game.grow('spd')">迅(SPD)+</button>
+            </div>
+        </div>
+        <div id="tab-equip" class="tab-content">
+            <div id="eq-head">頭: ---</div>
+            <div id="eq-arm">腕: ---</div>
+            <div id="eq-body">体: ---</div>
+            <div id="eq-leg">脚: ---</div>
+        </div>
+        <div id="tab-skill" class="tab-content">
+            <div id="skill-desc" style="color:#8af;">腕パーツを装備すると、固有スキルが解放されます。</div>
+        </div>
     </div>
 
     <div id="log"></div>
@@ -101,10 +105,9 @@
 </div>
 
 <script>
-// -- ゲームロジックは前回（v0.3）のセーブ・スキル・成長システムを完全継承 --
 class DeaRip {
     constructor() {
-        this.SAVE_KEY = "DEARIP_SAVE_DATA_V031";
+        this.SAVE_KEY = "DEARIP_SAVE_DATA_V032";
         this.load();
         
         this.jobs = ["村人", "兵士", "騎士", "魔導師", "商人", "貴族"];
@@ -117,6 +120,14 @@ class DeaRip {
 
         if(!this.seed) this.generateSeed();
         this.spawn();
+    }
+
+    // --- タブ切り替え ---
+    switchTab(index) {
+        const btns = document.querySelectorAll('.tab-btn');
+        const contents = document.querySelectorAll('.tab-content');
+        btns.forEach((b, i) => b.classList.toggle('active', i === index));
+        contents.forEach((c, i) => c.classList.toggle('active', i === index));
     }
 
     save() {
@@ -200,11 +211,9 @@ class DeaRip {
         }
         this.enemy.hp -= dmg;
         this.log(`${this.enemy.name} を剥ぐ：${dmg} dmg`);
-        document.getElementById('enemy-sprite').classList.add('shake');
-        setTimeout(()=>document.getElementById('enemy-sprite').classList.remove('shake'), 200);
 
         if(this.enemy.hp <= 0) { await this.win(); } else {
-            await new Promise(r => setTimeout(r, 600));
+            await new Promise(r => setTimeout(r, 400));
             const eDmg = Math.max(1, this.enemy.atk - Math.floor(s.def/2));
             this.p.hp -= eDmg;
             this.log(`${this.enemy.name} の拒絶：${eDmg} dmg`);
@@ -216,14 +225,13 @@ class DeaRip {
     async win() {
         this.enemy.hp = 0;
         this.log(`<span style="color:var(--win);">${this.enemy.name} を救済。 R.I.P.</span>`);
-        document.getElementById('enemy-sprite').classList.add('released');
         document.getElementById('btn-attack').disabled = true;
         document.getElementById('btn-skill').disabled = true;
         const exp = this.enemy.isBoss ? 1000 : 30 + (this.floor * 5);
         this.p.exp += exp;
         if(this.p.exp >= this.p.next) this.levelUp();
         if(this.enemy.isBoss) { this.dropPart(); this.generateSeed(); }
-        setTimeout(() => { document.getElementById('btn-next').style.display = 'block'; }, 800);
+        setTimeout(() => { document.getElementById('btn-next').style.display = 'block'; }, 600);
     }
 
     levelUp() {
@@ -251,12 +259,11 @@ class DeaRip {
         this.floor++; this.spawn();
         document.getElementById('btn-next').style.display = 'none';
         document.getElementById('btn-attack').disabled = false;
-        document.getElementById('enemy-sprite').classList.remove('released');
         this.save();
     }
 
     gameOver() {
-        this.log(`<span style="color:red;">【警告】意識が消失しました。</span>`);
+        this.log(`<span style="color:red;">【警告】意識が消失。</span>`);
         document.getElementById('btn-attack').disabled = true;
         document.getElementById('btn-restart').style.display = 'block';
     }
@@ -276,18 +283,19 @@ class DeaRip {
         document.getElementById('p-stats').innerText = `A:${s.atk} / D:${s.def} / S:${s.spd}`;
         document.getElementById('p-sp').innerText = this.p.sp;
         document.getElementById('enemy-name').innerText = this.enemy ? this.enemy.name : "---";
-        document.getElementById('enemy-sprite').innerText = this.enemy ? (this.enemy.isBoss ? "【 侵 食 の 根 源 】" : "【 彷 徨 う 魂 】") : "";
         document.getElementById('e-hp-bar').style.width = this.enemy ? `${(this.enemy.hp/this.enemy.maxHp)*100}%` : "0%";
+        
+        // 装備タブの更新
+        document.getElementById('eq-head').innerText = `頭: ${this.p.eq.head ? this.p.eq.head.name : '---'}`;
+        document.getElementById('eq-arm').innerText = `腕: ${this.p.eq.arm ? this.p.eq.arm.name : '---'}`;
+        document.getElementById('eq-body').innerText = `体: ${this.p.eq.body ? this.p.eq.body.name : '---'}`;
+        document.getElementById('eq-leg').innerText = `脚: ${this.p.eq.leg ? this.p.eq.leg.name : '---'}`;
+
         const sk = this.p.eq.arm ? this.p.eq.arm.skill : "---";
         document.getElementById('btn-skill').innerText = `技：${sk}`;
         document.getElementById('btn-skill').disabled = (sk === "---" || this.busy || this.enemy.hp <= 0);
-        for(let k in this.p.eq) {
-            const el = document.getElementById(`slot-${k}`);
-            const p = this.p.eq[k];
-            el.innerHTML = `${this.getSlotName(k)}: <span class="${p?'part-active':''}">${p ? p.name : '---'}</span>`;
-        }
+        document.getElementById('skill-desc').innerText = this.p.eq.arm ? `発動可能スキル：『${sk}』\n(通常の2.5倍の威力を放ちます)` : "腕パーツを装備すると、固有スキルが解放されます。";
     }
-    getSlotName(s) { return {head:"頭", arm:"腕", body:"体", leg:"脚"}[s]; }
 }
 
 const game = new DeaRip();
