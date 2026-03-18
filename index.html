@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DeaRip - v0.45 (Initial Equip & Clean Log)</title>
+    <title>DeaRip - v1.1</title>
     <style>
         :root { 
             --bg: #050505; 
@@ -13,6 +13,7 @@
             --win: #ffffff; 
             --skill: #0077be; 
             --sp: #ffcc00; 
+            --exp-bar: #555555;
         }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { 
@@ -24,6 +25,7 @@
             justify-content: center; 
             height: 100vh; 
             overflow: hidden; 
+            position: relative;
         }
         
         #game-container { 
@@ -45,10 +47,10 @@
         .status-row { 
             display: flex; 
             justify-content: space-between; 
-            font-size: 0.7rem; 
-            color: #888; 
+            font-size: 0.75rem; 
+            color: #aaa; 
         }
-        .hp-bar-container { 
+        .bar-container { 
             width: 100%; 
             height: 5px; 
             background: #222; 
@@ -56,24 +58,24 @@
             border-radius: 2px; 
             overflow: hidden; 
         }
-        .hp-bar { 
+        .bar-fill { 
             height: 100%; 
-            background: #2a2; 
             transition: width 0.3s; 
         }
+        .hp-bar { background: #2a2; }
         .e-hp-bar { background: #b30000; }
+        .exp-bar { background: var(--exp-bar); height: 3px; }
         
         #display { 
-            padding: 10px; 
+            padding: 20px 10px; 
             display: flex; 
             flex-direction: column; 
             align-items: center; 
             justify-content: center; 
             flex-shrink: 0; 
-            min-height: 120px; 
+            min-height: 100px; 
         }
-        #enemy-name { font-size: 0.95rem; margin-bottom: 4px; letter-spacing: 1px; }
-        #enemy-sprite { font-size: 1.1rem; color: #888; margin: 8px 0; }
+        #enemy-name { font-size: 0.95rem; margin-bottom: 8px; letter-spacing: 1px; }
 
         #tab-container { 
             flex-shrink: 0; 
@@ -99,13 +101,13 @@
         .tab-content { 
             display: none; 
             padding: 12px; 
-            height: 130px; 
+            height: 140px; 
             font-size: 0.75rem; 
             overflow-y: auto; 
         }
         .tab-content.active { display: block; }
         
-        .growth-grid { display: flex; gap: 8px; margin-top: 8px; }
+        .growth-grid { display: flex; gap: 8px; margin-top: 10px; }
         .growth-btn { 
             flex: 1; 
             background: #222; 
@@ -160,6 +162,16 @@
             border-top: 1px solid #222; 
         }
         .log-entry { margin-bottom: 5px; border-left: 2px solid #222; padding-left: 10px; }
+
+        #version-tag {
+            position: absolute;
+            bottom: 5px;
+            right: 10px;
+            font-size: 0.6rem;
+            color: #444;
+            pointer-events: none;
+            z-index: 100;
+        }
     </style>
 </head>
 <body>
@@ -168,16 +180,15 @@
     <div id="header">
         <div id="area-title" style="font-size: 0.65rem; color:#666; margin-bottom:2px;">---</div>
         <div class="status-row">
-            <span id="p-lv">Soul Lv.1</span>
+            <span id="p-lv">Lv.1</span>
             <span id="p-hp-text">HP: 100/100</span>
         </div>
-        <div class="hp-bar-container"><div id="p-hp-bar" class="hp-bar"></div></div>
+        <div class="bar-container"><div id="p-hp-bar" class="bar-fill hp-bar"></div></div>
     </div>
 
     <div id="display">
         <div id="enemy-name">---</div>
-        <div id="enemy-sprite">【 彷 徨 う 魂 】</div>
-        <div class="hp-bar-container" style="width: 85%;"><div id="e-hp-bar" class="hp-bar e-hp-bar"></div></div>
+        <div class="bar-container" style="width: 85%;"><div id="e-hp-bar" class="bar-fill e-hp-bar"></div></div>
     </div>
 
     <div id="tab-container">
@@ -188,12 +199,14 @@
         </div>
         
         <div id="tab-status" class="tab-content active">
-            <div style="display:flex; justify-content:space-between;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:2px;">
                 <span>Soul Point: <span id="p-sp" style="color:var(--sp)">0</span></span>
-                <span id="p-exp" style="color:#555">Next: 100 exp</span>
+                <span id="p-exp-text" style="color:#666; font-size:0.65rem;">exp: 0 / 100</span>
             </div>
-            <div id="stat-list" style="margin: 8px 0; line-height: 1.5;">
-                </div>
+            <div class="bar-container" style="height:3px; margin-bottom:8px;"><div id="p-exp-bar" class="bar-fill exp-bar"></div></div>
+            
+            <div id="stat-list" style="margin: 8px 0; line-height: 1.6;"></div>
+            
             <div class="growth-grid">
                 <button class="growth-btn" onclick="game.grow('atk')">力(ATK)+</button>
                 <button class="growth-btn" onclick="game.grow('hp')">器(HP)+</button>
@@ -221,13 +234,14 @@
     </div>
 
     <div id="log"></div>
+    <div id="version-tag"></div>
 </div>
 
 <script>
 class DeaRip {
     constructor() {
-        this.VERSION = "0.45";
-        this.SAVE_KEY = "DEARIP_SAVE_DATA_V045";
+        this.VERSION = "1.1";
+        this.SAVE_KEY = "DEARIP_SAVE_DATA_V1_1";
         
         this.jobs = [
             {n:"村人", p:"素朴な", s:{h:1.0, a:1.0}}, {n:"兵士", p:"軍属の", s:{h:1.2, a:1.1}}, {n:"騎士", p:"高潔な", s:{h:1.5, a:1.3}}, {n:"魔導師", p:"叡智の", s:{h:0.8, a:1.8}}, {n:"暗殺者", p:"潜伏者の", s:{h:0.7, a:2.0}},
@@ -429,10 +443,12 @@ class DeaRip {
     updateUI() {
         const s = this.stats;
         document.getElementById('area-title').innerText = `${this.seed.name} (${this.floor}層)`;
-        document.getElementById('p-lv').innerText = `Soul Lv.${this.p.lv}`;
+        document.getElementById('p-lv').innerText = `Lv.${this.p.lv}`;
         document.getElementById('p-hp-text').innerText = `HP: ${Math.max(0,this.p.hp)}/${s.total.hp}`;
         document.getElementById('p-hp-bar').style.width = `${(this.p.hp/s.total.hp)*100}%`;
-        document.getElementById('p-exp').innerText = `Next: ${Math.max(0, this.p.next - this.p.exp)} exp`;
+        
+        document.getElementById('p-exp-text').innerText = `exp: ${this.p.exp} / ${this.p.next}`;
+        document.getElementById('p-exp-bar').style.width = `${(this.p.exp/this.p.next)*100}%`;
         document.getElementById('p-sp').innerText = this.p.sp;
         
         document.getElementById('stat-list').innerHTML = `
@@ -468,6 +484,8 @@ class DeaRip {
         document.getElementById('btn-skill').disabled = (sk === "---" || this.busy || this.state === "win");
         document.getElementById('btn-main').innerText = (this.state === "battle") ? "こうげき" : "深層へ";
         document.getElementById('skill-desc').innerText = this.p.eq.arm ? `適合中の腕パーツにより『${sk}』が発動可能です。` : "腕パーツを適合させると技が解放されます。";
+        
+        document.getElementById('version-tag').innerText = `DeaRip v${this.VERSION}`;
     }
 }
 const game = new DeaRip();
