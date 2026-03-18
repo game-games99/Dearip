@@ -3,176 +3,273 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DeaRip - Prototype v0.1</title>
+    <title>DeaRip - Alpha v0.2</title>
     <style>
-        body { background: #0a0a0a; color: #d0d0d0; font-family: 'Georgia', serif; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
-        #game-container { width: 400px; height: 600px; border: 2px solid #333; position: relative; background: #111; display: flex; flex-direction: column; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
-        #header { padding: 10px; border-bottom: 1px solid #333; text-align: center; }
-        #display { flex: 1; padding: 20px; display: flex; flex-direction: column; justify-content: space-around; align-items: center; text-align: center; position: relative; }
-        #enemy-sprite { font-size: 1.2rem; color: #888; min-height: 100px; transition: all 0.5s; }
-        .hp-bar-container { width: 80%; height: 10px; background: #222; border: 1px solid #444; margin-top: 10px; }
-        .hp-bar { height: 100%; background: #a00; transition: width 0.3s; }
-        #log { height: 120px; overflow-y: auto; font-size: 0.85rem; padding: 10px; border-top: 1px solid #333; background: #050505; color: #aaa; text-align: left; }
-        #controls { padding: 15px; display: flex; gap: 10px; justify-content: center; border-top: 1px solid #333; }
-        button { background: #222; color: #ddd; border: 1px solid #444; padding: 10px 20px; cursor: pointer; transition: 0.2s; }
-        button:hover { background: #333; border-color: #666; }
-        button:disabled { color: #555; border-color: #222; cursor: default; }
-        .released { animation: fadeUp 1s forwards; color: #fff !important; text-shadow: 0 0 10px #fff; }
-        @keyframes fadeUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-50px); } }
+        :root { --bg: #0a0a0a; --panel: #151515; --accent: #e0e0e0; --danger: #a00; --win: #fff; }
+        body { background: var(--bg); color: var(--accent); font-family: 'Hiragino Mincho ProN', 'serif'; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
+        #game-container { width: 450px; height: 750px; border: 1px solid #333; position: relative; background: var(--panel); display: flex; flex-direction: column; box-shadow: 0 0 30px rgba(0,0,0,0.8); }
+        
+        /* UI Panels */
+        #header { padding: 15px; border-bottom: 1px solid #333; background: #000; }
+        .status-row { display: flex; justify-content: space-between; font-size: 0.8rem; margin-top: 5px; color: #888; }
+        
+        #display { flex: 1; padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+        #enemy-sprite { font-size: 1.5rem; margin: 20px 0; min-height: 40px; transition: 0.5s; }
+        
+        #equipment-panel { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; padding: 10px; background: #080808; font-size: 0.75rem; border-top: 1px solid #222; }
+        .part-slot { border: 1px border: #333; padding: 4px; color: #666; }
+        .part-equipped { color: #aaa; border-left: 2px solid #555; padding-left: 5px; }
+
+        .hp-bar-container { width: 100%; height: 6px; background: #222; margin: 10px 0; border-radius: 3px; overflow: hidden; }
+        .hp-bar { height: 100%; background: var(--danger); transition: width 0.3s; }
+        
+        #log { height: 150px; overflow-y: auto; font-size: 0.8rem; padding: 10px; background: #000; color: #999; border-top: 1px solid #333; line-height: 1.4; }
+        #controls { padding: 20px; display: flex; gap: 10px; background: #000; }
+        
+        button { flex: 1; background: #1a1a1a; color: #ccc; border: 1px solid #444; padding: 12px; cursor: pointer; font-family: inherit; }
+        button:hover { background: #252525; color: #fff; }
+        button:disabled { opacity: 0.3; }
+
+        /* Animations */
+        .released { animation: releaseAnim 1.2s forwards; text-shadow: 0 0 15px #fff; }
+        @keyframes releaseAnim { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(1.1); } 100% { opacity: 0; transform: translateY(-100px); } }
+        .dmg { animation: shake 0.2s; color: var(--danger) !important; }
+        @keyframes shake { 0% { transform: translate(2px, 0); } 50% { transform: translate(-2px, 0); } 100% { transform: translate(0, 0); } }
     </style>
 </head>
 <body>
 
 <div id="game-container">
     <div id="header">
-        <div id="location-name">村 - 1層</div>
-        <div id="player-status" style="font-size: 0.8rem; margin-top:5px;">Soul Lv.1 | HP: 100/100</div>
+        <div id="area-title" style="font-weight: bold; font-size: 1.1rem;">---</div>
+        <div class="status-row">
+            <span id="p-lv">Soul Lv.1</span>
+            <span id="p-hp-text">HP: 100/100</span>
+        </div>
+        <div class="hp-bar-container"><div id="p-hp-bar" class="hp-bar" style="width: 100%; background: #4a4;"></div></div>
+        <div id="p-exp" style="font-size: 0.6rem; color: #555; text-align: right;">Next: 100 exp</div>
     </div>
 
     <div id="display">
-        <div id="enemy-container">
-            <div id="enemy-name">---</div>
-            <div id="enemy-sprite"></div>
-            <div class="hp-bar-container"><div id="enemy-hp" class="hp-bar" style="width: 100%;"></div></div>
-        </div>
+        <div id="enemy-phase" style="font-size: 0.7rem; color: #555; letter-spacing: 2px;">DESTINY ENCOUNTER</div>
+        <div id="enemy-name" style="font-size: 1.2rem; margin-top: 10px;">---</div>
+        <div id="enemy-sprite">【 異 形 】</div>
+        <div class="hp-bar-container"><div id="e-hp-bar" class="hp-bar" style="width: 100%;"></div></div>
+    </div>
+
+    <div id="equipment-panel">
+        <div class="part-slot">頭: <span id="eq-head" class="part-equipped">未装備</span></div>
+        <div class="part-slot">腕: <span id="eq-arm" class="part-equipped">未装備</span></div>
+        <div class="part-slot">体: <span id="eq-body" class="part-equipped">未装備</span></div>
+        <div class="part-slot">脚: <span id="eq-leg" class="part-equipped">未装備</span></div>
     </div>
 
     <div id="log"></div>
 
     <div id="controls">
-        <button id="btn-attack" onclick="game.attack()">こうげき</button>
-        <button id="btn-next" onclick="game.nextFloor()" style="display:none;">深部へ進む</button>
+        <button id="btn-attack" onclick="game.action('attack')">解放（攻撃）</button>
+        <button id="btn-next" onclick="game.action('next')" style="display:none;">深部へ</button>
+        <button id="btn-restart" onclick="location.reload()" style="display:none;">再構築</button>
     </div>
 </div>
 
 <script>
 class DeaRip {
     constructor() {
-        this.player = { lv: 1, hp: 100, maxHp: 100, atk: 15, exp: 0 };
-        this.dungeon = { name: "村", floor: 1, maxFloor: 30 };
-        this.enemy = null;
-        this.isBattle = false;
+        // Player Data
+        this.p = { 
+            lv: 1, exp: 0, next: 100,
+            baseHp: 100, baseAtk: 15, baseDef: 5, baseSpd: 10,
+            hp: 100,
+            eq: { head: null, arm: null, body: null, leg: null }
+        };
 
-        this.jobs = [
-            { id: 'villager', name: '村人', hp: 40, atk: 8 },
-            { id: 'soldier', name: '兵士', hp: 70, atk: 12 }
-        ];
+        // Master Data
+        this.jobs = ["村人", "兵士", "騎士", "魔導師", "商人", "貴族"];
         this.ranks = [
-            { name: "ただの", multi: 1.0 },
-            { name: "生きたかった", multi: 1.2 },
-            { name: "狂気に染まる", multi: 1.5 },
-            { name: "支配された", multi: 2.0 }
+            { n: "ただの", m: 1.0 }, { n: "生きたかった", m: 1.3 },
+            { n: "狂気に染まる", m: 1.7 }, { n: "支配された", m: 2.2 }
         ];
+        this.areaNames = ["嘆きの", "静寂の", "狂乱の", "歪な", "見捨てられた"];
+        this.areaTypes = ["村", "街", "砦", "城"];
+        this.adj = ["歪な", "狂乱の", "崩御せし", "嘆きの", "嗤う"];
 
-        this.init();
+        this.seed = null;
+        this.floor = 1;
+        this.enemy = null;
+        this.busy = false;
+
+        this.generateSeed();
+        this.spawn();
     }
 
-    init() {
-        this.spawnEnemy();
-        this.updateUI();
+    generateSeed() {
+        const name = this.areaNames[Math.floor(Math.random()*this.areaNames.length)] + 
+                     this.areaTypes[Math.floor(Math.random()*this.areaTypes.length)];
+        this.seed = {
+            name: name,
+            bossTitle: this.adj[Math.floor(Math.random()*this.adj.length)],
+            diff: 1.0 + (Math.random() * 0.5)
+        };
+        document.getElementById('area-title').innerText = `${this.seed.name}のシード`;
     }
 
-    spawnEnemy() {
-        this.isBattle = true;
-        document.getElementById('btn-attack').style.display = 'block';
-        document.getElementById('btn-next').style.display = 'none';
+    get stats() {
+        let s = { hp: this.p.baseHp, atk: this.p.baseAtk, def: this.p.baseDef, spd: this.p.baseSpd };
+        for (let k in this.p.eq) {
+            if (this.p.eq[k]) {
+                s.hp += (this.p.eq[k].hp || 0);
+                s.atk += (this.p.eq[k].atk || 0);
+                s.def += (this.p.eq[k].def || 0);
+                s.spd += (this.p.eq[k].spd || 0);
+            }
+        }
+        return s;
+    }
 
-        if (this.dungeon.floor === this.dungeon.maxFloor) {
-            // ボス生成
+    spawn() {
+        const isBoss = this.floor === 30;
+        if (isBoss) {
             this.enemy = {
-                name: "村長の歪な異形",
-                hp: 500, maxHp: 500, atk: 35,
+                name: `${this.seed.name}主：${this.seed.bossTitle}異形`,
+                hp: Math.floor(600 * this.seed.diff),
+                maxHp: Math.floor(600 * this.seed.diff),
+                atk: Math.floor(40 * this.seed.diff),
                 isBoss: true
             };
-            this.log(`<span style="color:#f00;">警告：強大な異形の気配を感じる...</span>`);
+            this.log(`<span style="color:#f55;">最深部。${this.enemy.name}が現れた。</span>`);
         } else {
-            // 雑魚敵生成
-            const job = this.jobs[Math.floor(Math.random() * this.jobs.length)];
-            const rank = this.ranks[Math.floor(Math.random() * Math.min(this.ranks.length, Math.ceil(this.dungeon.floor / 7)))];
-            const lvBonus = 1 + (this.dungeon.floor * 0.1);
-
+            const job = this.jobs[Math.floor(Math.random()*this.jobs.length)];
+            const rank = this.ranks[Math.floor(Math.random()*Math.min(this.ranks.length, Math.ceil(this.floor/8)))];
+            const scale = 1 + (this.floor * 0.15) * this.seed.diff;
             this.enemy = {
-                name: `${rank.name}${job.name}`,
-                hp: Math.floor(job.hp * rank.multi * lvBonus),
-                maxHp: Math.floor(job.hp * rank.multi * lvBonus),
-                atk: Math.floor(job.atk * rank.multi * lvBonus),
+                name: `${rank.n}${job}`,
+                hp: Math.floor(40 * rank.m * scale),
+                maxHp: Math.floor(40 * rank.m * scale),
+                atk: Math.floor(8 * rank.m * scale),
+                job: job,
                 isBoss: false
             };
         }
-        
-        const sprite = document.getElementById('enemy-sprite');
-        sprite.classList.remove('released');
-        sprite.innerHTML = this.enemy.isBoss ? "【深淵の異形】" : "【彷徨う魂】";
         this.updateUI();
     }
 
-    attack() {
-        if (!this.isBattle) return;
+    action(type) {
+        if (this.busy) return;
+        if (type === 'attack') this.battle();
+        if (type === 'next') {
+            this.floor++;
+            document.getElementById('btn-next').style.display = 'none';
+            document.getElementById('btn-attack').style.display = 'block';
+            document.getElementById('enemy-sprite').classList.remove('released');
+            this.spawn();
+        }
+    }
 
-        // プレイヤー攻撃
-        const pDmg = Math.max(1, this.player.atk + Math.floor(Math.random() * 5));
+    async battle() {
+        this.busy = true;
+        const s = this.stats;
+        
+        // Player turn
+        const pDmg = Math.max(1, s.atk - Math.floor(Math.random()*5));
         this.enemy.hp -= pDmg;
-        this.log(`${this.enemy.name} を切り裂いた。 ${pDmg}のダメージ。`);
+        this.log(`${this.enemy.name}を剥ぎ取る。 ${pDmg}ダメージ。`);
+        document.getElementById('enemy-sprite').classList.add('dmg');
+        setTimeout(()=>document.getElementById('enemy-sprite').classList.remove('dmg'), 200);
 
         if (this.enemy.hp <= 0) {
-            this.enemy.hp = 0;
-            this.win();
+            await this.win();
         } else {
-            // 敵の反撃
-            setTimeout(() => {
-                const eDmg = Math.max(1, this.enemy.atk + Math.floor(Math.random() * 3));
-                this.player.hp -= eDmg;
-                this.log(`${this.enemy.name} の拒絶。 ${eDmg}のダメージを受けた。`);
-                if (this.player.hp <= 0) this.gameOver();
-                this.updateUI();
-            }, 400);
+            // Enemy turn
+            await new Promise(r => setTimeout(r, 500));
+            const eDmg = Math.max(1, this.enemy.atk - Math.floor(s.def/2));
+            this.p.hp -= eDmg;
+            this.log(`${this.enemy.name}の拒絶。 ${eDmg}ダメージ。`);
+            if (this.p.hp <= 0) this.die();
         }
-        this.updateUI();
-    }
-
-    win() {
-        this.isBattle = false;
-        this.log(`<span style="color:#fff;">${this.enemy.name} を救済した。 R.I.P.</span>`);
-        document.getElementById('enemy-sprite').classList.add('released');
         
+        this.updateUI();
+        this.busy = false;
+    }
+
+    async win() {
+        this.enemy.hp = 0;
+        this.log(`<span style="color:var(--win);">${this.enemy.name}を救済した。 R.I.P.</span>`);
+        document.getElementById('enemy-sprite').classList.add('released');
         document.getElementById('btn-attack').style.display = 'none';
-        document.getElementById('btn-next').style.display = 'block';
+        
+        // Gain Exp
+        const expGain = this.enemy.isBoss ? 500 : 20 + (this.floor * 5);
+        this.p.exp += expGain;
+        this.log(`${expGain}の記憶（経験値）を得た。`);
+        if (this.p.exp >= this.p.next) this.levelUp();
 
-        if(this.enemy.isBoss) {
-            this.log(`<b>【深淵への門が開かれた。パーツ：村人の腕 を獲得】</b>`);
-        }
-    }
-
-    nextFloor() {
-        if (this.dungeon.floor < this.dungeon.maxFloor) {
-            this.dungeon.floor++;
-            this.spawnEnemy();
+        // Drop Part
+        if (this.enemy.isBoss) {
+            this.dropPart();
+            document.getElementById('area-title').innerText = "【救済完了】";
         } else {
-            this.log("このエリアの救済は完了した。");
+            document.getElementById('btn-next').style.display = 'block';
         }
     }
 
-    log(msg) {
-        const logEl = document.getElementById('log');
-        logEl.innerHTML = `> ${msg}<br>` + logEl.innerHTML;
+    levelUp() {
+        this.p.lv++;
+        this.p.exp -= this.p.next;
+        this.p.next = Math.floor(this.p.next * 1.5);
+        this.p.baseHp += 20;
+        this.p.baseAtk += 5;
+        this.p.baseDef += 2;
+        this.p.hp = this.stats.hp; // 全快
+        this.log(`<span style="color:#0f0;">Soul Level Up: ${this.p.lv}</span>`);
+    }
+
+    dropPart() {
+        const slots = ["head", "arm", "body", "leg"];
+        const slot = slots[Math.floor(Math.random()*slots.length)];
+        const partName = `${this.enemy.name.split('：')[0]}の${this.getSlotName(slot)}`;
+        
+        const part = { name: partName };
+        if (slot === 'head') part.def = 10;
+        if (slot === 'arm') part.atk = 15;
+        if (slot === 'body') part.hp = 100;
+        if (slot === 'leg') part.spd = 10;
+
+        this.p.eq[slot] = part;
+        this.log(`<span style="color:gold;">パーツ獲得：${partName} を装備した。</span>`);
+    }
+
+    getSlotName(s) { return {head:"頭", arm:"腕", body:"体", leg:"脚"}[s]; }
+
+    die() {
+        this.log(`<span style="color:red;">コアが破損。意識が散逸する...</span>`);
+        document.getElementById('btn-attack').disabled = true;
+        document.getElementById('btn-restart').style.display = 'block';
+    }
+
+    log(m) {
+        const l = document.getElementById('log');
+        l.innerHTML = `<div>> ${m}</div>` + l.innerHTML;
     }
 
     updateUI() {
-        document.getElementById('location-name').innerText = `${this.dungeon.name} - ${this.dungeon.floor}層`;
-        document.getElementById('player-status').innerText = `Soul Lv.${this.player.lv} | HP: ${this.player.hp}/${this.player.maxHp}`;
-        document.getElementById('enemy-name').innerText = this.enemy ? this.enemy.name : "---";
-        const hpPercent = this.enemy ? (this.enemy.hp / this.enemy.maxHp) * 100 : 0;
-        document.getElementById('enemy-hp').style.width = `${hpPercent}%`;
-    }
+        const s = this.stats;
+        document.getElementById('p-lv').innerText = `Soul Lv.${this.p.lv}`;
+        document.getElementById('p-hp-text').innerText = `HP: ${Math.max(0,this.p.hp)} / ${s.hp}`;
+        document.getElementById('p-hp-bar').style.width = `${(this.p.hp/s.hp)*100}%`;
+        document.getElementById('p-exp').innerText = `Next: ${this.p.next - this.p.exp} exp`;
 
-    gameOver() {
-        this.log(`<span style="color:red;">意識が遠のく... 再構築を開始します。</span>`);
-        location.reload();
+        document.getElementById('enemy-name').innerText = this.enemy.name;
+        document.getElementById('e-hp-bar').style.width = `${(this.enemy.hp/this.enemy.maxHp)*100}%`;
+        
+        document.getElementById('eq-head').innerText = this.p.eq.head ? this.p.eq.head.name : "未装備";
+        document.getElementById('eq-arm').innerText = this.p.eq.arm ? this.p.eq.arm.name : "未装備";
+        document.getElementById('eq-body').innerText = this.p.eq.body ? this.p.eq.body.name : "未装備";
+        document.getElementById('eq-leg').innerText = this.p.eq.leg ? this.p.eq.leg.name : "未装備";
     }
 }
 
 const game = new DeaRip();
 </script>
-
 </body>
 </html>
