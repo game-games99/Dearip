@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DeaRip - v0.33 (Layout Refined)</title>
+    <title>DeaRip - v0.34 (Roguelike Death)</title>
     <style>
         :root { --bg: #050505; --panel: #121212; --accent: #dcdcdc; --danger: #b30000; --win: #ffffff; --skill: #0077be; --sp: #ffcc00; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -11,19 +11,16 @@
         
         #game-container { width: 100%; max-width: 480px; height: 100%; display: flex; flex-direction: column; background: var(--panel); position: relative; }
         
-        /* 1. ヘッダー */
         #header { padding: 8px 15px; border-bottom: 1px solid #333; background: #000; flex-shrink: 0; }
         .status-row { display: flex; justify-content: space-between; font-size: 0.7rem; color: #888; }
         .hp-bar-container { width: 100%; height: 5px; background: #222; margin: 4px 0; border-radius: 2px; overflow: hidden; }
         .hp-bar { height: 100%; background: #2a2; transition: width 0.3s; }
         .e-hp-bar { background: var(--danger); }
         
-        /* 2. 敵表示エリア */
         #display { padding: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0; min-height: 100px; }
         #enemy-name { font-size: 0.95rem; margin-bottom: 4px; letter-spacing: 1px; }
         #enemy-sprite { font-size: 1.1rem; color: #888; margin: 4px 0; }
 
-        /* 3. タブエリア（ステータス・装備） */
         #tab-container { flex-shrink: 0; background: #0a0a0a; border-top: 1px solid #222; border-bottom: 1px solid #333; }
         .tab-buttons { display: flex; border-bottom: 1px solid #222; }
         .tab-btn { flex: 1; padding: 10px; background: #111; border: none; color: #555; font-size: 0.7rem; cursor: pointer; }
@@ -33,14 +30,12 @@
         .growth-grid { display: flex; gap: 6px; margin-top: 5px; }
         .growth-btn { flex: 1; background: #222; border: 1px solid #444; color: #aaa; padding: 8px 0; font-size: 0.7rem; border-radius: 3px; }
 
-        /* 4. 操作ボタン（画面中央・タブの直下） */
         #controls { padding: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background: #0e0e0e; border-bottom: 1px solid #333; flex-shrink: 0; }
         button.action-btn { background: #1a1a1a; color: #ccc; border: 1px solid #444; padding: 15px 5px; cursor: pointer; font-family: inherit; border-radius: 4px; font-size: 0.95rem; }
         button.action-btn:hover:not(:disabled) { background: #252525; border-color: #666; }
         button.action-btn:disabled { opacity: 0.1; }
         .btn-skill { border-color: var(--skill) !important; color: #8af !important; }
 
-        /* 5. ログエリア（最下部） */
         #log { flex: 1; overflow-y: auto; font-size: 0.8rem; padding: 12px; background: #000; color: #777; line-height: 1.4; border-top: 1px solid #222; }
         .log-entry { margin-bottom: 4px; border-left: 2px solid #222; padding-left: 8px; }
     </style>
@@ -55,7 +50,7 @@
             <span id="p-hp-text">HP: 100/100</span>
         </div>
         <div class="hp-bar-container"><div id="p-hp-bar" class="hp-bar"></div></div>
-        <div style="display:flex; justify-content: space-between; font-size: 0.6rem; color: #555;">
+        <div style="display:flex; justify-content: space-between; font-size: 0.6rem; color: #444;">
             <span id="p-stats">A:15 / D:5 / S:10</span>
             <span id="p-exp">Next: 100 exp</span>
         </div>
@@ -96,7 +91,7 @@
         <button id="btn-attack" class="action-btn" onclick="game.battle('atk')">解放（通常）</button>
         <button id="btn-skill" class="action-btn btn-skill" onclick="game.battle('skill')" disabled>技：---</button>
         <button id="btn-next" class="action-btn" onclick="game.nextFloor()" style="display:none; grid-column: span 2; border-color: #fff;">深部（次層）へ</button>
-        <button id="btn-restart" class="action-btn" onclick="game.reset()" style="display:none; grid-column: span 2;">再構築する</button>
+        <button id="btn-retry" class="action-btn" onclick="game.retry()" style="display:none; grid-column: span 2; border-color: var(--danger); color: var(--danger);">1層からやり直す</button>
     </div>
 
     <div id="log"></div>
@@ -105,7 +100,7 @@
 <script>
 class DeaRip {
     constructor() {
-        this.SAVE_KEY = "DEARIP_SAVE_DATA_V033";
+        this.SAVE_KEY = "DEARIP_SAVE_DATA_V034";
         this.load();
         
         this.jobs = ["村人", "兵士", "騎士", "魔導師", "商人", "貴族"];
@@ -204,7 +199,7 @@ class DeaRip {
         let dmg = s.atk + Math.floor(Math.random()*5);
         if(mode === 'skill' && this.p.eq.arm) {
             dmg = Math.floor(dmg * 2.5);
-            this.log(`<span style="color:var(--skill);">『${this.p.eq.arm.skill}』発動。</span>`);
+            this.log(`<span style="color:var(--skill);">『${this.p.eq.arm.skill}』発动。</span>`);
         }
         this.enemy.hp -= dmg;
         this.log(`${this.enemy.name} を剥ぐ：${dmg} dmg`);
@@ -214,7 +209,10 @@ class DeaRip {
             const eDmg = Math.max(1, this.enemy.atk - Math.floor(s.def/2));
             this.p.hp -= eDmg;
             this.log(`${this.enemy.name} の拒絶：${eDmg} dmg`);
-            if(this.p.hp <= 0) this.gameOver();
+            if(this.p.hp <= 0) {
+                this.p.hp = 0;
+                this.gameOver();
+            }
         }
         this.updateUI(); this.busy = false; this.save();
     }
@@ -260,9 +258,24 @@ class DeaRip {
     }
 
     gameOver() {
-        this.log(`<span style="color:red;">【警告】意識が消失。</span>`);
+        this.log(`<span style="color:red;">【警告】意識が消失。ダンジョン外へ転送されます...</span>`);
         document.getElementById('btn-attack').disabled = true;
-        document.getElementById('btn-restart').style.display = 'block';
+        document.getElementById('btn-skill').disabled = true;
+        setTimeout(() => {
+            document.getElementById('btn-retry').style.display = 'block';
+        }, 800);
+    }
+
+    retry() {
+        // 階層を1に戻し、HPを全快して再開
+        this.floor = 1;
+        this.p.hp = this.stats.hp;
+        this.generateSeed();
+        this.spawn();
+        document.getElementById('btn-retry').style.display = 'none';
+        document.getElementById('btn-attack').disabled = false;
+        this.log(`<span style="color:#aaa;">--- 第1層から再起します ---</span>`);
+        this.save();
     }
 
     log(m) {
@@ -289,7 +302,7 @@ class DeaRip {
 
         const sk = this.p.eq.arm ? this.p.eq.arm.skill : "---";
         document.getElementById('btn-skill').innerText = `技：${sk}`;
-        document.getElementById('btn-skill').disabled = (sk === "---" || this.busy || this.enemy.hp <= 0);
+        document.getElementById('btn-skill').disabled = (sk === "---" || this.busy || this.enemy.hp <= 0 || this.p.hp <= 0);
         document.getElementById('skill-desc').innerText = this.p.eq.arm ? `発動可能スキル：『${sk}』\n(通常の2.5倍の威力を放ちます)` : "腕パーツを装備すると、固有スキルが解放されます。";
     }
 }
