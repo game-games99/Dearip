@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DeaRip - v0.34 (Roguelike Death)</title>
+    <title>DeaRip - v0.36</title>
     <style>
         :root { --bg: #050505; --panel: #121212; --accent: #dcdcdc; --danger: #b30000; --win: #ffffff; --skill: #0077be; --sp: #ffcc00; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -50,7 +50,7 @@
             <span id="p-hp-text">HP: 100/100</span>
         </div>
         <div class="hp-bar-container"><div id="p-hp-bar" class="hp-bar"></div></div>
-        <div style="display:flex; justify-content: space-between; font-size: 0.6rem; color: #444;">
+        <div style="display:flex; justify-content: space-between; font-size: 0.6rem; color: #555;">
             <span id="p-stats">A:15 / D:5 / S:10</span>
             <span id="p-exp">Next: 100 exp</span>
         </div>
@@ -88,10 +88,8 @@
     </div>
 
     <div id="controls">
-        <button id="btn-attack" class="action-btn" onclick="game.battle('atk')">解放（通常）</button>
+        <button id="btn-main" class="action-btn" onclick="game.handleMainBtn()">こうげき</button>
         <button id="btn-skill" class="action-btn btn-skill" onclick="game.battle('skill')" disabled>技：---</button>
-        <button id="btn-next" class="action-btn" onclick="game.nextFloor()" style="display:none; grid-column: span 2; border-color: #fff;">深部（次層）へ</button>
-        <button id="btn-retry" class="action-btn" onclick="game.retry()" style="display:none; grid-column: span 2; border-color: var(--danger); color: var(--danger);">1層からやり直す</button>
     </div>
 
     <div id="log"></div>
@@ -100,7 +98,7 @@
 <script>
 class DeaRip {
     constructor() {
-        this.SAVE_KEY = "DEARIP_SAVE_DATA_V034";
+        this.SAVE_KEY = "DEARIP_SAVE_DATA_V036";
         this.load();
         
         this.jobs = ["村人", "兵士", "騎士", "魔導師", "商人", "貴族"];
@@ -110,6 +108,7 @@ class DeaRip {
 
         this.enemy = null;
         this.busy = false;
+        this.state = "battle"; // battle or win
 
         if(!this.seed) this.generateSeed();
         this.spawn();
@@ -179,6 +178,7 @@ class DeaRip {
                 atk: Math.floor(10 * rank.m * scale), isBoss: false
             };
         }
+        this.state = "battle";
         this.updateUI();
     }
 
@@ -188,8 +188,13 @@ class DeaRip {
         if(type === 'atk') this.p.plusAtk += 3;
         if(type === 'hp') { this.p.plusHp += 15; this.p.hp += 15; }
         if(type === 'spd') this.p.plusSpd += 2;
-        this.log(`<span style="color:var(--sp);">Soul強化完了。</span>`);
+        this.log(`<span style="color:var(--sp);">強化完了。</span>`);
         this.save(); this.updateUI();
+    }
+
+    handleMainBtn() {
+        if(this.state === "battle") this.battle('atk');
+        else if(this.state === "win") this.nextFloor();
     }
 
     async battle(mode) {
@@ -199,16 +204,16 @@ class DeaRip {
         let dmg = s.atk + Math.floor(Math.random()*5);
         if(mode === 'skill' && this.p.eq.arm) {
             dmg = Math.floor(dmg * 2.5);
-            this.log(`<span style="color:var(--skill);">『${this.p.eq.arm.skill}』発动。</span>`);
+            this.log(`<span style="color:var(--skill);">『${this.p.eq.arm.skill}』</span>`);
         }
         this.enemy.hp -= dmg;
-        this.log(`${this.enemy.name} を剥ぐ：${dmg} dmg`);
+        this.log(`${this.enemy.name} に ${dmg} dmg`);
 
         if(this.enemy.hp <= 0) { await this.win(); } else {
             await new Promise(r => setTimeout(r, 400));
             const eDmg = Math.max(1, this.enemy.atk - Math.floor(s.def/2));
             this.p.hp -= eDmg;
-            this.log(`${this.enemy.name} の拒絶：${eDmg} dmg`);
+            this.log(`${this.enemy.name} から ${eDmg} dmg`);
             if(this.p.hp <= 0) {
                 this.p.hp = 0;
                 this.gameOver();
@@ -220,13 +225,11 @@ class DeaRip {
     async win() {
         this.enemy.hp = 0;
         this.log(`<span style="color:var(--win);">${this.enemy.name} を救済。 R.I.P.</span>`);
-        document.getElementById('btn-attack').disabled = true;
-        document.getElementById('btn-skill').disabled = true;
+        this.state = "win";
         const exp = this.enemy.isBoss ? 1000 : 30 + (this.floor * 5);
         this.p.exp += exp;
         if(this.p.exp >= this.p.next) this.levelUp();
         if(this.enemy.isBoss) { this.dropPart(); this.generateSeed(); }
-        setTimeout(() => { document.getElementById('btn-next').style.display = 'block'; }, 600);
     }
 
     levelUp() {
@@ -252,29 +255,16 @@ class DeaRip {
 
     nextFloor() {
         this.floor++; this.spawn();
-        document.getElementById('btn-next').style.display = 'none';
-        document.getElementById('btn-attack').disabled = false;
         this.save();
     }
 
     gameOver() {
-        this.log(`<span style="color:red;">【警告】意識が消失。ダンジョン外へ転送されます...</span>`);
-        document.getElementById('btn-attack').disabled = true;
-        document.getElementById('btn-skill').disabled = true;
-        setTimeout(() => {
-            document.getElementById('btn-retry').style.display = 'block';
-        }, 800);
-    }
-
-    retry() {
-        // 階層を1に戻し、HPを全快して再開
+        this.log(`<span style="color:red;">意識が消失。1層へ戻ります。</span>`);
+        // 即座に1層に戻る処理
         this.floor = 1;
         this.p.hp = this.stats.hp;
         this.generateSeed();
         this.spawn();
-        document.getElementById('btn-retry').style.display = 'none';
-        document.getElementById('btn-attack').disabled = false;
-        this.log(`<span style="color:#aaa;">--- 第1層から再起します ---</span>`);
         this.save();
     }
 
@@ -302,8 +292,18 @@ class DeaRip {
 
         const sk = this.p.eq.arm ? this.p.eq.arm.skill : "---";
         document.getElementById('btn-skill').innerText = `技：${sk}`;
-        document.getElementById('btn-skill').disabled = (sk === "---" || this.busy || this.enemy.hp <= 0 || this.p.hp <= 0);
-        document.getElementById('skill-desc').innerText = this.p.eq.arm ? `発動可能スキル：『${sk}』\n(通常の2.5倍の威力を放ちます)` : "腕パーツを装備すると、固有スキルが解放されます。";
+        document.getElementById('btn-skill').disabled = (sk === "---" || this.busy || this.state === "win");
+        
+        const mainBtn = document.getElementById('btn-main');
+        if(this.state === "battle") {
+            mainBtn.innerText = "こうげき";
+            mainBtn.style.borderColor = "#444";
+        } else {
+            mainBtn.innerText = "深層へ";
+            mainBtn.style.borderColor = "#fff";
+        }
+
+        document.getElementById('skill-desc').innerText = this.p.eq.arm ? `『${sk}』発動可能` : "腕を装備すると技が解放されます。";
     }
 }
 
