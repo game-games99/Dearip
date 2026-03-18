@@ -2,74 +2,85 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DeaRip - Alpha v0.3 (Save/Skill Update)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>DeaRip - Alpha v0.31 (UI Refined)</title>
     <style>
         :root { --bg: #050505; --panel: #121212; --accent: #dcdcdc; --danger: #b30000; --win: #ffffff; --skill: #0077be; --sp: #ffcc00; }
-        body { background: var(--bg); color: var(--accent); font-family: 'Hiragino Mincho ProN', 'serif'; margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
-        #game-container { width: 480px; height: 850px; border: 1px solid #222; position: relative; background: var(--panel); display: flex; flex-direction: column; box-shadow: 0 0 40px rgba(0,0,0,1); }
+        * { box-sizing: border-box; }
+        body { background: var(--bg); color: var(--accent); font-family: 'Hiragino Mincho ProN', 'serif'; margin: 0; display: flex; justify-content: center; align-items: flex-start; height: 100vh; overflow: hidden; }
         
-        #header { padding: 15px; border-bottom: 1px solid #333; background: #000; }
-        .status-row { display: flex; justify-content: space-between; font-size: 0.8rem; margin-top: 5px; color: #888; }
-        .hp-bar-container { width: 100%; height: 8px; background: #222; margin: 8px 0; border-radius: 4px; overflow: hidden; }
+        /* 画面に収めるためのメインコンテナ */
+        #game-container { width: 100%; max-width: 480px; height: 100%; max-height: 900px; display: flex; flex-direction: column; background: var(--panel); position: relative; }
+        
+        /* ヘッダー：コンパクト化 */
+        #header { padding: 10px 15px; border-bottom: 1px solid #333; background: #000; flex-shrink: 0; }
+        .status-row { display: flex; justify-content: space-between; font-size: 0.75rem; color: #888; }
+        .hp-bar-container { width: 100%; height: 6px; background: #222; margin: 5px 0; border-radius: 3px; overflow: hidden; }
         .hp-bar { height: 100%; background: #2a2; transition: width 0.3s; }
         .e-hp-bar { background: var(--danger); }
         
-        #display { flex: 1; padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
-        #enemy-sprite { font-size: 1.4rem; margin: 15px 0; min-height: 50px; text-align: center; line-height: 1.6; }
+        /* 敵表示エリア：大幅に圧縮 */
+        #display { padding: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 1; min-height: 120px; border-bottom: 1px solid #222; }
+        #enemy-phase { font-size: 0.5rem; color: #444; letter-spacing: 3px; margin-bottom: 2px; }
+        #enemy-name { font-size: 1rem; margin-top: 2px; }
+        #enemy-sprite { font-size: 1.1rem; margin: 5px 0; color: #aaa; text-align: center; }
         
-        /* スキルツリー / 育成パネル */
-        #soul-panel { padding: 10px; background: #0a0a0a; border-top: 1px solid #222; display: flex; justify-content: space-around; font-size: 0.75rem; }
-        .sp-text { color: var(--sp); font-weight: bold; }
-        .growth-btn { background: #222; border: 1px solid #444; color: #aaa; padding: 4px 8px; cursor: pointer; border-radius: 3px; }
+        /* スキルツリーパネル：横並びを最適化 */
+        #soul-panel { padding: 8px; background: #0a0a0a; border-bottom: 1px solid #222; display: flex; justify-content: space-between; align-items: center; font-size: 0.7rem; flex-shrink: 0; }
+        .sp-text { color: var(--sp); font-weight: bold; margin-right: 5px; }
+        .growth-btn { background: #1a1a1a; border: 1px solid #333; color: #888; padding: 6px 4px; cursor: pointer; border-radius: 2px; flex: 1; margin: 0 2px; font-size: 0.65rem; }
 
-        #equipment-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 8px; background: #000; font-size: 0.7rem; }
-        .part-slot { border: 1px solid #222; padding: 5px; color: #555; }
-        .part-active { color: #aaa; }
+        /* 装備パネル：2列構成のままフォントサイズ調整 */
+        #equipment-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; padding: 4px; background: #000; font-size: 0.65rem; flex-shrink: 0; }
+        .part-slot { border: 1px solid #1a1a1a; padding: 4px; color: #444; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .part-active { color: #888; }
 
-        #log { height: 160px; overflow-y: auto; font-size: 0.8rem; padding: 12px; background: #000; color: #888; border-top: 1px solid #333; }
-        #controls { padding: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background: #080808; }
+        /* ログ：高さを自動調整 */
+        #log { flex: 1; overflow-y: auto; font-size: 0.75rem; padding: 10px; background: #000; color: #666; border-top: 1px solid #222; line-height: 1.3; }
         
-        button { background: #1a1a1a; color: #ccc; border: 1px solid #333; padding: 12px; cursor: pointer; transition: 0.2s; font-family: inherit; }
-        button:hover:not(:disabled) { background: #333; color: #fff; border-color: #666; }
-        button:disabled { opacity: 0.2; cursor: default; }
+        /* 操作系：最下部に固定し、押しやすく */
+        #controls { padding: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; background: #080808; border-top: 1px solid #333; flex-shrink: 0; }
+        
+        button { background: #1a1a1a; color: #ccc; border: 1px solid #333; padding: 14px 5px; cursor: pointer; transition: 0.2s; font-family: inherit; border-radius: 4px; font-size: 0.9rem; }
+        button:hover:not(:disabled) { background: #2a2a2a; color: #fff; }
+        button:disabled { opacity: 0.1; }
         .btn-skill { border-color: var(--skill); color: #8af; }
 
-        /* Effects */
-        .released { animation: releaseAnim 1.5s forwards; text-shadow: 0 0 20px #fff; color: #fff; }
-        @keyframes releaseAnim { 0% { opacity: 1; transform: scale(1); filter: brightness(1); } 100% { opacity: 0; transform: translateY(-80px) scale(1.2); filter: brightness(3); } }
+        /* Animations */
+        .released { animation: releaseAnim 1s forwards; text-shadow: 0 0 15px #fff; color: #fff; }
+        @keyframes releaseAnim { 0% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: translateY(-30px); } }
         .shake { animation: shake 0.2s; }
-        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
     </style>
 </head>
 <body>
 
 <div id="game-container">
     <div id="header">
-        <div id="area-title" style="font-weight: bold; font-size: 1rem; color:#aaa;">---</div>
+        <div id="area-title" style="font-size: 0.8rem; color:#666;">---</div>
         <div class="status-row">
             <span id="p-lv">Soul Lv.1</span>
             <span id="p-hp-text">HP: 100/100</span>
         </div>
         <div class="hp-bar-container"><div id="p-hp-bar" class="hp-bar"></div></div>
-        <div style="display:flex; justify-content: space-between; font-size: 0.65rem;">
+        <div style="display:flex; justify-content: space-between; font-size: 0.65rem; color: #555;">
             <span id="p-stats">ATK: 0 / DEF: 0 / SPD: 0</span>
             <span id="p-exp">Next: 100 exp</span>
         </div>
     </div>
 
     <div id="display">
-        <div id="enemy-phase" style="font-size: 0.6rem; color: #444; letter-spacing: 4px;">PURIFICATION TARGET</div>
-        <div id="enemy-name" style="font-size: 1.1rem; margin-top: 8px;">---</div>
+        <div id="enemy-phase">PURIFICATION TARGET</div>
+        <div id="enemy-name">---</div>
         <div id="enemy-sprite"></div>
-        <div class="hp-bar-container"><div id="e-hp-bar" class="hp-bar e-hp-bar"></div></div>
+        <div class="hp-bar-container" style="width: 90%;"><div id="e-hp-bar" class="hp-bar e-hp-bar"></div></div>
     </div>
 
     <div id="soul-panel">
-        <div>Soul Point: <span id="p-sp" class="sp-text">0</span></div>
-        <button class="growth-btn" onclick="game.grow('atk')">力+ (ATK)</button>
-        <button class="growth-btn" onclick="game.grow('hp')">器+ (HP)</button>
-        <button class="growth-btn" onclick="game.grow('spd')">迅+ (SPD)</button>
+        <div>SP:<span id="p-sp" class="sp-text">0</span></div>
+        <button class="growth-btn" onclick="game.grow('atk')">力(ATK)+</button>
+        <button class="growth-btn" onclick="game.grow('hp')">器(HP)+</button>
+        <button class="growth-btn" onclick="game.grow('spd')">迅(SPD)+</button>
     </div>
 
     <div id="equipment-grid">
@@ -84,15 +95,16 @@
     <div id="controls">
         <button id="btn-attack" onclick="game.battle('atk')">解放（通常）</button>
         <button id="btn-skill" class="btn-skill" onclick="game.battle('skill')" disabled>スキル：---</button>
-        <button id="btn-next" onclick="game.nextFloor()" style="display:none; grid-column: span 2;">深部（次層）へ進む</button>
+        <button id="btn-next" onclick="game.nextFloor()" style="display:none; grid-column: span 2;">深部（次層）へ</button>
         <button id="btn-restart" onclick="game.reset()" style="display:none; grid-column: span 2;">再構築する</button>
     </div>
 </div>
 
 <script>
+// -- ゲームロジックは前回（v0.3）のセーブ・スキル・成長システムを完全継承 --
 class DeaRip {
     constructor() {
-        this.SAVE_KEY = "DEARIP_SAVE_DATA";
+        this.SAVE_KEY = "DEARIP_SAVE_DATA_V031";
         this.load();
         
         this.jobs = ["村人", "兵士", "騎士", "魔導師", "商人", "貴族"];
@@ -107,7 +119,6 @@ class DeaRip {
         this.spawn();
     }
 
-    // --- SAVE / LOAD ---
     save() {
         const data = { p: this.p, seed: this.seed, floor: this.floor };
         localStorage.setItem(this.SAVE_KEY, JSON.stringify(data));
@@ -117,28 +128,20 @@ class DeaRip {
         const saved = localStorage.getItem(this.SAVE_KEY);
         if(saved) {
             const d = JSON.parse(saved);
-            this.p = d.p;
-            this.seed = d.seed;
-            this.floor = d.floor;
+            this.p = d.p; this.seed = d.seed; this.floor = d.floor;
         } else {
             this.p = {
                 lv: 1, exp: 0, next: 100, sp: 0,
                 baseHp: 100, baseAtk: 15, baseDef: 5, baseSpd: 10,
-                hp: 100,
-                plusAtk: 0, plusHp: 0, plusSpd: 0,
+                hp: 100, plusAtk: 0, plusHp: 0, plusSpd: 0,
                 eq: { head: null, arm: null, body: null, leg: null }
             };
-            this.seed = null;
-            this.floor = 1;
+            this.seed = null; this.floor = 1;
         }
     }
 
-    reset() {
-        localStorage.removeItem(this.SAVE_KEY);
-        location.reload();
-    }
+    reset() { localStorage.removeItem(this.SAVE_KEY); location.reload(); }
 
-    // --- SYSTEM ---
     generateSeed() {
         const name = this.areaNames[Math.floor(Math.random()*this.areaNames.length)] + 
                      this.areaTypes[Math.floor(Math.random()*this.areaTypes.length)];
@@ -146,19 +149,10 @@ class DeaRip {
     }
 
     get stats() {
-        let s = { 
-            hp: this.p.baseHp + this.p.plusHp, 
-            atk: this.p.baseAtk + this.p.plusAtk, 
-            def: this.p.baseDef, 
-            spd: this.p.baseSpd + this.p.plusSpd 
-        };
-        for(let k in this.p.eq) {
-            if(this.p.eq[k]) {
-                s.hp += (this.p.eq[k].hp || 0);
-                s.atk += (this.p.eq[k].atk || 0);
-                s.def += (this.p.eq[k].def || 0);
-                s.spd += (this.p.eq[k].spd || 0);
-            }
+        let s = { hp: this.p.baseHp + this.p.plusHp, atk: this.p.baseAtk + this.p.plusAtk, def: this.p.baseDef, spd: this.p.baseSpd + this.p.plusSpd };
+        for(let k in this.p.eq) if(this.p.eq[k]) {
+            s.hp += (this.p.eq[k].hp || 0); s.atk += (this.p.eq[k].atk || 0);
+            s.def += (this.p.eq[k].def || 0); s.spd += (this.p.eq[k].spd || 0);
         }
         return s;
     }
@@ -171,7 +165,7 @@ class DeaRip {
                 hp: Math.floor(800 * this.seed.diff), maxHp: Math.floor(800 * this.seed.diff),
                 atk: Math.floor(45 * this.seed.diff), isBoss: true
             };
-            this.log(`<span style="color:#f44;">【警告】強大な負の意志を感知。救済を開始します。</span>`);
+            this.log(`<span style="color:#f44;">【警告】強大な異形を感知。</span>`);
         } else {
             const job = this.jobs[Math.floor(Math.random()*this.jobs.length)];
             const rank = this.ranks[Math.floor(Math.random()*Math.min(this.ranks.length, Math.ceil(this.floor/8)))];
@@ -191,69 +185,51 @@ class DeaRip {
         if(type === 'atk') this.p.plusAtk += 3;
         if(type === 'hp') { this.p.plusHp += 15; this.p.hp += 15; }
         if(type === 'spd') this.p.plusSpd += 2;
-        this.log(`<span style="color:var(--sp);">ソウルを強化しました。</span>`);
-        this.save();
-        this.updateUI();
+        this.log(`<span style="color:var(--sp);">Soul強化完了。</span>`);
+        this.save(); this.updateUI();
     }
 
     async battle(mode) {
         if(this.busy) return;
         this.busy = true;
         const s = this.stats;
-        
-        // Player
         let dmg = s.atk + Math.floor(Math.random()*5);
         if(mode === 'skill' && this.p.eq.arm) {
             dmg = Math.floor(dmg * 2.5);
-            this.log(`<span style="color:var(--skill);">スキル『${this.p.eq.arm.skill}』発動！</span>`);
+            this.log(`<span style="color:var(--skill);">『${this.p.eq.arm.skill}』発動。</span>`);
         }
         this.enemy.hp -= dmg;
-        this.log(`${this.enemy.name} を剥ぎ取る：${dmg} dmg`);
+        this.log(`${this.enemy.name} を剥ぐ：${dmg} dmg`);
         document.getElementById('enemy-sprite').classList.add('shake');
         setTimeout(()=>document.getElementById('enemy-sprite').classList.remove('shake'), 200);
 
-        if(this.enemy.hp <= 0) {
-            await this.win();
-        } else {
-            // Enemy
+        if(this.enemy.hp <= 0) { await this.win(); } else {
             await new Promise(r => setTimeout(r, 600));
             const eDmg = Math.max(1, this.enemy.atk - Math.floor(s.def/2));
             this.p.hp -= eDmg;
             this.log(`${this.enemy.name} の拒絶：${eDmg} dmg`);
             if(this.p.hp <= 0) this.gameOver();
         }
-        
-        this.updateUI();
-        this.busy = false;
-        this.save();
+        this.updateUI(); this.busy = false; this.save();
     }
 
     async win() {
         this.enemy.hp = 0;
-        this.log(`<span style="color:var(--win);">${this.enemy.name} は静かに消えた。 R.I.P.</span>`);
+        this.log(`<span style="color:var(--win);">${this.enemy.name} を救済。 R.I.P.</span>`);
         document.getElementById('enemy-sprite').classList.add('released');
         document.getElementById('btn-attack').disabled = true;
         document.getElementById('btn-skill').disabled = true;
-
         const exp = this.enemy.isBoss ? 1000 : 30 + (this.floor * 5);
         this.p.exp += exp;
         if(this.p.exp >= this.p.next) this.levelUp();
-
-        if(this.enemy.isBoss) {
-            this.dropPart();
-            this.generateSeed(); // 次のエリアへ
-        }
-        setTimeout(() => {
-            document.getElementById('btn-next').style.display = 'block';
-        }, 1000);
+        if(this.enemy.isBoss) { this.dropPart(); this.generateSeed(); }
+        setTimeout(() => { document.getElementById('btn-next').style.display = 'block'; }, 800);
     }
 
     levelUp() {
-        this.p.lv++;
-        this.p.exp -= this.p.next;
+        this.p.lv++; this.p.exp -= this.p.next;
         this.p.next = Math.floor(this.p.next * 1.6);
-        this.p.sp += 2;
-        this.p.hp = this.stats.hp;
+        this.p.sp += 2; this.p.hp = this.stats.hp;
         this.log(`<span style="color:#0f0;">Level Up. 魂が純化した。</span>`);
     }
 
@@ -262,20 +238,17 @@ class DeaRip {
         const s = slots[Math.floor(Math.random()*slots.length)];
         const names = {head:"の思考回路", arm:"の執行腕", body:"の防護殻", leg:"の加速脚"};
         const skills = ["重圧破断", "魂の連撃", "虚空斬り", "絶命の閃き"];
-        
         const part = { name: this.enemy.name.split('：')[0] + names[s] };
         if(s === 'head') part.def = 15;
         if(s === 'arm') { part.atk = 20; part.skill = skills[Math.floor(Math.random()*skills.length)]; }
         if(s === 'body') part.hp = 150;
         if(s === 'leg') part.spd = 15;
-
         this.p.eq[s] = part;
-        this.log(`<span style="color:gold;">救済の証としてパーツを得た。</span>`);
+        this.log(`<span style="color:gold;">パーツ獲得：${part.name}</span>`);
     }
 
     nextFloor() {
-        this.floor++;
-        this.spawn();
+        this.floor++; this.spawn();
         document.getElementById('btn-next').style.display = 'none';
         document.getElementById('btn-attack').disabled = false;
         document.getElementById('enemy-sprite').classList.remove('released');
@@ -283,7 +256,7 @@ class DeaRip {
     }
 
     gameOver() {
-        this.log(`<span style="color:red;">【致命的エラー】意識が途絶えた...</span>`);
+        this.log(`<span style="color:red;">【警告】意識が消失しました。</span>`);
         document.getElementById('btn-attack').disabled = true;
         document.getElementById('btn-restart').style.display = 'block';
     }
@@ -295,29 +268,25 @@ class DeaRip {
 
     updateUI() {
         const s = this.stats;
-        document.getElementById('area-title').innerText = `${this.seed.name}のシード (${this.floor}層)`;
+        document.getElementById('area-title').innerText = `${this.seed.name} (${this.floor}層)`;
         document.getElementById('p-lv').innerText = `Soul Lv.${this.p.lv}`;
-        document.getElementById('p-hp-text').innerText = `HP: ${Math.max(0,this.p.hp)} / ${s.hp}`;
+        document.getElementById('p-hp-text').innerText = `HP: ${Math.max(0,this.p.hp)}/${s.hp}`;
         document.getElementById('p-hp-bar').style.width = `${(this.p.hp/s.hp)*100}%`;
         document.getElementById('p-exp').innerText = `Next: ${this.p.next - this.p.exp} exp`;
-        document.getElementById('p-stats').innerText = `ATK: ${s.atk} / DEF: ${s.def} / SPD: ${s.spd}`;
+        document.getElementById('p-stats').innerText = `A:${s.atk} / D:${s.def} / S:${s.spd}`;
         document.getElementById('p-sp').innerText = this.p.sp;
-
         document.getElementById('enemy-name').innerText = this.enemy ? this.enemy.name : "---";
         document.getElementById('enemy-sprite').innerText = this.enemy ? (this.enemy.isBoss ? "【 侵 食 の 根 源 】" : "【 彷 徨 う 魂 】") : "";
         document.getElementById('e-hp-bar').style.width = this.enemy ? `${(this.enemy.hp/this.enemy.maxHp)*100}%` : "0%";
-
         const sk = this.p.eq.arm ? this.p.eq.arm.skill : "---";
-        document.getElementById('btn-skill').innerText = `スキル：${sk}`;
-        document.getElementById('btn-skill').disabled = (sk === "---" || this.busy);
-
+        document.getElementById('btn-skill').innerText = `技：${sk}`;
+        document.getElementById('btn-skill').disabled = (sk === "---" || this.busy || this.enemy.hp <= 0);
         for(let k in this.p.eq) {
             const el = document.getElementById(`slot-${k}`);
             const p = this.p.eq[k];
-            el.innerHTML = `${this.getSlotName(k)}: <span class="${p?'part-active':''}">${p ? p.name : '未装備'}</span>`;
+            el.innerHTML = `${this.getSlotName(k)}: <span class="${p?'part-active':''}">${p ? p.name : '---'}</span>`;
         }
     }
-
     getSlotName(s) { return {head:"頭", arm:"腕", body:"体", leg:"脚"}[s]; }
 }
 
