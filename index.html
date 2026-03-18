@@ -1,237 +1,160 @@
-　<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dearip Prototype</title>
-
+<title>Dearip Core</title>
 <style>
-body {
-  margin: 0;
-  background: #0f1115;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto;
-  color: #ccc;
-  overflow: hidden;
-}
-
-.top-ui { padding: 10px; }
-
-.boss-name {
-  text-align: center;
-  font-size: 16px;
-  margin-bottom: 6px;
-}
-
-.hp-bar, .energy-bar {
-  height: 10px;
-  background: #222;
-  border-radius: 6px;
-  overflow: hidden;
-  margin-bottom: 4px;
-}
-
-.hp-fill {
-  height: 100%;
-  background: linear-gradient(90deg, #ff4d4d, #ff1a1a);
-}
-
-.energy-fill {
-  height: 100%;
-  background: #4da6ff;
-}
-
-.stats {
-  display: flex;
-  justify-content: space-between;
-  font-size: 14px;
-}
-
-canvas {
-  display: block;
-  background: #111;
-}
-
-.log {
-  position: absolute;
-  bottom: 110px;
-  width: 100%;
-  height: 120px;
-  overflow-y: auto;
-  font-size: 12px;
-  padding: 8px;
-  box-sizing: border-box;
-}
-
-.dmg { color: #4da6ff; }
-
-.skill-ui {
-  position: absolute;
-  bottom: 20px;
-  right: 20px;
-}
-
-.skill, .evade {
-  width: 60px;
-  height: 60px;
-  margin: 6px;
-  border-radius: 50%;
-  border: none;
-  font-size: 18px;
-}
-
-.skill {
-  background: #2a2f3a;
-  color: white;
-}
-
-.evade {
-  background: #ff9933;
-}
-
-.overheat {
-  box-shadow: inset 0 0 40px rgba(255,0,0,0.6);
-}
+body { background:#111; color:#ccc; font-family:sans-serif; padding:10px; }
+button { padding:10px; margin:5px; font-size:16px; }
+.log { height:300px; overflow:auto; border:1px solid #333; padding:5px; }
 </style>
 </head>
-
 <body>
 
-<div class="top-ui">
-  <div class="boss-name">村長の歪な異形</div>
+<h2>Dearip - ダンジョン</h2>
 
-  <div class="hp-bar">
-    <div class="hp-fill" id="bossHP"></div>
-  </div>
+<div id="status"></div>
+<div id="enemy"></div>
 
-  <div class="energy-bar">
-    <div class="energy-fill" id="energyBar"></div>
-  </div>
-
-  <div class="stats">
-    <div>ATK <span id="atk">10</span></div>
-    <div>HP <span id="hp">100</span></div>
-  </div>
-</div>
-
-<canvas id="game"></canvas>
+<button onclick="attack()">攻撃</button>
+<button onclick="nextFloor()">次の階層へ</button>
 
 <div class="log" id="log"></div>
 
-<div class="skill-ui">
-  <button class="skill" onclick="skill(1)">①</button>
-  <button class="skill" onclick="skill(2)">②</button>
-  <button class="skill" onclick="skill(3)">③</button>
-  <button class="evade" onclick="evade()">回避</button>
-</div>
-
 <script>
-const canvas = document.getElementById("game");
-const ctx = canvas.getContext("2d");
-
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight * 0.5;
-
-const player = {
-  x: 100,
-  y: 150,
-  hp: 100,
-  atk: 10,
-  energy: 100,
-  heat: 0
+let player = {
+  level:1,
+  exp:0,
+  hp:100,
+  maxHp:100,
+  atk:10
 };
 
-const boss = {
-  x: 300,
-  y: 150,
-  hp: 500,
-  maxHp: 500
-};
+let floor = 1;
+let enemy = null;
 
-function log(text) {
+/* ログ */
+function log(msg){
   const el = document.getElementById("log");
-  const div = document.createElement("div");
-  div.innerHTML = text;
-  el.prepend(div);
+  el.innerHTML = msg + "<br>" + el.innerHTML;
 }
 
-function draw() {
-  ctx.clearRect(0,0,canvas.width,canvas.height);
+/* 敵生成 */
+function spawnEnemy(){
+  if(floor === 30){
+    enemy = {
+      name: "城主の歪な異形",
+      hp: 500,
+      atk: 25,
+      exp: 100
+    };
+  }else{
+    const types = ["村人","兵士","魔導師","騎士"];
+    const stages = ["ただの","生きたかった","狂気に染まる","支配された"];
 
-  ctx.fillStyle = "#4da6ff";
-  ctx.fillRect(player.x, player.y, 30, 30);
+    let t = types[Math.floor(Math.random()*types.length)];
+    let s = stages[Math.floor(Math.random()*stages.length)];
 
-  ctx.fillStyle = "#ff4d4d";
-  ctx.fillRect(boss.x, boss.y, 50, 50);
-}
-
-function attack() {
-  const dmg = Math.floor(player.atk * (0.9 + Math.random()*0.2));
-  boss.hp -= dmg;
-  player.energy = Math.min(100, player.energy + 5);
-
-  log("攻撃！ " + dmg);
-
-  if (boss.hp <= 0) {
-    log("撃破！");
-    boss.hp = boss.maxHp;
+    enemy = {
+      name: s + t,
+      hp: 50 + floor * 10,
+      atk: 5 + floor * 2,
+      exp: 10 + floor * 2
+    };
   }
 }
 
-function skill(num) {
-  if (player.energy < 20) {
-    log("エネルギー不足");
+/* UI更新 */
+function update(){
+  document.getElementById("status").innerHTML =
+    `Lv:${player.level} HP:${player.hp}/${player.maxHp} ATK:${player.atk} EXP:${player.exp}`;
+
+  document.getElementById("enemy").innerHTML =
+    `【${floor}層】 ${enemy.name} HP:${enemy.hp}`;
+}
+
+/* 攻撃 */
+function attack(){
+  if(player.hp <= 0) return;
+
+  let dmg = Math.floor(player.atk * (0.8 + Math.random()*0.4));
+  enemy.hp -= dmg;
+
+  log("攻撃 → " + dmg);
+
+  if(enemy.hp <= 0){
+    log(enemy.name + " 撃破");
+
+    player.exp += enemy.exp;
+
+    levelUpCheck();
+
+    floor++;
+    if(floor > 30){
+      log("ダンジョンクリア！");
+      reset();
+      return;
+    }
+
+    spawnEnemy();
+  }else{
+    enemyAttack();
+  }
+
+  update();
+}
+
+/* 敵攻撃 */
+function enemyAttack(){
+  let dmg = Math.floor(enemy.atk * (0.8 + Math.random()*0.4));
+  player.hp -= dmg;
+
+  log("敵攻撃 → " + dmg);
+
+  if(player.hp <= 0){
+    log("敗北…最初から");
+    reset();
+  }
+}
+
+/* レベルアップ */
+function levelUpCheck(){
+  let need = player.level * 20;
+
+  if(player.exp >= need){
+    player.exp -= need;
+    player.level++;
+    player.maxHp += 20;
+    player.hp = player.maxHp;
+    player.atk += 5;
+
+    log("レベルアップ！");
+  }
+}
+
+/* 次の階層 */
+function nextFloor(){
+  floor++;
+  if(floor > 30){
+    log("ダンジョンクリア！");
+    reset();
     return;
   }
-
-  player.energy -= 20;
-  player.heat += 30;
-
-  let dmg = player.atk * (2 + Math.random());
-  boss.hp -= dmg;
-
-  log("スキル" + num + "！ " + Math.floor(dmg));
-
-  if (player.heat >= 100) {
-    log("オーバーヒート！");
-    player.heat = 0;
-    document.body.classList.add("overheat");
-    setTimeout(()=>document.body.classList.remove("overheat"),500);
-  }
+  spawnEnemy();
+  update();
 }
 
-function evade() {
-  player.x += 50;
-  log("回避！");
+/* リセット */
+function reset(){
+  player = { level:1, exp:0, hp:100, maxHp:100, atk:10 };
+  floor = 1;
+  spawnEnemy();
+  update();
 }
 
-function updateUI() {
-  document.getElementById("bossHP").style.width = (boss.hp / boss.maxHp * 100) + "%";
-  document.getElementById("energyBar").style.width = player.energy + "%";
-  document.getElementById("atk").textContent = player.atk;
-  document.getElementById("hp").textContent = player.hp;
-}
-
-function enemyAttack() {
-  const dmg = Math.floor(5 + Math.random()*5);
-  player.hp -= dmg;
-  log("敵の攻撃 " + dmg);
-
-  if (player.hp <= 0) {
-    log("敗北...");
-    player.hp = 100;
-  }
-}
-
-function gameLoop() {
-  draw();
-  updateUI();
-  requestAnimationFrame(gameLoop);
-}
-
-setInterval(attack, 1000);
-setInterval(enemyAttack, 2000);
-
-gameLoop();
+/* 初期化 */
+spawnEnemy();
+update();
 </script>
 
 </body>
