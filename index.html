@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DeaRip - v1.8</title>
+    <title>DeaRip - v1.9</title>
     <style>
         :root { 
             --bg: #050505; --panel: #121212; --accent: #dcdcdc; 
@@ -112,40 +112,35 @@
 <script>
 class DeaRip {
     constructor() {
-        this.VERSION = "1.8";
-        this.SAVE_KEY = "DEARIP_SAVE_V18";
+        this.VERSION = "1.9";
+        this.SAVE_KEY = "DEARIP_SAVE_V19";
         
-        this.jobMaster = this.initJobs();
-        // エリア定義: ティアごとに敵を設定
-        this.areaMaster = [
-            { id: 0, name: "嘆きの村", type: "村", tier: 1, jobs: [0, 1, 38, 39, 49] }, // 村人,兵士,農夫,山賊,無職
-            { id: 1, name: "静寂の墓所", type: "墓所", tier: 2, jobs: [7, 10, 11, 17, 33, 61] }, // 司祭,盗賊,薬師,死霊使い,隠者,探偵
-            { id: 2, name: "狂乱の牢獄", type: "牢獄", tier: 3, jobs: [2, 13, 14, 25, 45, 53] }, // 騎士,弓兵,盾使い,海賊,傭兵,重装歩兵
-            { id: 3, name: "忘却の廃都", type: "廃都", tier: 4, jobs: [16, 18, 47, 51, 55, 72] }  // 賢者,竜騎士,王,死神,魔王,英雄
-        ];
-
-        this.ranks = [{n:"ただの", m:1.0}, {n:"生きたかった", m:1.3}, {n:"狂気に染まる", m:1.8}, {n:"支配された", m:2.5}];
-        this.enemy = null;
-        this.busy = false;
-        this.state = "battle"; 
-
+        this.initData();
         this.load();
-        if(!this.seed) this.generateArea(0); // 最初は村から
+        if(!this.seed) this.generateArea(0);
         this.spawn();
     }
 
-    initJobs() {
+    initData() {
         const names = ["村人","兵士","騎士","魔導師","暗殺者","狂戦士","守護者","司祭","狩人","格闘家","盗賊","薬師","剣豪","弓兵","盾使い","吟遊詩人","賢者","死霊使い","竜騎士","忍者","僧侶","修道士","侍","錬金術師","踊り子","海賊","呪術師","機工士","聖騎士","道化師","破戒僧","探検家","貴族","隠者","道士","銃士","狙撃手","槍兵","農夫","山賊","審問官","占星術師","呪われし者","異端者","大師","傭兵","狂人","王","職人","無職","虚空騎士","死神","舞姫","重装歩兵","調教師","魔王","予言者","料理人","狂信者","流浪人","傀儡師","探偵","石像鬼","博徒","発明家","裁定者","氷結使い","炎術師","森の番人","虚像","神主","暗黒騎士","英雄","観測者","混沌の器"];
-        return names.map((n, i) => ({
-            id: i, n: n, p: n==="無職"?"名もなき":"熟練の", 
-            s: { h: 1 + (i*0.02), a: 1 + (i*0.02) },
-            sk: n==="無職"?"あがき":"魂の一撃", sm: n==="無職"?1.2:2.0,
+        this.jobMaster = names.map((n, i) => ({
+            id: i, n: n, p: (i > 50) ? "超越的な" : "熟練の", 
+            s: { h: 1 + (i*0.025), a: 1 + (i*0.025) },
+            sk: n==="無職"?"あがき":"魂の一撃", sm: 2.0 + (i*0.02),
             coll: {
                 n: { hp: 5+i }, r: { atk: 2+(i%5) }, e: { def: 1+(i%3), spd: 1+(i%3) },
                 l: { atkP: 0.01, exp: 0.02 }
             },
             cb: { hpP: 0.05 }
         }));
+
+        this.areaMaster = [
+            { id: 0, name: "嘆きの村", type: "村", tier: 1, jobs: [0, 1, 38, 39, 49] },
+            { id: 1, name: "静寂の墓所", type: "墓所", tier: 2, jobs: [7, 10, 11, 17, 33, 61] },
+            { id: 2, name: "狂乱の牢獄", type: "牢獄", tier: 3, jobs: [2, 13, 14, 25, 45, 53] },
+            { id: 3, name: "忘却の廃都", type: "廃都", tier: 4, jobs: [16, 18, 47, 51, 55, 72] }
+        ];
+        this.ranks = [{n:"ただの", m:1.0}, {n:"生きたかった", m:1.3}, {n:"狂気に染まる", m:1.8}, {n:"支配された", m:2.5}];
     }
 
     load() {
@@ -154,23 +149,28 @@ class DeaRip {
             const data = JSON.parse(saved);
             this.p = data.p; this.floor = data.floor; this.seed = data.seed;
         } else {
-            this.p = {
-                lv: 1, exp: 0, next: 100, base: { hp: 120, atk: 18, def: 5, spd: 10 }, hp: 120,
-                eq: { 
-                    head: { name: "忘却のボロ布", def: 2 }, body: { name: "忘却の骸殻", hp: 40 },
-                    arm: { name: "忘却の腕", atk: 4, skillId: 49 }, leg: { name: "忘却の足枷", spd: 3 }
-                },
-                coll: {}
+            this.resetStatus();
+            this.p.eq = { 
+                head: { name: "忘却のボロ布", def: 2 }, body: { name: "忘却の骸殻", hp: 40 },
+                arm: { name: "忘却の腕", atk: 4, skillId: 49 }, leg: { name: "忘却の足枷", spd: 3 }
             };
+            this.p.coll = {};
             this.floor = 1;
         }
+    }
+
+    resetStatus() {
+        this.p = this.p || {};
+        this.p.lv = 1; this.p.exp = 0; this.p.next = 100;
+        this.p.base = { hp: 120, atk: 18, def: 5, spd: 10 };
+        this.p.hp = this.stats.hp;
     }
 
     save() { localStorage.setItem(this.SAVE_KEY, JSON.stringify({p:this.p, floor:this.floor, seed:this.seed})); }
 
     generateArea(areaIdx) {
         const area = this.areaMaster[areaIdx] || this.areaMaster[0];
-        this.seed = { ...area, diff: 1 + (area.tier * 0.3) };
+        this.seed = { ...area, diff: 1 + (area.tier * 0.4) };
     }
 
     get stats() {
@@ -196,19 +196,16 @@ class DeaRip {
 
     spawn() {
         const isBoss = this.floor % 30 === 0;
-        // エリア設定に基づいたジョブ選出
         const availableJobs = this.seed.jobs;
-        const jobId = availableJobs[Math.floor(Math.random() * availableJobs.length)];
-        const job = this.jobMaster[jobId];
-        
+        const job = this.jobMaster[availableJobs[Math.floor(Math.random() * availableJobs.length)]];
         const rankIdx = Math.floor(Math.random() * Math.min(4, this.seed.tier));
-        const scale = 1 + (this.floor * 0.1) * this.seed.diff;
+        const scale = (1 + (this.floor * 0.12)) * this.seed.diff;
         
         this.enemy = {
             name: isBoss ? `${this.seed.name}の主` : `${this.ranks[rankIdx].n}${job.n}`,
-            hp: Math.floor((isBoss?1000:60) * scale * job.s.h),
-            atk: Math.floor((isBoss?50:12) * scale * job.s.a),
-            def: Math.floor(10 * scale),
+            hp: Math.floor((isBoss?1200:70) * scale * job.s.h),
+            atk: Math.floor((isBoss?60:15) * scale * job.s.a),
+            def: Math.floor(12 * scale),
             isBoss: isBoss, jobRef: job, rankIdx: rankIdx
         };
         this.enemy.maxHp = this.enemy.hp;
@@ -217,9 +214,9 @@ class DeaRip {
     }
 
     levelUp() {
-        this.p.lv++; this.p.exp -= this.p.next; this.p.next = Math.floor(this.p.next * 1.5);
-        const incHp = 15 + Math.floor(Math.random() * 11);
-        const incAtk = 3 + Math.floor(Math.random() * 3);
+        this.p.lv++; this.p.exp -= this.p.next; this.p.next = Math.floor(this.p.next * 1.6);
+        const incHp = 18 + Math.floor(Math.random() * 12);
+        const incAtk = 4 + Math.floor(Math.random() * 4);
         this.p.base.hp += incHp; this.p.base.atk += incAtk;
         this.p.base.def += 1; this.p.base.spd += 1;
         this.p.hp = this.stats.hp;
@@ -235,21 +232,24 @@ class DeaRip {
             dmg *= sk.sm; this.log(`<span style="color:var(--skill);">『${sk.sk}』</span>`);
         }
         if(isCrit) dmg *= s.critD;
-        let finalDmg = Math.max(1, Math.floor(dmg * (500 / (this.enemy.def + 500))));
+        let finalDmg = Math.max(1, Math.floor(dmg * (600 / (this.enemy.def + 600))));
         this.enemy.hp -= finalDmg;
         this.log(`${this.enemy.name} に ${finalDmg}${isCrit?" (Crit!)":""} ダメージ`);
 
         if(this.enemy.hp <= 0) {
             this.enemy.hp = 0; this.state = "win";
-            const exp = Math.floor((this.enemy.isBoss ? 2000 : 40 + this.floor * 5) * s.exp);
+            const exp = Math.floor((this.enemy.isBoss ? 3000 : 50 + this.floor * 8) * s.exp);
             this.p.exp += exp; this.log(`${exp} exp 獲得`);
             this.tryDrop();
+            // 装備ドロップ判定
+            if(this.enemy.isBoss || Math.random() < 0.05) this.dropEquip();
+            
             if(this.p.exp >= this.p.next) this.levelUp();
-            if(this.enemy.isBoss) { this.dropEquip(); this.nextArea(); }
+            if(this.enemy.isBoss) this.nextArea();
         } else {
-            await new Promise(r => setTimeout(r, 300));
+            await new Promise(r => setTimeout(r, 250));
             if(Math.random() > s.eva) {
-                const eDmg = Math.max(1, Math.floor(this.enemy.atk * (500 / (s.def + 500))));
+                const eDmg = Math.max(1, Math.floor(this.enemy.atk * (600 / (s.def + 600))));
                 this.p.hp -= eDmg;
                 this.log(`<span style="color:var(--danger);">${this.enemy.name}から${eDmg}の痛打</span>`);
                 if(this.p.hp <= 0) { this.p.hp = 0; this.gameOver(); }
@@ -261,7 +261,7 @@ class DeaRip {
     tryDrop() {
         const jn = this.enemy.jobRef.n;
         if(!this.p.coll[jn]) this.p.coll[jn] = [false,false,false,false];
-        const rates = [0.1, 0.03, 0.008, 0.002];
+        const rates = [0.12, 0.04, 0.01, 0.003];
         for(let i=0; i<=this.enemy.rankIdx; i++) {
             if(!this.p.coll[jn][i] && Math.random() < rates[i]) {
                 this.p.coll[jn][i] = true;
@@ -275,23 +275,27 @@ class DeaRip {
         const s = slots[Math.floor(Math.random()*4)];
         const job = this.enemy.jobRef;
         const item = { name: job.p + (s==="head"?"の思考":s==="body"?"の器":s==="arm"?"の腕":"の脚") };
-        if(s==='head') item.def = Math.floor(20 * job.s.h);
-        if(s==='body') item.hp = Math.floor(150 * job.s.h);
-        if(s==='arm') { item.atk = Math.floor(30 * job.s.a); item.skillId = job.id; }
-        if(s==='leg') item.spd = Math.floor(20 * job.s.a);
-        this.p.eq[s] = item; this.log(`適合：${item.name}`);
+        const baseVal = 5 + (job.id * 0.5);
+        if(s==='head') item.def = Math.floor(baseVal * job.s.h);
+        if(s==='body') item.hp = Math.floor(baseVal * 10 * job.s.h);
+        if(s==='arm') { item.atk = Math.floor(baseVal * 2 * job.s.a); item.skillId = job.id; }
+        if(s==='leg') item.spd = Math.floor(baseVal * job.s.a);
+        this.p.eq[s] = item;
+        this.log(`<span style="color:#fff; background:#444;">適合：${item.name}</span>`);
     }
 
     nextArea() {
         const nextIdx = (this.areaMaster.findIndex(a => a.id === this.seed.id) + 1) % this.areaMaster.length;
         this.generateArea(nextIdx);
-        this.log(`<span style="color:#fff;">新たな領域「${this.seed.name}」へ到達した。</span>`);
+        this.floor++; 
+        this.resetStatus(); // エリアクリアでレベルと基礎ステをリセット
+        this.log(`<span style="color:#fa0; font-weight:bold;">領域踏破。魂は浄化され、新たな地「${this.seed.name}」へ。</span>`);
     }
 
     gameOver() {
         this.log(`力尽きた…。。。`);
-        this.floor = 1; this.p.hp = this.stats.hp;
-        this.generateArea(0); // 敗北時は最初のエリアへ
+        this.floor = 1; this.generateArea(0);
+        this.resetStatus();
         this.spawn();
     }
 
