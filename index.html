@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DeaRip - v1.7</title>
+    <title>DeaRip - v1.8</title>
     <style>
         :root { 
             --bg: #050505; --panel: #121212; --accent: #dcdcdc; 
@@ -33,7 +33,6 @@
         .tab-content { display: none; padding: 12px; flex: 1; font-size: 0.75rem; overflow-y: auto; }
         .tab-content.active { display: flex; flex-direction: column; }
         
-        /* 戦闘 */
         #enemy-area { padding: 15px 0; text-align: center; flex-shrink: 0; }
         #enemy-name { font-size: 0.9rem; margin-bottom: 4px; letter-spacing: 1px; }
         #enemy-hp-num { font-size: 0.7rem; color: #888; margin-bottom: 8px; }
@@ -46,18 +45,15 @@
         #log { flex: 1; overflow-y: auto; font-size: 0.72rem; padding: 10px; background: #000; color: #777; line-height: 1.6; border: 1px solid #222; }
         .log-entry { margin-bottom: 4px; border-left: 2px solid #222; padding-left: 8px; }
 
-        /* ステータス */
         .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 20px; margin-bottom: 15px; }
         .stat-item { border-bottom: 1px solid #1a1a1a; padding: 4px 0; display: flex; justify-content: space-between; }
         .stat-label { color: #666; font-size: 0.65rem; }
 
-        /* 装備 */
         .equip-slot { padding: 12px; background: #111; margin-bottom: 8px; border-radius: 4px; border-left: 3px solid #333; }
         .slot-header { display: flex; justify-content: space-between; margin-bottom: 5px; color: #555; font-size: 0.65rem; }
         .equip-name { font-size: 0.85rem; color: #ddd; }
         .equip-eff { font-size: 0.7rem; color: #8af; margin-top: 4px; }
 
-        /* 収集 */
         .coll-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid #151515; }
         .coll-name { font-size: 0.7rem; color: #444; flex: 1; }
         .coll-name.comp { color: #fa0; font-weight: bold; }
@@ -106,18 +102,9 @@
             <div id="log"></div>
         </div>
 
-        <div id="tab-equip" class="tab-content">
-            <div id="equip-list"></div>
-        </div>
-
-        <div id="tab-status" class="tab-content">
-            <div class="stat-grid" id="stat-list"></div>
-            <div id="p-exp-full" style="color:#666; font-size:0.65rem; text-align:right;"></div>
-        </div>
-
-        <div id="tab-coll" class="tab-content">
-            <div id="coll-list"></div>
-        </div>
+        <div id="tab-equip" class="tab-content"><div id="equip-list"></div></div>
+        <div id="tab-status" class="tab-content"><div class="stat-grid" id="stat-list"></div><div id="p-exp-full" style="color:#666; font-size:0.65rem; text-align:right;"></div></div>
+        <div id="tab-coll" class="tab-content"><div id="coll-list"></div></div>
     </div>
     <div id="version-tag"></div>
 </div>
@@ -125,55 +112,40 @@
 <script>
 class DeaRip {
     constructor() {
-        this.VERSION = "1.7";
-        this.SAVE_KEY = "DEARIP_SAVE_V17";
+        this.VERSION = "1.8";
+        this.SAVE_KEY = "DEARIP_SAVE_V18";
         
-        // 全75種ジョブマスター（全収集ボーナス完備）
         this.jobMaster = this.initJobs();
-        this.ranks = [{n:"ただの", m:1.0}, {n:"生きたかった", m:1.3}, {n:"狂気に染まる", m:1.8}, {n:"支配された", m:2.5}];
-        this.areaNames = ["嘆きの", "静寂の", "狂乱の", "歪な", "忘却の"];
-        this.areaTypes = ["境界", "墓所", "廃都", "牢獄"];
+        // エリア定義: ティアごとに敵を設定
+        this.areaMaster = [
+            { id: 0, name: "嘆きの村", type: "村", tier: 1, jobs: [0, 1, 38, 39, 49] }, // 村人,兵士,農夫,山賊,無職
+            { id: 1, name: "静寂の墓所", type: "墓所", tier: 2, jobs: [7, 10, 11, 17, 33, 61] }, // 司祭,盗賊,薬師,死霊使い,隠者,探偵
+            { id: 2, name: "狂乱の牢獄", type: "牢獄", tier: 3, jobs: [2, 13, 14, 25, 45, 53] }, // 騎士,弓兵,盾使い,海賊,傭兵,重装歩兵
+            { id: 3, name: "忘却の廃都", type: "廃都", tier: 4, jobs: [16, 18, 47, 51, 55, 72] }  // 賢者,竜騎士,王,死神,魔王,英雄
+        ];
 
+        this.ranks = [{n:"ただの", m:1.0}, {n:"生きたかった", m:1.3}, {n:"狂気に染まる", m:1.8}, {n:"支配された", m:2.5}];
         this.enemy = null;
         this.busy = false;
         this.state = "battle"; 
 
         this.load();
-        if(!this.seed) this.generateSeed();
+        if(!this.seed) this.generateArea(0); // 最初は村から
         this.spawn();
     }
 
     initJobs() {
-        const jobs = [
-            {id:0, n:"村人", p:"素朴な", s:{h:1,a:1}, sk:"全力の素振り", sm:1.5},
-            {id:1, n:"兵士", p:"軍属の", s:{h:1.2,a:1.1}, sk:"連撃衝", sm:1.8},
-            {id:2, n:"騎士", p:"高潔な", s:{h:1.5,a:1.3}, sk:"クロス斬り", sm:2.2},
-            {id:3, n:"魔導師", p:"叡智の", s:{h:0.8,a:1.8}, sk:"マナ・バースト", sm:3.0},
-            {id:4, n:"暗殺者", p:"潜伏者の", s:{h:0.7,a:2.0}, sk:"フェイタル・レイド", sm:3.5},
-            {id:5, n:"狂戦士", p:"獣性の", s:{h:2.0,a:2.2}, sk:"ブラッド・レイジ", sm:4.0},
-            {id:6, n:"守護者", p:"鉄壁の", s:{h:2.5,a:0.9}, sk:"シールド・バッシュ", sm:1.2},
-            {id:7, n:"司祭", p:"祈念の", s:{h:1.1,a:1.2}, sk:"ホーリー・レイ", sm:2.0},
-            {id:8, n:"狩人", p:"追跡の", s:{h:1.0,a:1.4}, sk:"スナイプ・アロー", sm:2.5},
-            {id:9, n:"格闘家", p:"剛腕の", s:{h:1.4,a:1.5}, sk:"爆裂拳", sm:2.4},
-            // ... (全75種分を簡略ループ生成、実際は個別に設定可能だがここでは全種ステータス付与ロジックを優先)
-        ];
-        // 10以降のプレースホルダ埋め
-        const names = ["盗賊","薬師","剣豪","弓兵","盾使い","吟遊詩人","賢者","死霊使い","竜騎士","忍者","僧侶","修道士","侍","錬金術師","踊り子","海賊","呪術師","機工士","聖騎士","道化師","破戒僧","探検家","貴族","隠者","道士","銃士","狙撃手","槍兵","農夫","山賊","審問官","占星術師","呪われし者","異端者","大師","傭兵","狂人","王","職人","無職","虚空騎士","死神","舞姫","重装歩兵","調教師","魔王","予言者","料理人","狂信者","流浪人","傀儡師","探偵","石像鬼","博徒","発明家","裁定者","氷結使い","炎術師","森の番人","虚像","神主","暗黒騎士","英雄","観測者","混沌の器"];
-        for(let i=10; i<75; i++) {
-            if(!jobs[i]) jobs.push({id:i, n:names[i-10]||"名無き魂", p:"名もなき", s:{h:1,a:1}, sk:"魂の一撃", sm:2.0});
-        }
-        
-        return jobs.map(j => {
-            // 全収集アイテムに自動で上昇値を割り当て (N:HP, R:ATK, E:DEF/SPD, L:特殊/割合)
-            j.coll = {
-                n: { hp: 5 + (j.id % 5) * 5 },
-                r: { atk: 2 + (j.id % 3) * 2 },
-                e: { def: 1 + (j.id % 2), spd: 1 + (j.id % 2) },
+        const names = ["村人","兵士","騎士","魔導師","暗殺者","狂戦士","守護者","司祭","狩人","格闘家","盗賊","薬師","剣豪","弓兵","盾使い","吟遊詩人","賢者","死霊使い","竜騎士","忍者","僧侶","修道士","侍","錬金術師","踊り子","海賊","呪術師","機工士","聖騎士","道化師","破戒僧","探検家","貴族","隠者","道士","銃士","狙撃手","槍兵","農夫","山賊","審問官","占星術師","呪われし者","異端者","大師","傭兵","狂人","王","職人","無職","虚空騎士","死神","舞姫","重装歩兵","調教師","魔王","予言者","料理人","狂信者","流浪人","傀儡師","探偵","石像鬼","博徒","発明家","裁定者","氷結使い","炎術師","森の番人","虚像","神主","暗黒騎士","英雄","観測者","混沌の器"];
+        return names.map((n, i) => ({
+            id: i, n: n, p: n==="無職"?"名もなき":"熟練の", 
+            s: { h: 1 + (i*0.02), a: 1 + (i*0.02) },
+            sk: n==="無職"?"あがき":"魂の一撃", sm: n==="無職"?1.2:2.0,
+            coll: {
+                n: { hp: 5+i }, r: { atk: 2+(i%5) }, e: { def: 1+(i%3), spd: 1+(i%3) },
                 l: { atkP: 0.01, exp: 0.02 }
-            };
-            j.cb = { hpP: 0.05 }; // コンプボーナス
-            return j;
-        });
+            },
+            cb: { hpP: 0.05 }
+        }));
     }
 
     load() {
@@ -183,14 +155,10 @@ class DeaRip {
             this.p = data.p; this.floor = data.floor; this.seed = data.seed;
         } else {
             this.p = {
-                lv: 1, exp: 0, next: 100,
-                base: { hp: 120, atk: 18, def: 5, spd: 10 },
-                hp: 120,
+                lv: 1, exp: 0, next: 100, base: { hp: 120, atk: 18, def: 5, spd: 10 }, hp: 120,
                 eq: { 
-                    head: { name: "忘却のボロ布", def: 2 },
-                    body: { name: "忘却の骸殻", hp: 40 },
-                    arm: { name: "忘却の腕", atk: 4, skillId: 49 },
-                    leg: { name: "忘却の足枷", spd: 3 }
+                    head: { name: "忘却のボロ布", def: 2 }, body: { name: "忘却の骸殻", hp: 40 },
+                    arm: { name: "忘却の腕", atk: 4, skillId: 49 }, leg: { name: "忘却の足枷", spd: 3 }
                 },
                 coll: {}
             };
@@ -200,11 +168,14 @@ class DeaRip {
 
     save() { localStorage.setItem(this.SAVE_KEY, JSON.stringify({p:this.p, floor:this.floor, seed:this.seed})); }
 
+    generateArea(areaIdx) {
+        const area = this.areaMaster[areaIdx] || this.areaMaster[0];
+        this.seed = { ...area, diff: 1 + (area.tier * 0.3) };
+    }
+
     get stats() {
         let s = { ...this.p.base };
         let b = { hp:0, atk:0, def:0, spd:0, hpP:0, atkP:0, defP:0, spdP:0, exp:1, crit:0.05, critD:1.5, eva:0.05, drain:0, regen:0 };
-
-        // 収集品ボーナス
         for(let jn in this.p.coll) {
             const m = this.jobMaster.find(j => j.n === jn);
             const owned = this.p.coll[jn];
@@ -212,26 +183,26 @@ class DeaRip {
             owned.forEach((has, i) => { if(has) for(let k in m.coll[rr[i]]) b[k] += m.coll[rr[i]][k]; });
             if(owned.every(v=>v)) for(let k in m.cb) b[k] += m.cb[k];
         }
-        // 装備ボーナス
         for(let k in this.p.eq) {
             const it = this.p.eq[k];
             if(it.hp) s.hp += it.hp; if(it.atk) s.atk += it.atk; if(it.def) s.def += it.def; if(it.spd) s.spd += it.spd;
         }
-
         return {
-            hp: Math.floor((s.hp + b.hp) * (1+b.hpP)),
-            atk: Math.floor((s.atk + b.atk) * (1+b.atkP)),
-            def: Math.floor((s.def + b.def) * (1+b.defP)),
-            spd: Math.floor((s.spd + b.spd) * (1+b.spdP)),
+            hp: Math.floor((s.hp + b.hp) * (1+b.hpP)), atk: Math.floor((s.atk + b.atk) * (1+b.atkP)),
+            def: Math.floor((s.def + b.def) * (1+b.defP)), spd: Math.floor((s.spd + b.spd) * (1+b.spdP)),
             exp: b.exp, crit: b.crit, critD: b.critD, eva: b.eva, drain: b.drain, regen: b.regen
         };
     }
 
     spawn() {
         const isBoss = this.floor % 30 === 0;
-        const job = this.jobMaster[Math.floor(Math.random()*75)];
-        const rankIdx = Math.floor(Math.random() * Math.min(4, Math.ceil(this.floor/15)));
-        const scale = 1 + (this.floor * 0.15) * (this.seed?.diff || 1);
+        // エリア設定に基づいたジョブ選出
+        const availableJobs = this.seed.jobs;
+        const jobId = availableJobs[Math.floor(Math.random() * availableJobs.length)];
+        const job = this.jobMaster[jobId];
+        
+        const rankIdx = Math.floor(Math.random() * Math.min(4, this.seed.tier));
+        const scale = 1 + (this.floor * 0.1) * this.seed.diff;
         
         this.enemy = {
             name: isBoss ? `${this.seed.name}の主` : `${this.ranks[rankIdx].n}${job.n}`,
@@ -246,47 +217,35 @@ class DeaRip {
     }
 
     levelUp() {
-        this.p.lv++;
-        this.p.exp -= this.p.next;
-        this.p.next = Math.floor(this.p.next * 1.5);
-        
-        // 自動成長
-        const incHp = 15 + Math.floor(Math.random() * 11); // 15-25
-        const incAtk = 3 + Math.floor(Math.random() * 3);  // 3-5
-        const incDef = 1 + Math.floor(Math.random() * 2);  // 1-2
-        const incSpd = 1 + Math.floor(Math.random() * 2);  // 1-2
-        
+        this.p.lv++; this.p.exp -= this.p.next; this.p.next = Math.floor(this.p.next * 1.5);
+        const incHp = 15 + Math.floor(Math.random() * 11);
+        const incAtk = 3 + Math.floor(Math.random() * 3);
         this.p.base.hp += incHp; this.p.base.atk += incAtk;
-        this.p.base.def += incDef; this.p.base.spd += incSpd;
+        this.p.base.def += 1; this.p.base.spd += 1;
         this.p.hp = this.stats.hp;
         this.log(`<span style="color:#fff;">魂の格が上昇した (HP+${incHp} ATK+${incAtk})</span>`);
     }
 
     async battle(mode) {
         if(this.busy || this.state !== "battle") return;
-        this.busy = true;
-        const s = this.stats;
-        
-        let dmg = s.atk;
-        let isCrit = Math.random() < s.crit;
+        this.busy = true; const s = this.stats;
+        let dmg = s.atk; let isCrit = Math.random() < s.crit;
         if(mode === 'skill') {
             const sk = this.jobMaster.find(j => j.id === this.p.eq.arm.skillId);
             dmg *= sk.sm; this.log(`<span style="color:var(--skill);">『${sk.sk}』</span>`);
         }
         if(isCrit) dmg *= s.critD;
         let finalDmg = Math.max(1, Math.floor(dmg * (500 / (this.enemy.def + 500))));
-        
         this.enemy.hp -= finalDmg;
         this.log(`${this.enemy.name} に ${finalDmg}${isCrit?" (Crit!)":""} ダメージ`);
 
         if(this.enemy.hp <= 0) {
-            this.enemy.hp = 0;
-            this.state = "win";
+            this.enemy.hp = 0; this.state = "win";
             const exp = Math.floor((this.enemy.isBoss ? 2000 : 40 + this.floor * 5) * s.exp);
             this.p.exp += exp; this.log(`${exp} exp 獲得`);
             this.tryDrop();
             if(this.p.exp >= this.p.next) this.levelUp();
-            if(this.enemy.isBoss) { this.dropEquip(); this.generateSeed(); }
+            if(this.enemy.isBoss) { this.dropEquip(); this.nextArea(); }
         } else {
             await new Promise(r => setTimeout(r, 300));
             if(Math.random() > s.eva) {
@@ -323,9 +282,16 @@ class DeaRip {
         this.p.eq[s] = item; this.log(`適合：${item.name}`);
     }
 
+    nextArea() {
+        const nextIdx = (this.areaMaster.findIndex(a => a.id === this.seed.id) + 1) % this.areaMaster.length;
+        this.generateArea(nextIdx);
+        this.log(`<span style="color:#fff;">新たな領域「${this.seed.name}」へ到達した。</span>`);
+    }
+
     gameOver() {
         this.log(`力尽きた…。。。`);
         this.floor = 1; this.p.hp = this.stats.hp;
+        this.generateArea(0); // 敗北時は最初のエリアへ
         this.spawn();
     }
 
@@ -347,16 +313,14 @@ class DeaRip {
 
     updateUI() {
         const s = this.stats;
-        document.getElementById('area-title').innerText = `${this.seed?.name || "---"} (${this.floor}層)`;
+        document.getElementById('area-title').innerText = `${this.seed.name} (${this.floor}層 / Tier ${this.seed.tier})`;
         document.getElementById('p-lv').innerText = `Lv.${this.p.lv}`;
         document.getElementById('p-hp-text').innerText = `HP: ${this.p.hp} / ${s.hp}`;
         document.getElementById('p-hp-bar').style.width = (this.p.hp/s.hp*100)+'%';
         document.getElementById('p-exp-bar').style.width = (this.p.exp/this.p.next*100)+'%';
-        
         document.getElementById('enemy-name').innerText = this.enemy.name;
         document.getElementById('enemy-hp-num').innerText = `HP: ${this.enemy.hp} / ${this.enemy.maxHp}`;
         document.getElementById('e-hp-bar').style.width = (this.enemy.hp/this.enemy.maxHp*100)+'%';
-        
         document.getElementById('btn-main').innerText = this.state==="battle"?"こうげき":"深層へ";
         const sk = this.jobMaster.find(j=>j.id === this.p.eq.arm.skillId);
         document.getElementById('btn-skill').innerText = sk ? sk.sk : "技なし";
@@ -367,21 +331,17 @@ class DeaRip {
             <div class="stat-item"><span class="stat-label">防御力</span><span>${s.def}</span></div>
             <div class="stat-item"><span class="stat-label">俊敏性</span><span>${s.spd}</span></div>
             <div class="stat-item"><span class="stat-label">会心率</span><span>${Math.floor(s.crit*100)}%</span></div>
-            <div class="stat-item"><span class="stat-label">会心倍率</span><span>${s.critD.toFixed(1)}x</span></div>
             <div class="stat-item"><span class="stat-label">回避率</span><span>${Math.floor(s.eva*100)}%</span></div>
             <div class="stat-item"><span class="stat-label">獲得経験値</span><span>${s.exp.toFixed(2)}x</span></div>
-            <div class="stat-item"><span class="stat-label">吸収率</span><span>${s.drain}%</span></div>
-            <div class="stat-item"><span class="stat-label">再生力</span><span>${s.regen}</span></div>
+            <div class="stat-item"><span class="stat-label">吸収/再生</span><span>${s.drain}% / ${s.regen}</span></div>
         `;
         document.getElementById('p-exp-full').innerText = `EXP: ${this.p.exp} / ${this.p.next}`;
-
         let eqH = "";
         ["head","body","arm","leg"].forEach(k => {
             const it = this.p.eq[k];
             eqH += `<div class="equip-slot"><div class="slot-header">部位: ${k.toUpperCase()}</div><div class="equip-name">${it.name}</div><div class="equip-eff">${this.getEqStr(it)}</div></div>`;
         });
         document.getElementById('equip-list').innerHTML = eqH;
-
         let collH = "";
         this.jobMaster.forEach(j => {
             const ow = this.p.coll[j.n] || [false,false,false,false];
@@ -393,17 +353,12 @@ class DeaRip {
         document.getElementById('coll-list').innerHTML = collH;
         document.getElementById('version-tag').innerText = `DeaRip v${this.VERSION}`;
     }
-
     getEqStr(it) {
         let s = [];
         if(it.hp) s.push(`HP+${it.hp}`); if(it.atk) s.push(`ATK+${it.atk}`); 
         if(it.def) s.push(`DEF+${it.def}`); if(it.spd) s.push(`SPD+${it.spd}`);
         if(it.skillId !== undefined) s.push(`[技:${this.jobMaster.find(j=>j.id===it.skillId).sk}]`);
         return s.join(" ");
-    }
-
-    generateSeed() {
-        this.seed = { name: this.areaNames[Math.floor(Math.random()*5)] + this.areaTypes[Math.floor(Math.random()*4)], diff: 1 + Math.random()*0.5 };
     }
 }
 const game = new DeaRip();
