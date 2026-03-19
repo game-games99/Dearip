@@ -327,10 +327,10 @@ class DeaRip {
         this.kills = 0;
         this.resetStatus(true);
         this.p.eq = {
-            head: { name: "忘却のボロ布", def: 2 },
-            body: { name: "忘却の骸殻", hp: 40 },
-            arm: { name: "忘却の腕", atk: 4, skillId: 49 },
-            leg: { name: "忘却の足枷", spd: 3 }
+            head: { name: "ただの村人の頭", def: 2 },
+            body: { name: "ただの村人の胴", hp: 40 },
+            arm: { name: "ただの村人の腕", atk: 4, skillId: 49 },
+            leg: { name: "ただの村人の脚", spd: 3 }
         };
         this.p.coll = {};
         this.floor = 1;
@@ -567,7 +567,8 @@ class DeaRip {
     }
 
     buildEquipItem(slot, job) {
-        const item = { name: job.p + (slot === "head" ? "の思考" : slot === "body" ? "の器" : slot === "arm" ? "の腕" : "の脚") };
+        const slotSuffix = { head: "の頭", body: "の胴", arm: "の腕", leg: "の脚" };
+        const item = { name: `${job.p}${job.n}${slotSuffix[slot]}` };
         const baseVal = 5 + job.id * 0.5;
         if (slot === 'head') item.def = Math.floor(baseVal * job.s.h);
         if (slot === 'body') item.hp = Math.floor(baseVal * 10 * job.s.h);
@@ -642,9 +643,9 @@ class DeaRip {
 
     gameOver() {
         this.log(`<span style="color:#555;">── 力尽きた ──</span>`);
-        this.floor = 1;
-        this.generateArea(0);
-        this.resetStatus(false);
+        // HP/MPのみ回復。レベル・ステータス・装備はそのまま
+        this.p.hp = this.stats.hp;
+        this.p.mp = 0;
         this.spawn();
     }
 
