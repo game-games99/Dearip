@@ -2,777 +2,3465 @@
 
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DeaRip - v2.0</title>
-    <style>
-        :root {
-            --bg: #050505; --panel: #0e0e0e; --accent: #dcdcdc;
-            --danger: #ff3333; --win: #ffffff; --skill: #0077be;
-            --exp-bar: #555; --rarity-n: #aaa; --rarity-r: #4af;
-            --rarity-e: #a4f; --rarity-l: #fa0;
-            --mp-bar: #44f; --border: #1e1e1e;
-        }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
-        body {
-            background: var(--bg); color: var(--accent);
-            font-family: 'Hiragino Mincho ProN', 'Yu Mincho', 'serif';
-            margin: 0; display: flex; justify-content: center; height: 100vh; overflow: hidden;
-        }
-        #game-container {
-            width: 100%; max-width: 480px; height: 100%; display: flex;
-            flex-direction: column; background: var(--panel); position: relative;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shadow Hunter - 影の君主</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;700;900&family=Rajdhani:wght@300;400;600;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #050810;
+    --bg2: #080d1a;
+    --panel: #0a1020;
+    --border: #1a2a4a;
+    --accent: #4a9eff;
+    --accent2: #7b4aff;
+    --shadow: #6600ff;
+    --gold: #ffd700;
+    --red: #ff3366;
+    --green: #00ff88;
+    --text: #c8d8f0;
+    --text-dim: #5a7090;
+    --s-rank: #ff6600;
+    --a-rank: #cc44ff;
+    --b-rank: #4488ff;
+    --c-rank: #44ddff;
+    --d-rank: #44ff88;
+    --e-rank: #aaaaaa;
+  }
 
-```
-    /* ── HEADER ── */
-    #header { padding: 10px 14px 8px; border-bottom: 1px solid #1a1a1a; background: #000; flex-shrink: 0; }
-    .status-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.72rem; color: #888; margin-bottom: 3px; }
-    .bar-row { display: flex; align-items: center; gap: 6px; margin: 2px 0; }
-    .bar-label { font-size: 0.6rem; color: #555; width: 20px; flex-shrink: 0; }
-    .bar-container { flex: 1; height: 5px; background: #1a1a1a; border-radius: 1px; overflow: hidden; }
-    .bar-fill { height: 100%; transition: width 0.3s; }
-    .hp-bar { background: linear-gradient(90deg, #1a5c1a, #2ecc2e); }
-    .mp-bar { background: linear-gradient(90deg, #1a1a8c, #4466ff); }
-    .e-hp-bar { background: linear-gradient(90deg, #6b0000, #cc2222); }
-    .exp-bar { background: var(--exp-bar); }
+- { margin: 0; padding: 0; box-sizing: border-box; }
 
-    /* ── TABS ── */
-    #tab-container { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-    .tab-buttons { display: flex; border-bottom: 1px solid #1a1a1a; flex-shrink: 0; background: #080808; }
-    .tab-btn { flex: 1; padding: 11px 2px; background: transparent; border: none; color: #444; font-size: 0.68rem; cursor: pointer; border-bottom: 2px solid transparent; letter-spacing: 1px; }
-    .tab-btn.active { color: var(--accent); border-bottom-color: #888; }
-    .tab-content { display: none; padding: 12px; flex: 1; font-size: 0.75rem; overflow-y: auto; }
-    .tab-content.active { display: flex; flex-direction: column; }
+body {
+background: var(–bg);
+color: var(–text);
+font-family: ‘Noto Sans JP’, sans-serif;
+min-height: 100vh;
+overflow-x: hidden;
+}
 
-    /* ── ENEMY ── */
-    #enemy-area { padding: 12px 0 10px; text-align: center; flex-shrink: 0; }
-    #enemy-name { font-size: 0.95rem; margin-bottom: 3px; letter-spacing: 2px; }
-    #enemy-hp-num { font-size: 0.65rem; color: #666; margin-bottom: 6px; }
-    .bar-container.enemy-bar { height: 8px; }
+/* Animated background */
+body::before {
+content: ‘’;
+position: fixed;
+inset: 0;
+background:
+radial-gradient(ellipse 60% 40% at 20% 80%, rgba(74,158,255,0.04) 0%, transparent 60%),
+radial-gradient(ellipse 40% 60% at 80% 20%, rgba(123,74,255,0.06) 0%, transparent 60%),
+radial-gradient(ellipse 30% 30% at 50% 50%, rgba(102,0,255,0.03) 0%, transparent 70%);
+pointer-events: none;
+z-index: 0;
+}
 
-    /* ── BATTLE CONTROLS ── */
-    #battle-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; flex-shrink: 0; }
-    button.action-btn {
-        background: #111; color: #bbb; border: 1px solid #333; padding: 16px 5px;
-        cursor: pointer; border-radius: 3px; font-size: 0.85rem; transition: background 0.15s, opacity 0.2s;
-        font-family: inherit;
-    }
-    button.action-btn:active { background: #1e1e1e; }
-    button.action-btn:disabled { opacity: 0.2; cursor: default; }
-    .btn-skill { border-color: #1a3f6f !important; color: #6aacff !important; }
-    .btn-skill:not(:disabled):active { background: #0d1f3a !important; }
+.scanline {
+position: fixed;
+inset: 0;
+background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
+pointer-events: none;
+z-index: 1;
+}
 
-    /* MP bar under skill btn */
-    #mp-bar-wrap { margin-bottom: 8px; flex-shrink: 0; }
+#app { position: relative; z-index: 2; }
 
-    /* ── BOTTOM ROW: auto toggle + status ── */
-    #bottom-bar { display: flex; justify-content: space-between; align-items: center; padding: 4px 2px 6px; flex-shrink: 0; gap: 10px; }
-    .toggle-wrap { display: flex; align-items: center; gap: 6px; font-size: 0.65rem; color: #555; flex-shrink: 0; }
-    .toggle { position: relative; width: 32px; height: 17px; }
-    .toggle input { opacity: 0; width: 0; height: 0; }
-    .slider { position: absolute; inset: 0; background: #222; border-radius: 17px; cursor: pointer; transition: .2s; }
-    .slider:before { content:""; position: absolute; width: 13px; height: 13px; left: 2px; bottom: 2px; background: #555; border-radius: 50%; transition: .2s; }
-    input:checked + .slider { background: #1a3060; }
-    input:checked + .slider:before { transform: translateX(15px); background: #6aacff; }
-    #battle-state-text { font-size: 0.65rem; color: #555; flex: 1; text-align: right; }
+/* ===== SCREENS ===== */
+.screen { display: none; min-height: 100vh; }
+.screen.active { display: flex; flex-direction: column; }
 
-    /* ── LOG ── */
-    #log { flex: 1; overflow-y: auto; font-size: 0.7rem; padding: 8px 10px; background: #000; color: #666; line-height: 1.65; border: 1px solid #161616; border-radius: 2px; min-height: 0; }
-    .log-entry { margin-bottom: 2px; padding-left: 10px; border-left: 1px solid #1e1e1e; }
+/* ===== TITLE SCREEN ===== */
+#title-screen {
+align-items: center;
+justify-content: center;
+text-align: center;
+position: relative;
+}
 
-    /* ── STATS ── */
-    .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3px 20px; margin-bottom: 12px; }
-    .stat-item { border-bottom: 1px solid #161616; padding: 5px 0; display: flex; justify-content: space-between; }
-    .stat-label { color: #555; font-size: 0.62rem; }
-    .stat-val { font-size: 0.72rem; }
+.title-bg {
+position: absolute;
+inset: 0;
+overflow: hidden;
+}
 
-    /* ── EQUIP ── */
-    .equip-slot { padding: 10px 12px; background: #0a0a0a; margin-bottom: 6px; border-radius: 3px; border-left: 2px solid #222; }
-    .slot-header { display: flex; justify-content: space-between; margin-bottom: 4px; color: #444; font-size: 0.6rem; letter-spacing: 1px; }
-    .equip-name { font-size: 0.82rem; color: #ddd; }
-    .equip-eff { font-size: 0.68rem; color: #5a8fcf; margin-top: 3px; }
+.title-bg .particle {
+position: absolute;
+width: 2px;
+height: 2px;
+background: var(–accent);
+border-radius: 50%;
+animation: float-particle linear infinite;
+opacity: 0;
+}
 
-    /* ── COLLECTION ── */
-    #coll-header { display: flex; justify-content: space-between; color: #444; font-size: 0.6rem; margin-bottom: 8px; padding-bottom: 4px; border-bottom: 1px solid #161616; }
-    .coll-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid #111; }
-    .coll-name { font-size: 0.68rem; color: #3a3a3a; flex: 1; }
-    .coll-name.has-any { color: #666; }
-    .coll-name.comp { color: #fa0; }
-    .coll-chips { display: flex; gap: 3px; }
-    .chip { font-size: 0.52rem; width: 15px; text-align: center; color: #1e1e1e; background: #0e0e0e; border-radius: 1px; line-height: 1.6; }
-    .chip.active { color: #000; }
-    .chip.n.active { background: var(--rarity-n); }
-    .chip.r.active { background: var(--rarity-r); }
-    .chip.e.active { background: var(--rarity-e); }
-    .chip.l.active { background: var(--rarity-l); }
-    #coll-summary { font-size: 0.65rem; color: #555; margin-bottom: 10px; text-align: right; }
+@keyframes float-particle {
+0% { transform: translateY(100vh) translateX(0); opacity: 0; }
+10% { opacity: 1; }
+90% { opacity: 1; }
+100% { transform: translateY(-100px) translateX(var(–drift)); opacity: 0; }
+}
 
-    /* ── EQUIP MODAL ── */
-    #equip-modal {
-        display: none; position: absolute; inset: 0; background: rgba(0,0,0,0.88);
-        z-index: 100; align-items: center; justify-content: center; padding: 20px;
-    }
-    #equip-modal.show { display: flex; }
-    .modal-box { background: #0e0e0e; border: 1px solid #333; padding: 20px; width: 100%; max-width: 360px; border-radius: 4px; }
-    .modal-title { font-size: 0.8rem; color: #888; margin-bottom: 14px; letter-spacing: 1px; }
-    .modal-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
-    .modal-item { background: #0a0a0a; border: 1px solid #222; padding: 10px; border-radius: 3px; }
-    .modal-item-label { font-size: 0.58rem; color: #555; margin-bottom: 5px; }
-    .modal-item-name { font-size: 0.78rem; color: #ddd; margin-bottom: 4px; }
-    .modal-item-eff { font-size: 0.65rem; color: #5a8fcf; line-height: 1.5; }
-    .modal-item.new { border-color: #2a5a2a; }
-    .modal-item.new .modal-item-label { color: #2ecc2e; }
-    .modal-diff { font-size: 0.65rem; color: #888; text-align: center; margin-bottom: 14px; line-height: 1.6; }
-    .modal-diff .pos { color: #4f4; }
-    .modal-diff .neg { color: #f44; }
-    .modal-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-    .modal-btn { padding: 12px; border: 1px solid #333; background: #111; color: #aaa; cursor: pointer; font-family: inherit; font-size: 0.75rem; border-radius: 3px; }
-    .modal-btn.equip { border-color: #2a5a2a; color: #4f8; background: #0a1a0a; }
+.title-content {
+position: relative;
+z-index: 1;
+}
 
-    /* ── DAMAGE FLOAT ── */
-    .dmg-float {
-        position: absolute; font-size: 1.1rem; font-weight: bold; pointer-events: none;
-        animation: floatUp 0.9s ease-out forwards; z-index: 50;
-        text-shadow: 0 0 8px currentColor;
-    }
-    @keyframes floatUp {
-        0% { opacity: 1; transform: translateY(0) scale(1); }
-        60% { opacity: 0.9; transform: translateY(-28px) scale(1.1); }
-        100% { opacity: 0; transform: translateY(-48px) scale(0.9); }
-    }
+.title-rank {
+font-family: ‘Orbitron’, monospace;
+font-size: 0.9rem;
+letter-spacing: 0.5em;
+color: var(–accent);
+margin-bottom: 1rem;
+animation: pulse-glow 2s ease-in-out infinite;
+}
 
-    /* ── ENEMY ACTION INDICATOR ── */
-    #enemy-intent { font-size: 0.6rem; color: #553333; margin-top: 4px; min-height: 14px; letter-spacing: 1px; }
+@keyframes pulse-glow {
+0%, 100% { text-shadow: 0 0 10px var(–accent); }
+50% { text-shadow: 0 0 30px var(–accent), 0 0 60px var(–accent2); }
+}
 
-    /* ── MISC ── */
-    #version-tag { position: absolute; bottom: 4px; right: 8px; font-size: 0.55rem; color: #2a2a2a; pointer-events: none; }
-    .section-label { font-size: 0.6rem; color: #3a3a3a; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; }
-    ::-webkit-scrollbar { width: 3px; } ::-webkit-scrollbar-track { background: #000; } ::-webkit-scrollbar-thumb { background: #222; }
+.title-main {
+font-family: ‘Orbitron’, monospace;
+font-size: clamp(2.5rem, 8vw, 5rem);
+font-weight: 900;
+line-height: 1;
+margin-bottom: 0.5rem;
+background: linear-gradient(135deg, #fff 0%, var(–accent) 40%, var(–accent2) 80%, var(–shadow) 100%);
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+background-clip: text;
+filter: drop-shadow(0 0 20px rgba(74,158,255,0.5));
+}
+
+.title-sub {
+font-size: clamp(1rem, 3vw, 1.4rem);
+color: var(–accent2);
+letter-spacing: 0.3em;
+margin-bottom: 3rem;
+font-weight: 300;
+}
+
+.title-story {
+max-width: 600px;
+line-height: 1.8;
+color: var(–text-dim);
+font-size: 0.9rem;
+margin-bottom: 3rem;
+text-align: left;
+background: rgba(10,16,32,0.8);
+border: 1px solid var(–border);
+padding: 1.5rem;
+border-radius: 4px;
+position: relative;
+}
+
+.title-story::before {
+content: ‘’;
+position: absolute;
+top: -1px; left: -1px; right: -1px;
+height: 2px;
+background: linear-gradient(90deg, transparent, var(–accent), transparent);
+}
+
+.btn-start {
+font-family: ‘Orbitron’, monospace;
+font-size: 1.1rem;
+letter-spacing: 0.2em;
+padding: 1rem 3rem;
+background: transparent;
+border: 2px solid var(–accent);
+color: var(–accent);
+cursor: pointer;
+position: relative;
+overflow: hidden;
+transition: all 0.3s;
+text-transform: uppercase;
+}
+
+.btn-start::before {
+content: ‘’;
+position: absolute;
+inset: 0;
+background: var(–accent);
+transform: translateX(-100%);
+transition: transform 0.3s;
+}
+
+.btn-start:hover::before { transform: translateX(0); }
+.btn-start:hover { color: var(–bg); }
+.btn-start span { position: relative; z-index: 1; }
+
+/* ===== MAIN GAME ===== */
+#game-screen { flex-direction: column; }
+
+.game-header {
+background: var(–panel);
+border-bottom: 1px solid var(–border);
+padding: 0.75rem 1.5rem;
+display: flex;
+align-items: center;
+justify-content: space-between;
+position: sticky;
+top: 0;
+z-index: 100;
+}
+
+.header-title {
+font-family: ‘Orbitron’, monospace;
+font-size: 0.85rem;
+color: var(–accent);
+letter-spacing: 0.2em;
+}
+
+.header-day {
+font-size: 0.8rem;
+color: var(–text-dim);
+}
+
+.game-body {
+display: grid;
+grid-template-columns: 280px 1fr 260px;
+gap: 0;
+flex: 1;
+min-height: calc(100vh - 52px);
+}
+
+/* ===== LEFT PANEL - STATS ===== */
+.left-panel {
+background: var(–panel);
+border-right: 1px solid var(–border);
+padding: 1.5rem 1rem;
+overflow-y: auto;
+}
+
+.player-card {
+text-align: center;
+margin-bottom: 1.5rem;
+padding-bottom: 1.5rem;
+border-bottom: 1px solid var(–border);
+}
+
+.player-avatar {
+width: 80px;
+height: 80px;
+border-radius: 50%;
+background: radial-gradient(circle, var(–accent2) 0%, var(–shadow) 60%, var(–bg2) 100%);
+margin: 0 auto 0.75rem;
+display: flex;
+align-items: center;
+justify-content: center;
+font-size: 2.5rem;
+border: 2px solid var(–accent2);
+box-shadow: 0 0 20px rgba(123,74,255,0.4), inset 0 0 20px rgba(0,0,0,0.5);
+position: relative;
+animation: avatar-pulse 3s ease-in-out infinite;
+}
+
+@keyframes avatar-pulse {
+0%, 100% { box-shadow: 0 0 20px rgba(123,74,255,0.4), inset 0 0 20px rgba(0,0,0,0.5); }
+50% { box-shadow: 0 0 40px rgba(123,74,255,0.7), 0 0 80px rgba(102,0,255,0.3), inset 0 0 20px rgba(0,0,0,0.5); }
+}
+
+.player-name {
+font-size: 1.1rem;
+font-weight: 700;
+color: #fff;
+margin-bottom: 0.25rem;
+}
+
+.player-rank-badge {
+display: inline-block;
+padding: 0.15rem 0.8rem;
+border-radius: 2px;
+font-family: ‘Orbitron’, monospace;
+font-size: 0.8rem;
+font-weight: 700;
+letter-spacing: 0.1em;
+margin-bottom: 0.5rem;
+}
+
+.rank-S { background: rgba(255,102,0,0.2); color: var(–s-rank); border: 1px solid var(–s-rank); }
+.rank-A { background: rgba(204,68,255,0.2); color: var(–a-rank); border: 1px solid var(–a-rank); }
+.rank-B { background: rgba(68,136,255,0.2); color: var(–b-rank); border: 1px solid var(–b-rank); }
+.rank-C { background: rgba(68,221,255,0.2); color: var(–c-rank); border: 1px solid var(–c-rank); }
+.rank-D { background: rgba(68,255,136,0.2); color: var(–d-rank); border: 1px solid var(–d-rank); }
+.rank-E { background: rgba(170,170,170,0.2); color: var(–e-rank); border: 1px solid var(–e-rank); }
+
+.player-title {
+font-size: 0.75rem;
+color: var(–shadow);
+font-style: italic;
+}
+
+.stat-section { margin-bottom: 1.2rem; }
+
+.stat-label {
+font-size: 0.65rem;
+letter-spacing: 0.15em;
+color: var(–text-dim);
+text-transform: uppercase;
+margin-bottom: 0.6rem;
+font-family: ‘Rajdhani’, sans-serif;
+border-bottom: 1px solid var(–border);
+padding-bottom: 0.3rem;
+}
+
+.level-display {
+display: flex;
+align-items: baseline;
+gap: 0.5rem;
+margin-bottom: 0.5rem;
+}
+
+.level-num {
+font-family: ‘Orbitron’, monospace;
+font-size: 2rem;
+font-weight: 700;
+color: var(–gold);
+line-height: 1;
+}
+
+.level-text { font-size: 0.75rem; color: var(–text-dim); }
+
+.exp-bar-wrap {
+background: rgba(255,215,0,0.1);
+border: 1px solid rgba(255,215,0,0.2);
+height: 6px;
+border-radius: 3px;
+overflow: hidden;
+margin-bottom: 0.3rem;
+}
+
+.exp-bar {
+height: 100%;
+background: linear-gradient(90deg, var(–gold), #ffaa00);
+transition: width 0.8s ease;
+position: relative;
+}
+
+.exp-bar::after {
+content: ‘’;
+position: absolute;
+inset: 0;
+background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%);
+animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+0% { transform: translateX(-100%); }
+100% { transform: translateX(200%); }
+}
+
+.exp-text { font-size: 0.65rem; color: var(–text-dim); text-align: right; }
+
+.stat-row {
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-bottom: 0.5rem;
+}
+
+.stat-name { font-size: 0.8rem; color: var(–text-dim); font-family: ‘Rajdhani’, sans-serif; }
+.stat-val { font-family: ‘Orbitron’, monospace; font-size: 0.85rem; color: var(–accent); }
+
+.hp-bar-wrap, .mp-bar-wrap {
+background: rgba(255,51,102,0.1);
+border: 1px solid rgba(255,51,102,0.2);
+height: 8px;
+border-radius: 4px;
+overflow: hidden;
+margin-bottom: 0.2rem;
+}
+
+.mp-bar-wrap { background: rgba(74,158,255,0.1); border-color: rgba(74,158,255,0.2); }
+
+.hp-bar {
+height: 100%;
+background: linear-gradient(90deg, var(–red), #ff6688);
+transition: width 0.5s ease;
+}
+
+.mp-bar {
+height: 100%;
+background: linear-gradient(90deg, var(–accent2), var(–accent));
+transition: width 0.5s ease;
+}
+
+.bar-label {
+display: flex;
+justify-content: space-between;
+font-size: 0.65rem;
+color: var(–text-dim);
+margin-bottom: 0.4rem;
+}
+
+.shadow-army {
+background: rgba(102,0,255,0.1);
+border: 1px solid rgba(102,0,255,0.3);
+border-radius: 4px;
+padding: 0.6rem;
+margin-top: 0.5rem;
+}
+
+.shadow-army-label {
+font-size: 0.65rem;
+color: var(–shadow);
+letter-spacing: 0.1em;
+margin-bottom: 0.4rem;
+}
+
+.shadow-slots {
+display: flex;
+gap: 0.3rem;
+flex-wrap: wrap;
+}
+
+.shadow-slot {
+width: 32px;
+height: 32px;
+border-radius: 3px;
+background: rgba(0,0,0,0.4);
+border: 1px solid rgba(102,0,255,0.3);
+display: flex;
+align-items: center;
+justify-content: center;
+font-size: 1rem;
+cursor: pointer;
+transition: all 0.2s;
+}
+
+.shadow-slot.filled {
+border-color: var(–shadow);
+background: rgba(102,0,255,0.2);
+box-shadow: 0 0 8px rgba(102,0,255,0.4);
+}
+
+.shadow-slot:hover { transform: scale(1.1); }
+
+/* ===== CENTER - MAIN CONTENT ===== */
+.center-panel {
+padding: 1.5rem;
+overflow-y: auto;
+}
+
+/* Quest window style */
+.window-panel {
+background: var(–panel);
+border: 1px solid var(–border);
+border-radius: 4px;
+margin-bottom: 1.2rem;
+position: relative;
+overflow: hidden;
+}
+
+.window-panel::before {
+content: ‘’;
+position: absolute;
+top: 0; left: 0; right: 0;
+height: 1px;
+background: linear-gradient(90deg, transparent, var(–accent), transparent);
+}
+
+.window-header {
+display: flex;
+align-items: center;
+justify-content: space-between;
+padding: 0.75rem 1rem;
+border-bottom: 1px solid var(–border);
+background: rgba(74,158,255,0.05);
+}
+
+.window-title {
+font-family: ‘Orbitron’, monospace;
+font-size: 0.75rem;
+letter-spacing: 0.15em;
+color: var(–accent);
+display: flex;
+align-items: center;
+gap: 0.5rem;
+}
+
+.window-title-icon { font-size: 1rem; }
+
+.window-body { padding: 1rem; }
+
+/* Status Window */
+.status-window {
+background: rgba(10,16,32,0.95);
+border: 2px solid var(–accent);
+border-radius: 4px;
+padding: 1.2rem;
+position: relative;
+overflow: hidden;
+animation: status-appear 0.5s ease;
+}
+
+@keyframes status-appear {
+from { opacity: 0; transform: scale(0.95); }
+to { opacity: 1; transform: scale(1); }
+}
+
+.status-window::before {
+content: ‘’;
+position: absolute;
+inset: 0;
+background: linear-gradient(135deg, rgba(74,158,255,0.05) 0%, transparent 60%);
+}
+
+.status-title {
+font-family: ‘Orbitron’, monospace;
+font-size: 0.9rem;
+color: var(–accent);
+letter-spacing: 0.3em;
+text-align: center;
+margin-bottom: 1rem;
+padding-bottom: 0.5rem;
+border-bottom: 1px solid rgba(74,158,255,0.3);
+}
+
+/* Dungeon Grid */
+.dungeon-grid {
+display: grid;
+grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+gap: 1rem;
+}
+
+.dungeon-card {
+background: var(–bg2);
+border: 1px solid var(–border);
+border-radius: 4px;
+padding: 1rem;
+cursor: pointer;
+transition: all 0.3s;
+position: relative;
+overflow: hidden;
+}
+
+.dungeon-card::before {
+content: ‘’;
+position: absolute;
+inset: 0;
+opacity: 0;
+transition: opacity 0.3s;
+}
+
+.dungeon-card:hover { transform: translateY(-2px); }
+.dungeon-card:hover::before { opacity: 1; }
+
+.dungeon-card.rank-S-card::before { background: radial-gradient(ellipse at center, rgba(255,102,0,0.1) 0%, transparent 70%); border: 1px solid rgba(255,102,0,0.4); }
+.dungeon-card.rank-A-card::before { background: radial-gradient(ellipse at center, rgba(204,68,255,0.1) 0%, transparent 70%); }
+.dungeon-card.rank-B-card::before { background: radial-gradient(ellipse at center, rgba(68,136,255,0.1) 0%, transparent 70%); }
+.dungeon-card.rank-C-card::before { background: radial-gradient(ellipse at center, rgba(68,221,255,0.1) 0%, transparent 70%); }
+.dungeon-card.rank-D-card::before { background: radial-gradient(ellipse at center, rgba(68,255,136,0.1) 0%, transparent 70%); }
+.dungeon-card.rank-E-card::before { background: radial-gradient(ellipse at center, rgba(170,170,170,0.1) 0%, transparent 70%); }
+
+.dungeon-card:hover.rank-S-card { border-color: var(–s-rank); }
+.dungeon-card:hover.rank-A-card { border-color: var(–a-rank); }
+.dungeon-card:hover.rank-B-card { border-color: var(–b-rank); }
+.dungeon-card:hover.rank-C-card { border-color: var(–c-rank); }
+.dungeon-card:hover.rank-D-card { border-color: var(–d-rank); }
+.dungeon-card:hover.rank-E-card { border-color: var(–e-rank); }
+
+.dungeon-card.locked {
+opacity: 0.4;
+cursor: not-allowed;
+filter: grayscale(0.8);
+}
+
+.dungeon-card.locked:hover { transform: none; }
+
+.dungeon-rank-header {
+display: flex;
+align-items: center;
+justify-content: space-between;
+margin-bottom: 0.7rem;
+}
+
+.dungeon-icon { font-size: 1.8rem; }
+
+.dungeon-name {
+font-weight: 700;
+font-size: 0.95rem;
+color: #fff;
+margin-bottom: 0.3rem;
+}
+
+.dungeon-desc {
+font-size: 0.75rem;
+color: var(–text-dim);
+line-height: 1.5;
+margin-bottom: 0.7rem;
+}
+
+.dungeon-reward {
+display: flex;
+gap: 0.5rem;
+flex-wrap: wrap;
+}
+
+.reward-tag {
+font-size: 0.65rem;
+padding: 0.15rem 0.4rem;
+border-radius: 2px;
+background: rgba(255,215,0,0.1);
+border: 1px solid rgba(255,215,0,0.2);
+color: var(–gold);
+}
+
+.dungeon-locked-msg {
+font-size: 0.7rem;
+color: var(–red);
+text-align: center;
+padding-top: 0.3rem;
+}
+
+/* Combat Screen */
+#combat-screen {
+background: var(–bg);
+min-height: 100vh;
+}
+
+.combat-arena {
+max-width: 700px;
+margin: 0 auto;
+padding: 2rem 1rem;
+}
+
+.combat-header {
+display: flex;
+align-items: center;
+justify-content: space-between;
+margin-bottom: 2rem;
+}
+
+.combat-dungeon-name {
+font-family: ‘Orbitron’, monospace;
+font-size: 1rem;
+color: var(–accent);
+letter-spacing: 0.2em;
+}
+
+.combat-floor {
+font-size: 0.8rem;
+color: var(–text-dim);
+}
+
+.combat-field {
+display: flex;
+align-items: center;
+justify-content: space-between;
+margin-bottom: 2rem;
+gap: 1rem;
+}
+
+.combatant {
+flex: 1;
+text-align: center;
+}
+
+.combatant-sprite {
+font-size: 5rem;
+display: block;
+margin-bottom: 0.5rem;
+line-height: 1;
+filter: drop-shadow(0 0 20px rgba(74,158,255,0.5));
+animation: combatant-idle 2s ease-in-out infinite;
+}
+
+.enemy-sprite {
+filter: drop-shadow(0 0 20px rgba(255,51,102,0.5));
+animation: enemy-idle 1.5s ease-in-out infinite;
+}
+
+@keyframes combatant-idle {
+0%, 100% { transform: translateY(0); }
+50% { transform: translateY(-5px); }
+}
+
+@keyframes enemy-idle {
+0%, 100% { transform: translateY(0) scale(1); }
+50% { transform: translateY(-8px) scale(1.05); }
+}
+
+.combatant-name {
+font-weight: 700;
+margin-bottom: 0.3rem;
+font-size: 0.9rem;
+}
+
+.vs-text {
+font-family: ‘Orbitron’, monospace;
+font-size: 1.5rem;
+color: var(–red);
+font-weight: 900;
+text-shadow: 0 0 20px var(–red);
+flex-shrink: 0;
+}
+
+.combat-hp-wrap {
+height: 10px;
+background: rgba(255,51,102,0.1);
+border: 1px solid rgba(255,51,102,0.3);
+border-radius: 5px;
+overflow: hidden;
+margin-bottom: 0.3rem;
+}
+
+.combat-hp-bar {
+height: 100%;
+background: linear-gradient(90deg, #cc0000, #ff3366);
+transition: width 0.5s ease;
+}
+
+.player-combat-hp { background: linear-gradient(90deg, #00aa55, #00ff88); }
+
+.combat-hp-text {
+font-size: 0.7rem;
+color: var(–text-dim);
+text-align: center;
+}
+
+.combat-log {
+background: var(–panel);
+border: 1px solid var(–border);
+border-radius: 4px;
+height: 120px;
+overflow-y: auto;
+padding: 0.75rem;
+margin-bottom: 1.2rem;
+font-size: 0.82rem;
+line-height: 1.7;
+}
+
+.log-line { color: var(–text-dim); }
+.log-line.highlight { color: var(–accent); }
+.log-line.damage { color: var(–red); }
+.log-line.heal { color: var(–green); }
+.log-line.skill { color: var(–accent2); }
+.log-line.shadow { color: var(–shadow); }
+.log-line.victory { color: var(–gold); font-weight: 700; }
+.log-line.defeat { color: var(–red); font-weight: 700; }
+
+.combat-actions {
+display: grid;
+grid-template-columns: repeat(2, 1fr);
+gap: 0.75rem;
+margin-bottom: 1rem;
+}
+
+.btn-action {
+background: var(–panel);
+border: 1px solid var(–border);
+color: var(–text);
+padding: 0.85rem 1rem;
+border-radius: 4px;
+cursor: pointer;
+font-family: ‘Noto Sans JP’, sans-serif;
+font-size: 0.85rem;
+transition: all 0.2s;
+text-align: left;
+position: relative;
+overflow: hidden;
+}
+
+.btn-action::before {
+content: ‘’;
+position: absolute;
+inset: 0;
+opacity: 0;
+transition: opacity 0.2s;
+}
+
+.btn-action:hover { transform: translateY(-1px); }
+.btn-action:hover::before { opacity: 1; }
+.btn-action:disabled { opacity: 0.3; cursor: not-allowed; transform: none; }
+
+.btn-attack::before { background: rgba(255,51,102,0.1); }
+.btn-attack:hover { border-color: var(–red); color: #fff; }
+.btn-attack:hover .action-icon { text-shadow: 0 0 10px var(–red); }
+
+.btn-skill::before { background: rgba(123,74,255,0.1); }
+.btn-skill:hover { border-color: var(–accent2); color: #fff; }
+
+.btn-shadow::before { background: rgba(102,0,255,0.15); }
+.btn-shadow:hover { border-color: var(–shadow); color: #fff; }
+
+.btn-item::before { background: rgba(255,215,0,0.1); }
+.btn-item:hover { border-color: var(–gold); color: #fff; }
+
+.action-icon { font-size: 1.2rem; margin-bottom: 0.2rem; display: block; }
+.action-name { font-weight: 700; font-size: 0.85rem; }
+.action-desc { font-size: 0.7rem; color: var(–text-dim); margin-top: 0.1rem; }
+.action-cost { font-size: 0.65rem; color: var(–accent2); margin-top: 0.2rem; }
+
+.btn-flee {
+width: 100%;
+background: transparent;
+border: 1px solid rgba(255,51,102,0.3);
+color: rgba(255,51,102,0.6);
+padding: 0.5rem;
+border-radius: 4px;
+cursor: pointer;
+font-size: 0.8rem;
+transition: all 0.2s;
+}
+
+.btn-flee:hover { border-color: var(–red); color: var(–red); }
+
+/* Damage Numbers */
+.damage-number {
+position: fixed;
+font-family: ‘Orbitron’, monospace;
+font-weight: 900;
+font-size: 2rem;
+pointer-events: none;
+z-index: 9999;
+animation: float-damage 1.5s ease-out forwards;
+}
+
+@keyframes float-damage {
+0% { transform: translateY(0) scale(0.5); opacity: 1; }
+50% { transform: translateY(-60px) scale(1.2); opacity: 1; }
+100% { transform: translateY(-100px) scale(1); opacity: 0; }
+}
+
+/* Notification */
+.notification {
+position: fixed;
+top: 20px;
+right: 20px;
+z-index: 9999;
+max-width: 320px;
+animation: notify-in 0.4s ease, notify-out 0.4s ease 2.6s forwards;
+}
+
+@keyframes notify-in {
+from { transform: translateX(120%); opacity: 0; }
+to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes notify-out {
+from { transform: translateX(0); opacity: 1; }
+to { transform: translateX(120%); opacity: 0; }
+}
+
+.notification-inner {
+background: var(–panel);
+border: 1px solid var(–accent);
+border-radius: 4px;
+padding: 0.75rem 1rem;
+font-size: 0.85rem;
+position: relative;
+overflow: hidden;
+}
+
+.notification-inner::before {
+content: ‘’;
+position: absolute;
+top: 0; left: 0; right: 0;
+height: 2px;
+background: linear-gradient(90deg, var(–accent2), var(–accent));
+}
+
+.notification.level-up .notification-inner {
+border-color: var(–gold);
+box-shadow: 0 0 30px rgba(255,215,0,0.3);
+}
+
+.notification.level-up .notification-inner::before {
+background: linear-gradient(90deg, var(–gold), #ffaa00);
+}
+
+/* Right Panel - Quest / Log */
+.right-panel {
+background: var(–panel);
+border-left: 1px solid var(–border);
+padding: 1rem;
+overflow-y: auto;
+}
+
+.right-section { margin-bottom: 1.5rem; }
+
+.right-section-title {
+font-family: ‘Orbitron’, monospace;
+font-size: 0.65rem;
+letter-spacing: 0.2em;
+color: var(–accent);
+margin-bottom: 0.8rem;
+padding-bottom: 0.4rem;
+border-bottom: 1px solid var(–border);
+}
+
+.quest-item {
+background: var(–bg2);
+border: 1px solid var(–border);
+border-radius: 3px;
+padding: 0.7rem;
+margin-bottom: 0.5rem;
+position: relative;
+overflow: hidden;
+}
+
+.quest-item::before {
+content: ‘’;
+position: absolute;
+left: 0; top: 0; bottom: 0;
+width: 3px;
+background: var(–accent2);
+}
+
+.quest-item.complete::before { background: var(–green); }
+.quest-name { font-size: 0.8rem; font-weight: 600; margin-bottom: 0.3rem; }
+.quest-progress-text { font-size: 0.7rem; color: var(–text-dim); margin-bottom: 0.4rem; }
+.quest-progress-bar-wrap {
+background: rgba(74,158,255,0.1);
+border-radius: 2px;
+height: 4px;
+overflow: hidden;
+}
+.quest-progress-bar {
+height: 100%;
+background: linear-gradient(90deg, var(–accent2), var(–accent));
+transition: width 0.5s;
+}
+.quest-item.complete .quest-progress-bar { background: var(–green); }
+
+.item-entry {
+display: flex;
+align-items: center;
+gap: 0.5rem;
+padding: 0.4rem 0;
+border-bottom: 1px solid rgba(26,42,74,0.5);
+font-size: 0.8rem;
+}
+
+.item-icon { font-size: 1.1rem; }
+
+.item-name { flex: 1; }
+
+.item-rarity {
+font-size: 0.65rem;
+padding: 0.1rem 0.3rem;
+border-radius: 2px;
+}
+
+.rarity-legendary { background: rgba(255,102,0,0.2); color: var(–s-rank); border: 1px solid rgba(255,102,0,0.3); }
+.rarity-epic { background: rgba(204,68,255,0.2); color: var(–a-rank); border: 1px solid rgba(204,68,255,0.3); }
+.rarity-rare { background: rgba(68,136,255,0.2); color: var(–b-rank); border: 1px solid rgba(68,136,255,0.3); }
+.rarity-common { background: rgba(170,170,170,0.1); color: var(–e-rank); border: 1px solid rgba(170,170,170,0.2); }
+
+.activity-entry {
+font-size: 0.75rem;
+color: var(–text-dim);
+padding: 0.3rem 0;
+border-bottom: 1px solid rgba(26,42,74,0.3);
+line-height: 1.5;
+}
+
+.activity-entry .time { color: var(–text-dim); font-size: 0.65rem; }
+.activity-entry .content { color: var(–text); }
+
+/* Nav tabs */
+.center-tabs {
+display: flex;
+gap: 0;
+margin-bottom: 1.2rem;
+border-bottom: 1px solid var(–border);
+}
+
+.tab-btn {
+background: none;
+border: none;
+color: var(–text-dim);
+padding: 0.6rem 1.2rem;
+cursor: pointer;
+font-family: ‘Rajdhani’, sans-serif;
+font-size: 0.9rem;
+letter-spacing: 0.1em;
+position: relative;
+transition: color 0.2s;
+}
+
+.tab-btn.active { color: var(–accent); }
+
+.tab-btn.active::after {
+content: ‘’;
+position: absolute;
+bottom: -1px;
+left: 0; right: 0;
+height: 2px;
+background: var(–accent);
+}
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* Reward modal */
+.modal-overlay {
+position: fixed;
+inset: 0;
+background: rgba(0,0,0,0.85);
+z-index: 1000;
+display: flex;
+align-items: center;
+justify-content: center;
+animation: fade-in 0.3s ease;
+}
+
+@keyframes fade-in {
+from { opacity: 0; }
+to { opacity: 1; }
+}
+
+.modal {
+background: var(–panel);
+border: 2px solid var(–accent);
+border-radius: 6px;
+padding: 2rem;
+max-width: 420px;
+width: 90%;
+text-align: center;
+position: relative;
+animation: modal-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes modal-in {
+from { transform: scale(0.7); opacity: 0; }
+to { transform: scale(1); opacity: 1; }
+}
+
+.modal::before {
+content: ‘’;
+position: absolute;
+top: -1px; left: 10%; right: 10%;
+height: 1px;
+background: linear-gradient(90deg, transparent, var(–accent), transparent);
+}
+
+.modal-icon { font-size: 4rem; margin-bottom: 1rem; }
+.modal-title {
+font-family: ‘Orbitron’, monospace;
+font-size: 1.1rem;
+color: var(–gold);
+margin-bottom: 0.5rem;
+letter-spacing: 0.2em;
+}
+
+.modal-subtitle { color: var(–text-dim); font-size: 0.85rem; margin-bottom: 1.5rem; }
+
+.reward-list { margin-bottom: 1.5rem; }
+
+.reward-item {
+display: flex;
+align-items: center;
+justify-content: space-between;
+padding: 0.5rem 0.75rem;
+margin-bottom: 0.4rem;
+background: rgba(255,215,0,0.05);
+border: 1px solid rgba(255,215,0,0.2);
+border-radius: 3px;
+font-size: 0.85rem;
+}
+
+.reward-item-name { color: #fff; }
+.reward-item-val { color: var(–gold); font-family: ‘Orbitron’, monospace; font-size: 0.8rem; }
+
+.btn-confirm {
+font-family: ‘Orbitron’, monospace;
+font-size: 0.9rem;
+letter-spacing: 0.15em;
+padding: 0.85rem 2.5rem;
+background: linear-gradient(135deg, var(–accent2), var(–accent));
+border: none;
+color: #fff;
+cursor: pointer;
+border-radius: 4px;
+transition: all 0.3s;
+box-shadow: 0 0 20px rgba(74,158,255,0.3);
+}
+
+.btn-confirm:hover {
+box-shadow: 0 0 40px rgba(74,158,255,0.6);
+transform: translateY(-1px);
+}
+
+/* Stat bars */
+.stat-bar-mini {
+height: 4px;
+background: rgba(74,158,255,0.1);
+border-radius: 2px;
+overflow: hidden;
+margin-top: 0.2rem;
+}
+
+.stat-bar-mini-fill {
+height: 100%;
+background: linear-gradient(90deg, var(–accent2), var(–accent));
+border-radius: 2px;
+}
+
+.gold-display {
+display: flex;
+align-items: center;
+gap: 0.5rem;
+padding: 0.5rem 0.75rem;
+background: rgba(255,215,0,0.08);
+border: 1px solid rgba(255,215,0,0.2);
+border-radius: 4px;
+margin-bottom: 1rem;
+}
+
+.gold-icon { font-size: 1.1rem; }
+.gold-label { font-size: 0.7rem; color: var(–text-dim); flex: 1; }
+.gold-amount { font-family: ‘Orbitron’, monospace; font-size: 0.9rem; color: var(–gold); }
+
+.btn-sm {
+font-size: 0.75rem;
+padding: 0.3rem 0.7rem;
+background: transparent;
+border: 1px solid var(–border);
+color: var(–text-dim);
+cursor: pointer;
+border-radius: 3px;
+transition: all 0.2s;
+}
+
+.btn-sm:hover { border-color: var(–accent); color: var(–accent); }
+
+/* Equipment slots */
+.equip-grid {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 0.5rem;
+margin-bottom: 1rem;
+}
+
+.equip-slot {
+background: var(–bg2);
+border: 1px dashed var(–border);
+border-radius: 4px;
+padding: 0.6rem 0.7rem;
+cursor: pointer;
+transition: all 0.2s;
+min-height: 56px;
+position: relative;
+}
+
+.equip-slot.filled {
+border-style: solid;
+border-color: var(–accent);
+background: rgba(74,158,255,0.06);
+}
+
+.equip-slot.filled.rarity-legendary { border-color: var(–s-rank); background: rgba(255,102,0,0.06); }
+.equip-slot.filled.rarity-epic      { border-color: var(–a-rank); background: rgba(204,68,255,0.06); }
+.equip-slot.filled.rarity-rare      { border-color: var(–b-rank); background: rgba(68,136,255,0.06); }
+
+.equip-slot:hover { border-color: var(–accent2); }
+.equip-slot-label {
+font-size: 0.6rem;
+color: var(–text-dim);
+letter-spacing: 0.1em;
+text-transform: uppercase;
+margin-bottom: 0.2rem;
+}
+
+.equip-slot-name {
+font-size: 0.78rem;
+font-weight: 600;
+color: #fff;
+white-space: nowrap;
+overflow: hidden;
+text-overflow: ellipsis;
+}
+
+.equip-slot-bonus {
+font-size: 0.65rem;
+color: var(–green);
+margin-top: 0.1rem;
+}
+
+.equip-slot-icon {
+font-size: 1rem;
+margin-right: 0.3rem;
+}
+
+.equip-stat-summary {
+background: rgba(0,255,136,0.05);
+border: 1px solid rgba(0,255,136,0.15);
+border-radius: 4px;
+padding: 0.5rem 0.7rem;
+margin-bottom: 1rem;
+font-size: 0.75rem;
+color: var(–green);
+display: flex;
+gap: 1rem;
+flex-wrap: wrap;
+}
+
+/* Inventory item in list */
+.inv-item {
+display: flex;
+align-items: center;
+gap: 0.6rem;
+padding: 0.55rem 0.7rem;
+margin-bottom: 0.4rem;
+background: var(–bg2);
+border: 1px solid var(–border);
+border-radius: 4px;
+cursor: pointer;
+transition: all 0.2s;
+position: relative;
+}
+
+.inv-item:hover { border-color: var(–accent2); background: rgba(123,74,255,0.07); }
+.inv-item.equipped { border-color: var(–accent); background: rgba(74,158,255,0.07); }
+
+.inv-item-icon { font-size: 1.3rem; flex-shrink: 0; }
+.inv-item-info { flex: 1; min-width: 0; }
+.inv-item-name { font-size: 0.82rem; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.inv-item-sub  { font-size: 0.68rem; color: var(–text-dim); margin-top: 0.1rem; }
+.inv-item-equipped-badge {
+font-size: 0.6rem;
+background: rgba(74,158,255,0.2);
+border: 1px solid var(–accent);
+color: var(–accent);
+padding: 0.1rem 0.35rem;
+border-radius: 2px;
+flex-shrink: 0;
+}
+
+/* Combat EXP bar */
+.combat-exp-row {
+display: flex;
+align-items: center;
+gap: 0.6rem;
+margin-bottom: 1rem;
+font-size: 0.7rem;
+color: var(–text-dim);
+}
+
+.combat-exp-wrap {
+flex: 1;
+height: 5px;
+background: rgba(255,215,0,0.1);
+border: 1px solid rgba(255,215,0,0.2);
+border-radius: 3px;
+overflow: hidden;
+}
+
+.combat-exp-fill {
+height: 100%;
+background: linear-gradient(90deg, var(–gold), #ffaa00);
+transition: width 0.6s ease;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; }
+
+/* Inventory sub-tabs */
+.inv-tab-btn {
+flex: 1;
+background: none;
+border: none;
+color: var(–text-dim);
+padding: 0.45rem 0.3rem;
+cursor: pointer;
+font-size: 0.72rem;
+font-family: ‘Noto Sans JP’, sans-serif;
+transition: color 0.15s;
+position: relative;
+white-space: nowrap;
+}
+.inv-tab-btn.active { color: var(–accent); }
+.inv-tab-btn.active::after {
+content: ‘’;
+position: absolute;
+bottom: 0; left: 10%; right: 10%;
+height: 2px;
+background: var(–accent);
+border-radius: 1px;
+}
+.inv-tab-btn:hover { color: #fff; }
+
+/* sell button on inv items */
+.sell-btn {
+font-size: 0.65rem;
+padding: 0.2rem 0.5rem;
+background: rgba(255,51,102,0.1);
+border: 1px solid rgba(255,51,102,0.3);
+color: var(–red);
+cursor: pointer;
+border-radius: 3px;
+transition: all 0.15s;
+flex-shrink: 0;
+white-space: nowrap;
+}
+.sell-btn:hover { background: rgba(255,51,102,0.25); border-color: var(–red); }
+
+/* Shop modal */
+.shop-modal {
+background: var(–panel);
+border: 2px solid var(–gold);
+border-radius: 6px;
+padding: 0;
+max-width: 520px;
+width: 94%;
+max-height: 85vh;
+overflow: hidden;
+display: flex;
+flex-direction: column;
+animation: modal-in 0.35s cubic-bezier(0.34,1.56,0.64,1);
+}
+.shop-modal::before {
+content: ‘’;
+position: absolute;
+top: -1px; left: 10%; right: 10%;
+height: 1px;
+background: linear-gradient(90deg, transparent, var(–gold), transparent);
+}
+.shop-header {
+display: flex;
+align-items: center;
+justify-content: space-between;
+padding: 1rem 1.2rem 0.75rem;
+border-bottom: 1px solid var(–border);
+flex-shrink: 0;
+}
+.shop-title {
+font-family: ‘Orbitron’, monospace;
+font-size: 1rem;
+color: var(–gold);
+letter-spacing: 0.2em;
+}
+.shop-gold-display {
+font-family: ‘Orbitron’, monospace;
+font-size: 0.85rem;
+color: var(–gold);
+}
+.shop-close {
+background: none;
+border: 1px solid var(–border);
+color: var(–text-dim);
+cursor: pointer;
+padding: 0.2rem 0.5rem;
+border-radius: 3px;
+font-size: 0.8rem;
+transition: all 0.15s;
+}
+.shop-close:hover { border-color: var(–red); color: var(–red); }
+.shop-tabs {
+display: flex;
+border-bottom: 1px solid var(–border);
+flex-shrink: 0;
+}
+.shop-tab {
+flex: 1;
+background: none;
+border: none;
+color: var(–text-dim);
+padding: 0.6rem;
+cursor: pointer;
+font-size: 0.8rem;
+font-family: ‘Noto Sans JP’, sans-serif;
+transition: color 0.15s;
+position: relative;
+}
+.shop-tab.active { color: var(–gold); }
+.shop-tab.active::after {
+content: ‘’;
+position: absolute;
+bottom: 0; left: 0; right: 0;
+height: 2px;
+background: var(–gold);
+}
+.shop-body {
+flex: 1;
+overflow-y: auto;
+padding: 0.75rem;
+}
+.shop-item {
+display: flex;
+align-items: center;
+gap: 0.6rem;
+padding: 0.6rem 0.75rem;
+margin-bottom: 0.4rem;
+background: var(–bg2);
+border: 1px solid var(–border);
+border-radius: 4px;
+transition: border-color 0.15s;
+}
+.shop-item:hover { border-color: var(–gold); }
+.shop-item-icon { font-size: 1.3rem; flex-shrink: 0; }
+.shop-item-info { flex: 1; min-width: 0; }
+.shop-item-name { font-size: 0.83rem; font-weight: 600; color: #fff; }
+.shop-item-bonus { font-size: 0.68rem; color: var(–green); margin-top: 0.1rem; }
+.shop-item-price { font-family: ‘Orbitron’, monospace; font-size: 0.78rem; color: var(–gold); flex-shrink: 0; }
+.btn-buy {
+font-size: 0.72rem;
+padding: 0.3rem 0.7rem;
+background: rgba(255,215,0,0.1);
+border: 1px solid rgba(255,215,0,0.4);
+color: var(–gold);
+cursor: pointer;
+border-radius: 3px;
+transition: all 0.15s;
+flex-shrink: 0;
+}
+.btn-buy:hover:not(:disabled) { background: rgba(255,215,0,0.25); }
+.btn-buy:disabled { opacity: 0.35; cursor: not-allowed; }
+::-webkit-scrollbar-track { background: var(–bg); }
+::-webkit-scrollbar-thumb { background: var(–border); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: var(–accent); }
+
+@media (max-width: 900px) {
+.game-body { grid-template-columns: 1fr; }
+.left-panel, .right-panel { display: none; }
+}
 </style>
-```
 
 </head>
 <body>
-<div id="game-container">
-    <!-- HEADER -->
-    <div id="header">
-        <div id="area-title" style="font-size:0.6rem; color:#444; margin-bottom:4px; letter-spacing:1px;">---</div>
-        <div class="status-row">
-            <span id="p-lv">Lv.1</span>
-            <span id="p-hp-text" style="font-size:0.68rem;">HP: --/--</span>
-            <span id="p-kill-count" style="font-size:0.6rem; color:#3a3a3a;">討滅: 0</span>
+<div class="scanline"></div>
+<div id="app">
+
+<!-- TITLE SCREEN -->
+
+<div id="title-screen" class="screen active">
+  <div class="title-bg" id="particle-container"></div>
+  <div class="title-content">
+    <div class="title-rank">[ HUNTER SYSTEM ONLINE ]</div>
+    <h1 class="title-main">SHADOW<br>HUNTER</h1>
+    <div class="title-sub">影の君主の覚醒</div>
+    <div class="title-story">
+      <p style="margin-bottom:0.8rem">世界に「亀裂」が走り始めたのは、今から十数年前のことだ。<br>空間の狭間から溢れ出す異形の存在——それを討つ者たちは<br>いつしか<strong style="color:var(--accent)">「ゲートダイバー」</strong>と呼ばれるようになった。</p>
+      <p>底辺ダイバー・<strong style="color:#fff">shadow</strong>。仲間からは足手まといと笑われ、<br>毎回ボロボロになりながらも潜り続けてきた男。<br>だがある深夜、崩壊した封印階層の最深部で<br>彼は<strong style="color:var(--accent2)">「何か」</strong>に選ばれた——</p>
+    </div>
+    <div id="title-buttons">
+      <button class="btn-start" onclick="startGame()" style="margin-bottom:0.8rem;display:block;width:100%"><span>▶ 新しくゲームを開始する</span></button>
+      <div id="continue-btn-wrap" style="display:none;margin-bottom:0.8rem">
+        <button class="btn-start" onclick="continueGame()" style="border-color:var(--green);color:var(--green);display:block;width:100%;margin-bottom:0.5rem">
+          <span>↩ セーブデータを続ける</span>
+        </button>
+        <div id="save-info" style="font-size:0.72rem;color:var(--text-dim);letter-spacing:0.05em;text-align:center"></div>
+      </div>
+      <button class="btn-start" onclick="resetSave()" style="border-color:rgba(255,51,102,0.5);color:rgba(255,51,102,0.6);font-size:0.8rem;padding:0.6rem 1.5rem;display:block;width:100%">
+        <span>🗑 セーブデータを削除</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- GAME SCREEN -->
+
+<div id="game-screen" class="screen">
+  <div class="game-header">
+    <div class="header-title">⚔ SHADOW HUNTER</div>
+    <div class="header-day" id="header-day">Day 1 | ハンター協会</div>
+    <button onclick="manualSave()" style="font-size:0.72rem;padding:0.3rem 0.8rem;background:transparent;border:1px solid var(--border);color:var(--text-dim);cursor:pointer;border-radius:3px;transition:all 0.2s;font-family:'Rajdhani',sans-serif;letter-spacing:0.05em" onmouseover="this.style.borderColor='var(--green)';this.style.color='var(--green)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)'">💾 セーブ</button>
+  </div>
+
+  <div class="game-body">
+    <!-- LEFT PANEL -->
+    <div class="left-panel">
+      <div class="player-card">
+        <div class="player-avatar" id="player-avatar">🥷</div>
+        <div class="player-name">shadow</div>
+        <div class="player-rank-badge" id="rank-badge">E級</div>
+        <div class="player-title" id="player-title">— 称号なし —</div>
+      </div>
+
+```
+  <div class="stat-section">
+    <div class="stat-label">LEVEL</div>
+    <div class="level-display">
+      <span class="level-num" id="stat-level">1</span>
+      <span class="level-text">/ MAX</span>
+    </div>
+    <div class="exp-bar-wrap">
+      <div class="exp-bar" id="exp-bar" style="width:0%"></div>
+    </div>
+    <div class="exp-text" id="exp-text">0 / 100 EXP</div>
+  </div>
+
+  <div class="gold-display">
+    <span class="gold-icon">💰</span>
+    <span class="gold-label">ゴールド</span>
+    <span class="gold-amount" id="stat-gold">0</span>
+  </div>
+
+  <div class="stat-section">
+    <div class="stat-label">VITALS</div>
+    <div class="bar-label"><span>HP</span><span id="hp-label">100 / 100</span></div>
+    <div class="hp-bar-wrap"><div class="hp-bar" id="hp-bar" style="width:100%"></div></div>
+    <div class="bar-label" style="margin-top:0.5rem"><span>MP</span><span id="mp-label">50 / 50</span></div>
+    <div class="mp-bar-wrap"><div class="mp-bar" id="mp-bar" style="width:100%"></div></div>
+  </div>
+
+  <div class="stat-section">
+    <div class="stat-label">STATS</div>
+    <div class="stat-row"><span class="stat-name">⚔ 攻撃力</span><span class="stat-val" id="stat-atk">10</span></div>
+    <div class="stat-bar-mini"><div class="stat-bar-mini-fill" id="atk-bar" style="width:10%"></div></div>
+    <div class="stat-row" style="margin-top:0.4rem"><span class="stat-name">🛡 防御力</span><span class="stat-val" id="stat-def">5</span></div>
+    <div class="stat-bar-mini"><div class="stat-bar-mini-fill" id="def-bar" style="width:5%"></div></div>
+    <div class="stat-row" style="margin-top:0.4rem"><span class="stat-name">⚡ 速度</span><span class="stat-val" id="stat-spd">8</span></div>
+    <div class="stat-bar-mini"><div class="stat-bar-mini-fill" id="spd-bar" style="width:8%"></div></div>
+  </div>
+
+  <div class="shadow-army">
+    <div class="shadow-army-label">👥 影の軍団 (<span id="shadow-count">0</span>/<span id="shadow-max">0</span>)</div>
+    <div class="shadow-slots" id="shadow-slots"></div>
+    <div style="font-size:0.65rem;color:var(--text-dim);margin-top:0.4rem" id="shadow-unlock-hint">『ネクロマンサー』への転職で解放</div>
+  </div>
+</div>
+
+<!-- CENTER PANEL -->
+<div class="center-panel">
+  <div class="center-tabs">
+    <button class="tab-btn active" onclick="switchTab('dungeon')">⚔ ダンジョン</button>
+    <button class="tab-btn" onclick="switchTab('equip')">🎒 装備</button>
+    <button class="tab-btn" onclick="switchTab('status')">📊 ステータス</button>
+    <button class="tab-btn" onclick="switchTab('skills')">✨ スキル</button>
+  </div>
+
+  <!-- Dungeon Tab -->
+  <div id="tab-dungeon" class="tab-content active">
+    <div class="window-panel">
+      <div class="window-header">
+        <div class="window-title"><span class="window-title-icon">🏛</span>ハンター協会 — ダンジョン斡旋</div>
+        <div style="font-size:0.7rem;color:var(--text-dim)">攻略可能ダンジョン</div>
+      </div>
+      <div class="window-body">
+        <div class="dungeon-grid" id="dungeon-grid"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Status Tab -->
+  <div id="tab-status" class="tab-content">
+    <div class="status-window">
+      <div class="status-title">◈ STATUS WINDOW ◈</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;font-size:0.85rem">
+        <div>
+          <div style="color:var(--text-dim);font-size:0.7rem;margin-bottom:0.2rem">名前</div>
+          <div style="color:#fff;font-weight:700">shadow</div>
         </div>
-        <div class="bar-row"><span class="bar-label">HP</span><div class="bar-container"><div id="p-hp-bar" class="bar-fill hp-bar" style="width:100%"></div></div></div>
-        <div class="bar-row"><span class="bar-label">MP</span><div class="bar-container"><div id="p-mp-bar" class="bar-fill mp-bar" style="width:0%"></div></div></div>
-        <div class="bar-row"><span class="bar-label" style="color:#333;">EXP</span><div class="bar-container" style="height:2px;"><div id="p-exp-bar" class="bar-fill exp-bar" style="width:0%"></div></div></div>
+        <div>
+          <div style="color:var(--text-dim);font-size:0.7rem;margin-bottom:0.2rem">職業</div>
+          <div id="status-class" style="color:var(--accent)">ハンター</div>
+        </div>
+        <div>
+          <div style="color:var(--text-dim);font-size:0.7rem;margin-bottom:0.2rem">ランク</div>
+          <div id="status-rank-display" style="font-family:'Orbitron',monospace;color:var(--e-rank)">E級</div>
+        </div>
+        <div>
+          <div style="color:var(--text-dim);font-size:0.7rem;margin-bottom:0.2rem">称号</div>
+          <div id="status-title-display" style="color:var(--shadow)">—</div>
+        </div>
+      </div>
+      <hr style="border:none;border-top:1px solid var(--border);margin:1rem 0">
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.75rem;text-align:center;font-size:0.85rem">
+        <div>
+          <div style="color:var(--text-dim);font-size:0.65rem">LEVEL</div>
+          <div style="font-family:'Orbitron',monospace;color:var(--gold);font-size:1.2rem" id="st-level">1</div>
+        </div>
+        <div>
+          <div style="color:var(--text-dim);font-size:0.65rem">HP</div>
+          <div style="font-family:'Orbitron',monospace;color:var(--red)" id="st-hp">100</div>
+        </div>
+        <div>
+          <div style="color:var(--text-dim);font-size:0.65rem">MP</div>
+          <div style="font-family:'Orbitron',monospace;color:var(--accent)" id="st-mp">50</div>
+        </div>
+        <div>
+          <div style="color:var(--text-dim);font-size:0.65rem">ATK</div>
+          <div style="font-family:'Orbitron',monospace;color:#fff" id="st-atk">10</div>
+        </div>
+        <div>
+          <div style="color:var(--text-dim);font-size:0.65rem">DEF</div>
+          <div style="font-family:'Orbitron',monospace;color:#fff" id="st-def">5</div>
+        </div>
+        <div>
+          <div style="color:var(--text-dim);font-size:0.65rem">SPD</div>
+          <div style="font-family:'Orbitron',monospace;color:#fff" id="st-spd">8</div>
+        </div>
+      </div>
+      <hr style="border:none;border-top:1px solid var(--border);margin:1rem 0">
+      <div>
+        <div style="color:var(--text-dim);font-size:0.65rem;margin-bottom:0.5rem">討伐数 / クリアダンジョン</div>
+        <div style="display:flex;gap:1rem;font-family:'Orbitron',monospace;font-size:0.9rem">
+          <span style="color:var(--red)">🗡 <span id="st-kills">0</span></span>
+          <span style="color:var(--accent)">🏛 <span id="st-dungeons">0</span></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Equipment Tab -->
+  <div id="tab-equip" class="tab-content">
+
+    <!-- Equipped slots -->
+    <div class="window-panel" style="margin-bottom:0.8rem">
+      <div class="window-header">
+        <div class="window-title"><span class="window-title-icon">🧑</span>装備中スロット</div>
+        <div id="equip-bonus-total" style="font-size:0.7rem;color:var(--green)"></div>
+      </div>
+      <div class="window-body" style="padding:0.75rem">
+        <div class="equip-grid" id="equip-slots-ui"></div>
+        <div class="equip-stat-summary" id="equip-stat-summary" style="display:none"></div>
+      </div>
+    </div>
+
+    <!-- Inventory tabs -->
+    <div class="window-panel">
+      <div class="window-header" style="flex-wrap:wrap;gap:0.4rem">
+        <div class="window-title"><span class="window-title-icon">🎒</span>インベントリ</div>
+        <div style="display:flex;align-items:center;gap:0.5rem">
+          <span id="inv-count" style="font-size:0.7rem;color:var(--text-dim)">0 / 30</span>
+          <button onclick="openShop()" style="font-size:0.7rem;padding:0.2rem 0.6rem;background:rgba(255,215,0,0.1);border:1px solid rgba(255,215,0,0.4);color:var(--gold);cursor:pointer;border-radius:3px;transition:all 0.2s" onmouseover="this.style.background='rgba(255,215,0,0.2)'" onmouseout="this.style.background='rgba(255,215,0,0.1)'">🏪 ショップ</button>
+        </div>
+      </div>
+      <!-- Category sub-tabs -->
+      <div style="display:flex;border-bottom:1px solid var(--border);background:rgba(0,0,0,0.2)">
+        <button class="inv-tab-btn active" id="invtab-all"     onclick="switchInvTab('all')"    >全て</button>
+        <button class="inv-tab-btn"        id="invtab-weapon"  onclick="switchInvTab('weapon')" >⚔ 武器</button>
+        <button class="inv-tab-btn"        id="invtab-armor"   onclick="switchInvTab('armor')"  >🛡 防具</button>
+        <button class="inv-tab-btn"        id="invtab-accessory" onclick="switchInvTab('accessory')">💎 アクセ</button>
+        <button class="inv-tab-btn"        id="invtab-ring"    onclick="switchInvTab('ring')"   >💍 指輪</button>
+        <button class="inv-tab-btn"        id="invtab-consume" onclick="switchInvTab('consume')">🧪 消耗品</button>
+      </div>
+      <div class="window-body" style="padding:0.6rem" id="inv-list">
+      </div>
+    </div>
+  </div>
+
+  <!-- Skills Tab -->
+  <div id="tab-skills" class="tab-content">
+    <div class="window-panel">
+      <div class="window-header">
+        <div class="window-title"><span class="window-title-icon">✨</span>習得スキル</div>
+      </div>
+      <div class="window-body" id="skills-list">
+        <div style="color:var(--text-dim);font-size:0.85rem;text-align:center;padding:2rem">スキルはダンジョン攻略で習得されます</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RIGHT PANEL -->
+<div class="right-panel">
+  <div class="right-section">
+    <div class="right-section-title">📋 デイリークエスト</div>
+    <div id="quest-list"></div>
+  </div>
+
+  <div class="right-section">
+    <div class="right-section-title">🎒 最近入手したアイテム</div>
+    <div id="inventory-list"></div>
+  </div>
+
+  <div class="right-section">
+    <div class="right-section-title">📜 活動履歴</div>
+    <div id="activity-log"></div>
+  </div>
+</div>
+```
+
+  </div>
+</div>
+
+<!-- COMBAT SCREEN -->
+
+<div id="combat-screen" class="screen">
+  <div class="combat-arena">
+    <div class="combat-header">
+      <div>
+        <div class="combat-dungeon-name" id="combat-dungeon-name">— ダンジョン —</div>
+        <div class="combat-floor" id="combat-floor">Floor 1</div>
+      </div>
+      <div id="combat-floor-indicator" style="font-family:'Orbitron',monospace;font-size:1rem;color:var(--accent)"></div>
     </div>
 
 ```
-<!-- TABS -->
-<div id="tab-container">
-    <div class="tab-buttons">
-        <button class="tab-btn active" onclick="game.switchTab(0)">戦闘</button>
-        <button class="tab-btn" onclick="game.switchTab(1)">装備</button>
-        <button class="tab-btn" onclick="game.switchTab(2)">能力</button>
-        <button class="tab-btn" onclick="game.switchTab(3)">収集</button>
+<div class="combat-field">
+  <div class="combatant" id="player-combatant">
+    <span class="combatant-sprite" id="player-sprite">🥷</span>
+    <div class="combatant-name" style="color:var(--accent)">shadow</div>
+    <div class="combat-hp-wrap">
+      <div class="combat-hp-bar player-combat-hp" id="combat-player-hp" style="width:100%"></div>
     </div>
+    <div class="combat-hp-text" id="combat-player-hp-text">HP: 100/100</div>
+  </div>
 
-    <!-- BATTLE TAB -->
-    <div id="tab-battle" class="tab-content active">
-        <div id="enemy-area">
-            <div id="enemy-name">---</div>
-            <div id="enemy-hp-num">HP: --- / ---</div>
-            <div class="bar-container enemy-bar"><div id="e-hp-bar" class="bar-fill e-hp-bar" style="width:100%"></div></div>
-            <div id="enemy-intent"></div>
-        </div>
-        <div id="battle-controls">
-            <button id="btn-main" class="action-btn" onclick="game.handleMainBtn()">こうげき</button>
-            <button id="btn-skill" class="action-btn btn-skill" onclick="game.battle('skill')" disabled>技</button>
-        </div>
-        <div id="bottom-bar">
-            <div class="toggle-wrap">
-                <label class="toggle"><input type="checkbox" id="auto-toggle" onchange="game.toggleAuto(this.checked)"><span class="slider"></span></label>
-                <span>自動戦闘</span>
-            </div>
-            <div id="battle-state-text"></div>
-        </div>
-        <div id="log"></div>
-    </div>
+  <div class="vs-text">VS</div>
 
-    <!-- EQUIP TAB -->
-    <div id="tab-equip" class="tab-content">
-        <div class="section-label">装備中</div>
-        <div id="equip-list"></div>
+  <div class="combatant" id="enemy-combatant">
+    <span class="combatant-sprite enemy-sprite" id="enemy-sprite">👾</span>
+    <div class="combatant-name" style="color:var(--red)" id="enemy-name">???</div>
+    <div class="combat-hp-wrap">
+      <div class="combat-hp-bar" id="combat-enemy-hp" style="width:100%"></div>
     </div>
-
-    <!-- STATUS TAB -->
-    <div id="tab-status" class="tab-content">
-        <div class="section-label">能力値</div>
-        <div class="stat-grid" id="stat-list"></div>
-        <div id="p-exp-full" style="color:#3a3a3a; font-size:0.62rem; text-align:right; margin-top:4px;"></div>
-    </div>
-
-    <!-- COLLECTION TAB -->
-    <div id="tab-coll" class="tab-content">
-        <div id="coll-summary"></div>
-        <div id="coll-header"><span>職業名</span><span>収集状況 (N/R/E/L)</span></div>
-        <div id="coll-list"></div>
-    </div>
+    <div class="combat-hp-text" id="combat-enemy-hp-text">HP: ???</div>
+  </div>
 </div>
 
-<!-- EQUIP MODAL -->
-<div id="equip-modal">
-    <div class="modal-box">
-        <div class="modal-title">── 新たな適合 ──</div>
-        <div class="modal-compare">
-            <div class="modal-item" id="modal-current">
-                <div class="modal-item-label">現在</div>
-                <div class="modal-item-name" id="modal-cur-name"></div>
-                <div class="modal-item-eff" id="modal-cur-eff"></div>
-            </div>
-            <div class="modal-item new" id="modal-new">
-                <div class="modal-item-label">入手</div>
-                <div class="modal-item-name" id="modal-new-name"></div>
-                <div class="modal-item-eff" id="modal-new-eff"></div>
-            </div>
-        </div>
-        <div class="modal-diff" id="modal-diff"></div>
-        <div class="modal-buttons">
-            <button class="modal-btn" onclick="game.resolveEquip(false)">捨てる</button>
-            <button class="modal-btn equip" onclick="game.resolveEquip(true)">装備する</button>
-        </div>
-    </div>
+<div class="combat-exp-row">
+  <span>Lv<strong id="combat-lv" style="color:var(--gold)">1</strong></span>
+  <div class="combat-exp-wrap">
+    <div class="combat-exp-fill" id="combat-exp-fill" style="width:0%"></div>
+  </div>
+  <span id="combat-exp-text" style="white-space:nowrap">0 / 100</span>
 </div>
 
-<div id="version-tag">DeaRip v2.0</div>
+<div class="combat-log" id="combat-log">
+  <div class="log-line">⚔ 戦闘開始...</div>
+</div>
+
+<div class="combat-actions" id="combat-actions">
+  <button class="btn-action btn-attack" onclick="playerAction('attack')">
+    <span class="action-icon">⚔</span>
+    <div class="action-name">通常攻撃</div>
+    <div class="action-desc">基本的な近接攻撃</div>
+  </button>
+  <button class="btn-action btn-skill" onclick="playerAction('skill')" id="btn-skill-action">
+    <span class="action-icon">✨</span>
+    <div class="action-name" id="skill-btn-name">スキル</div>
+    <div class="action-desc" id="skill-btn-desc">スキル未習得</div>
+    <div class="action-cost" id="skill-btn-cost"></div>
+  </button>
+  <button class="btn-action btn-shadow" onclick="playerAction('shadow')" id="btn-shadow-action">
+    <span class="action-icon">👥</span>
+    <div class="action-name">影の軍団</div>
+    <div class="action-desc" id="shadow-btn-desc">転職で解放</div>
+  </button>
+  <button class="btn-action btn-item" onclick="playerAction('item')">
+    <span class="action-icon">🧪</span>
+    <div class="action-name">アイテム使用</div>
+    <div class="action-desc">ポーションを使用</div>
+  </button>
+</div>
+
+<button class="btn-flee" onclick="fleeCombat()">← 逃げる（ペナルティあり）</button>
 ```
 
+  </div>
 </div>
+
+</div><!-- #app -->
 
 <script>
-class DeaRip {
-    constructor() {
-        this.VERSION = "2.0";
-        this.SAVE_KEY = "DEARIP_SAVE_V20";
-        this.MAX_MP = 100;
-        this.autoMode = false;
-        this.autoTimer = null;
-        this._pendingEquip = null;
-        this._equipResolve = null;
+// ===== GAME STATE =====
+let G = {
+  day: 1,
+  level: 1,
+  exp: 0,
+  expNeeded: 100,
+  hp: 100, maxHp: 100,
+  mp: 50, maxMp: 50,
+  atk: 10, def: 5, spd: 8,
+  gold: 0,
+  rank: 'E',
+  title: null,
+  jobClass: 'ハンター',
+  kills: 0,
+  dungeonsCleared: 0,
+  skills: [],
+  shadows: [],
+  maxShadows: 0,
+  items: [],
+  inventory: [],
+  activityLog: [],
+  currentDungeon: null,
+  currentEnemy: null,
+  currentFloor: 1,
+  totalFloors: 1,
+  dungeonEnemiesKilled: 0,
+  inCombat: false,
+  dailyQuests: [],
+  ranksUnlocked: ['E'],
+  // Equipment
+  equipped: { weapon: null, armor: null, accessory: null, ring: null },
+  fullInventory: [],
+  invMax: 30,
+  // Dungeon event state
+  eventAtkMult: 1.0,
+  eventGoldBonus: 1.0,
+  eventCurseAtk: false,
+  eventMissChance: 0,
+  eventBerserk: false,
+  eventActive: null,
+  dungeonBerserkTurn: 0,
+  // Shop / permanent bonuses
+  bonusAtk: 0, bonusDef: 0, bonusSpd: 0, bonusHp: 0,
+  revive: 0, expBoost: 0, goldBoost: 0,
+  // Skill selection
+  activeSkillIdx: 0,
+  // Auto-sell setting: null | 'common' | 'rare' | 'epic'
+  autoSellRarity: null,
+};
 
-        this.initData();
-        this.load();
-        if (!this.seed) this.generateArea(0);
-        this.spawn();
-    }
+const RANKS = ['E','D','C','B','A','S'];
 
-    initData() {
-        const names = ["村人","兵士","騎士","魔導師","暗殺者","狂戦士","守護者","司祭","狩人","格闘家","盗賊","薬師","剣豪","弓兵","盾使い","吟遊詩人","賢者","死霊使い","竜騎士","忍者","僧侶","修道士","侍","錬金術師","踊り子","海賊","呪術師","機工士","聖騎士","道化師","破戒僧","探検家","貴族","隠者","道士","銃士","狙撃手","槍兵","農夫","山賊","審問官","占星術師","呪われし者","異端者","大師","傭兵","狂人","王","職人","無職","虚空騎士","死神","舞姫","重装歩兵","調教師","魔王","予言者","料理人","狂信者","流浪人","傀儡師","探偵","石像鬼","博徒","発明家","裁定者","氷結使い","炎術師","森の番人","虚像","神主","暗黒騎士","英雄","観測者","混沌の器"];
-        this.jobMaster = names.map((n, i) => ({
-            id: i, n: n,
-            p: i > 50 ? "超越的な" : "熟練の",
-            s: { h: 1 + i * 0.025, a: 1 + i * 0.025 },
-            sk: n === "無職" ? "あがき" : "魂の一撃",
-            sm: 2.0 + i * 0.02,
-            mpCost: 30 + Math.floor(i * 0.3),
-            coll: {
-                n: { hp: 5 + i },
-                r: { atk: 2 + (i % 5) },
-                e: { def: 1 + (i % 3), spd: 1 + (i % 3) },
-                l: { atkP: 0.01, exp: 0.02 }
-            },
-            cb: { hpP: 0.05 },
-            // Drop rate info
-            rates: [0.12, 0.04, 0.01, 0.003]
-        }));
+// ===== ITEM TEMPLATES =====
+const ITEM_TEMPLATES = {
+  // Weapons
+  'ブロンズの剣':      { slot:'weapon', icon:'🗡', rarity:'common',    bonus:{ atk:3 } },
+  'アイアンソード':    { slot:'weapon', icon:'⚔', rarity:'common',    bonus:{ atk:5, spd:1 } },
+  'フロストソード':    { slot:'weapon', icon:'❄', rarity:'rare',      bonus:{ atk:15, spd:3 } },
+  '古代の魔剣':        { slot:'weapon', icon:'⚡', rarity:'epic',      bonus:{ atk:25, mp:20 } },
+  '悪魔の大剣':        { slot:'weapon', icon:'😈', rarity:'epic',      bonus:{ atk:35, hp:30 } },
+  '影の王の権杖':      { slot:'weapon', icon:'🔮', rarity:'legendary', bonus:{ atk:60, mp:100 } },
+  // Armors
+  'アイアンアーマー':  { slot:'armor',  icon:'🛡', rarity:'common',    bonus:{ def:8, hp:30 } },
+  '毒耐性の盾':        { slot:'armor',  icon:'🔰', rarity:'rare',      bonus:{ def:12, hp:50 } },
+  '王者のローブ':      { slot:'armor',  icon:'👘', rarity:'epic',      bonus:{ def:18, mp:40 } },
+  '神話の鎧':          { slot:'armor',  icon:'🏛', rarity:'legendary', bonus:{ def:50, hp:200 } },
+  // Accessories
+  '魔力の指輪':        { slot:'ring',   icon:'💍', rarity:'common',    bonus:{ mp:20, atk:2 } },
+  '魔法の石':          { slot:'accessory', icon:'🔮', rarity:'common', bonus:{ mp:15 } },
+  '魔晶石':            { slot:'accessory', icon:'💎', rarity:'rare',   bonus:{ atk:8, mp:20 } },
+  '魔力の大結晶':      { slot:'accessory', icon:'✨', rarity:'rare',   bonus:{ atk:12, mp:35 } },
+  '魔力結晶x5':        { slot:'accessory', icon:'⭐', rarity:'epic',   bonus:{ atk:20, mp:50 } },
+  '闇の王冠':          { slot:'ring',   icon:'👑', rarity:'epic',      bonus:{ atk:15, def:10, spd:5 } },
+  '創造の指輪':        { slot:'ring',   icon:'💫', rarity:'legendary', bonus:{ atk:30, def:20, spd:10 } },
+};
 
-        this.areaMaster = [
-            { id: 0, name: "嘆きの村", type: "村", tier: 1, jobs: [0, 1, 38, 39, 49] },
-            { id: 1, name: "静寂の墓所", type: "墓所", tier: 2, jobs: [7, 10, 11, 17, 33, 61] },
-            { id: 2, name: "狂乱の牢獄", type: "牢獄", tier: 3, jobs: [2, 13, 14, 25, 45, 53] },
-            { id: 3, name: "忘却の廃都", type: "廃都", tier: 4, jobs: [16, 18, 47, 51, 55, 72] }
-        ];
-        this.ranks = [
-            { n: "ただの", m: 1.0 },
-            { n: "生きたかった", m: 1.3 },
-            { n: "狂気に染まる", m: 1.8 },
-            { n: "支配された", m: 2.5 }
-        ];
+const SLOT_LABELS = { weapon:'武器', armor:'防具', accessory:'アクセサリ', ring:'リング' };
+const SLOT_ICONS  = { weapon:'⚔', armor:'🛡', accessory:'💎', ring:'💍' };
 
-        // Enemy action types
-        this.enemyActions = [
-            { id: "atk", label: "通常攻撃", dmgMul: 1.0 },
-            { id: "heavy", label: "強撃を構えている", dmgMul: 2.2, chance: 0.25 },
-            { id: "guard", label: "防御を固めている", dmgMul: 0, defMul: 3.0, chance: 0.2 }
-        ];
-    }
+// Consumables (not equippable)
+const CONSUMABLES = new Set(['HPポーション x2','HPポーション x3','MPポーション x2','エリクシル','大エリクシル']);
 
-    load() {
-        const saved = localStorage.getItem(this.SAVE_KEY);
-        if (saved) {
-            try {
-                const data = JSON.parse(saved);
-                this.p = data.p;
-                this.floor = data.floor;
-                this.seed = data.seed;
-                this.kills = data.kills || 0;
-            } catch(e) { this.freshStart(); }
-        } else {
-            this.freshStart();
-        }
-    }
-
-    freshStart() {
-        this.kills = 0;
-        this.resetStatus(true);
-        this.p.eq = {
-            head: { name: "ただの村人の頭", def: 2 },
-            body: { name: "ただの村人の胴", hp: 40 },
-            arm: { name: "ただの村人の腕", atk: 4, skillId: 49 },
-            leg: { name: "ただの村人の脚", spd: 3 }
-        };
-        this.p.coll = {};
-        this.floor = 1;
-    }
-
-    resetStatus(full = false) {
-        if (!this.p || full) this.p = {};
-        this.p.lv = 1; this.p.exp = 0; this.p.next = 100;
-        this.p.base = { hp: 120, atk: 18, def: 5, spd: 10 };
-        this.p.mp = 0;
-        // preserve eq and coll if not full reset
-        if (!this.p.eq) this.p.eq = {};
-        if (!this.p.coll) this.p.coll = {};
-        this.p.hp = this.calcStats().hp;
-    }
-
-    save() {
-        localStorage.setItem(this.SAVE_KEY, JSON.stringify({
-            p: this.p, floor: this.floor, seed: this.seed, kills: this.kills
-        }));
-    }
-
-    generateArea(areaIdx) {
-        const area = this.areaMaster[areaIdx % this.areaMaster.length] || this.areaMaster[0];
-        this.seed = { ...area, diff: 1 + area.tier * 0.4 };
-    }
-
-    calcStats() {
-        let s = { ...this.p.base };
-        let b = { hp: 0, atk: 0, def: 0, spd: 0, hpP: 0, atkP: 0, defP: 0, spdP: 0, exp: 1, crit: 0.05, critD: 1.5, eva: 0.05, drain: 0, regen: 0 };
-
-        for (let jn in this.p.coll) {
-            const m = this.jobMaster.find(j => j.n === jn);
-            if (!m) continue;
-            const owned = this.p.coll[jn];
-            const rr = ["n", "r", "e", "l"];
-            owned.forEach((has, i) => { if (has) for (let k in m.coll[rr[i]]) b[k] = (b[k] || 0) + m.coll[rr[i]][k]; });
-            if (owned.every(v => v)) for (let k in m.cb) b[k] = (b[k] || 0) + m.cb[k];
-        }
-
-        const eq = this.p.eq || {};
-        for (let k in eq) {
-            const it = eq[k];
-            if (it.hp) s.hp += it.hp; if (it.atk) s.atk += it.atk;
-            if (it.def) s.def += it.def; if (it.spd) s.spd += it.spd;
-        }
-
-        return {
-            hp: Math.floor((s.hp + b.hp) * (1 + b.hpP)),
-            atk: Math.floor((s.atk + (b.atk||0)) * (1 + (b.atkP||0))),
-            def: Math.floor((s.def + (b.def||0)) * (1 + (b.defP||0))),
-            spd: Math.floor((s.spd + (b.spd||0)) * (1 + (b.spdP||0))),
-            exp: b.exp, crit: b.crit, critD: b.critD, eva: b.eva,
-            drain: b.drain || 0, regen: b.regen || 0
-        };
-    }
-
-    get stats() { return this.calcStats(); }
-
-    spawn() {
-        const isBoss = this.floor > 1 && this.floor % 30 === 0;
-        const availableJobs = this.seed.jobs;
-        const job = this.jobMaster[availableJobs[Math.floor(Math.random() * availableJobs.length)]];
-        const rankIdx = Math.floor(Math.random() * Math.min(4, this.seed.tier));
-        const scale = (1 + this.floor * 0.12) * this.seed.diff;
-
-        this.enemy = {
-            name: isBoss ? `${this.seed.name}の主` : `${this.ranks[rankIdx].n}${job.n}`,
-            hp: Math.floor((isBoss ? 1200 : 70) * scale * job.s.h),
-            atk: Math.floor((isBoss ? 60 : 15) * scale * job.s.a),
-            def: Math.floor(12 * scale),
-            isBoss, jobRef: job, rankIdx,
-            nextAction: this.rollEnemyAction()
-        };
-        this.enemy.maxHp = this.enemy.hp;
-        this.state = "battle";
-        this.updateUI();
-        this._scheduleAuto();
-    }
-
-    rollEnemyAction() {
-        const r = Math.random();
-        if (r < 0.2) return this.enemyActions[2]; // guard
-        if (r < 0.45) return this.enemyActions[1]; // heavy
-        return this.enemyActions[0]; // normal
-    }
-
-    levelUp() {
-        this.p.lv++;
-        this.p.exp -= this.p.next;
-        this.p.next = Math.floor(this.p.next * 1.6);
-        const incHp = 18 + Math.floor(Math.random() * 12);
-        const incAtk = 4 + Math.floor(Math.random() * 4);
-        this.p.base.hp += incHp;
-        this.p.base.atk += incAtk;
-        this.p.base.def += 1;
-        this.p.base.spd += 1;
-        this.p.hp = this.stats.hp;
-        this.log(`<span style="color:#fff;">── 魂の格が上昇 (HP+${incHp} ATK+${incAtk}) ──</span>`);
-    }
-
-    async battle(mode) {
-        if (this.busy || this.state !== "battle") return;
-
-        // MP check for skill
-        if (mode === 'skill') {
-            const skJob = this.jobMaster.find(j => j.id === this.p.eq?.arm?.skillId);
-            if (!skJob) return;
-            const cost = skJob.mpCost;
-            if (this.p.mp < cost) {
-                this.log(`MPが足りない (必要: ${cost})`);
-                return;
-            }
-            this.p.mp -= cost;
-        }
-
-        this.busy = true;
-        const s = this.stats;
-        let dmg = s.atk;
-        let isCrit = Math.random() < s.crit;
-        let logMsg = "";
-
-        if (mode === 'skill') {
-            const sk = this.jobMaster.find(j => j.id === this.p.eq.arm.skillId);
-            dmg *= sk.sm;
-            logMsg = `<span style="color:var(--skill);">『${sk.sk}』</span> `;
-        }
-        if (isCrit) dmg *= s.critD;
-
-        // Enemy guard reduces damage
-        const enemyDefMul = this.enemy.nextAction.id === "guard" ? this.enemy.nextAction.defMul : 1;
-        let finalDmg = Math.max(1, Math.floor(dmg * (600 / (this.enemy.def * enemyDefMul + 600))));
-
-        this.enemy.hp -= finalDmg;
-        if (this.enemy.hp < 0) this.enemy.hp = 0;
-
-        logMsg += `${this.enemy.name} に ${finalDmg}${isCrit ? " <span style='color:#fa0;'>会心</span>" : ""}ダメージ`;
-        if (enemyDefMul > 1) logMsg += ` <span style='color:#888;'>(防御中)</span>`;
-        this.log(logMsg);
-        this.showDamageFloat(finalDmg, isCrit, true);
-
-        // Drain
-        if (s.drain > 0) {
-            const heal = Math.floor(finalDmg * s.drain / 100);
-            this.p.hp = Math.min(s.hp, this.p.hp + heal);
-        }
-
-        if (this.enemy.hp <= 0) {
-            this.state = "win";
-            this.kills = (this.kills || 0) + 1;
-            const exp = Math.floor((this.enemy.isBoss ? 3000 : 50 + this.floor * 8) * s.exp);
-            this.p.exp += exp;
-            // MP gain on kill
-            this.p.mp = Math.min(this.MAX_MP, this.p.mp + 15 + Math.floor(this.floor * 0.5));
-            this.log(`${exp} EXP獲得 / MP回収`);
-            this.tryDrop();
-
-            const dropChance = this.enemy.isBoss ? 1.0 : 0.08 + this.floor * 0.002;
-            if (Math.random() < dropChance) await this.dropEquipWithModal();
-
-            while (this.p.exp >= this.p.next) this.levelUp();
-            if (this.enemy.isBoss) this.nextArea();
-            this.updateUI();
-            if (this.autoMode) {
-                this.busy = false;
-                setTimeout(() => this.handleMainBtn(), 500);
-            } else {
-                this.busy = false;
-            }
-        } else {
-            await new Promise(r => setTimeout(r, 200));
-            this.enemy.nextAction = this.rollEnemyAction();
-
-            // Enemy attack
-            const action = this.enemy.nextAction;
-            if (action.id !== "guard") {
-                if (Math.random() > s.eva) {
-                    const eDmg = Math.max(1, Math.floor(this.enemy.atk * action.dmgMul * (600 / (s.def + 600))));
-                    this.p.hp -= eDmg;
-                    if (this.p.hp < 0) this.p.hp = 0;
-                    const isHeavy = action.id === "heavy";
-                    this.log(`<span style="color:${isHeavy ? '#ff6666' : 'var(--danger)'};">${this.enemy.name}から${eDmg}${isHeavy ? " (強撃!)" : ""}の痛打</span>`);
-                    this.showDamageFloat(eDmg, isHeavy, false);
-                    if (this.p.hp <= 0) { this.gameOver(); this.busy = false; return; }
-                } else {
-                    this.log(`回避`);
-                }
-            } else {
-                this.log(`<span style="color:#888;">${this.enemy.name}は防御した</span>`);
-            }
-
-            // Regen
-            if (s.regen > 0) {
-                this.p.hp = Math.min(s.hp, this.p.hp + s.regen);
-            }
-
-            // MP passive gain
-            this.p.mp = Math.min(this.MAX_MP, this.p.mp + 8);
-
-            this.updateUI();
-            this.busy = false;
-            this.save();
-            this._scheduleAuto();
-        }
-        this.save();
-    }
-
-    showDamageFloat(dmg, special, isPlayer) {
-        const el = document.createElement('div');
-        el.className = 'dmg-float';
-        el.textContent = (isPlayer ? '-' : '-') + dmg;
-        el.style.color = isPlayer ? (special ? '#fa0' : '#ccc') : (special ? '#f66' : '#f44');
-        const area = document.getElementById('enemy-area');
-        const rect = area.getBoundingClientRect();
-        const containerRect = document.getElementById('game-container').getBoundingClientRect();
-        el.style.left = (rect.left - containerRect.left + 30 + Math.random() * 60) + 'px';
-        el.style.top = (rect.top - containerRect.top + 20 + Math.random() * 20) + 'px';
-        document.getElementById('game-container').appendChild(el);
-        setTimeout(() => el.remove(), 900);
-    }
-
-    tryDrop() {
-        const jn = this.enemy.jobRef.n;
-        if (!this.p.coll[jn]) this.p.coll[jn] = [false, false, false, false];
-        const rates = [0.15, 0.05, 0.015, 0.004]; // slightly raised
-        for (let i = 0; i <= this.enemy.rankIdx; i++) {
-            if (!this.p.coll[jn][i] && Math.random() < rates[i]) {
-                this.p.coll[jn][i] = true;
-                const rn = ["N", "R", "E", "L"][i];
-                this.log(`<span style="color:#fa0;">魂収集：${jn} [${rn}]</span>`);
-                break;
-            }
-        }
-    }
-
-    buildEquipItem(slot, job) {
-        const slotSuffix = { head: "の頭", body: "の胴", arm: "の腕", leg: "の脚" };
-        const item = { name: `${job.p}${job.n}${slotSuffix[slot]}` };
-        const baseVal = 5 + job.id * 0.5;
-        if (slot === 'head') item.def = Math.floor(baseVal * job.s.h);
-        if (slot === 'body') item.hp = Math.floor(baseVal * 10 * job.s.h);
-        if (slot === 'arm') { item.atk = Math.floor(baseVal * 2 * job.s.a); item.skillId = job.id; }
-        if (slot === 'leg') item.spd = Math.floor(baseVal * job.s.a);
-        return item;
-    }
-
-    async dropEquipWithModal() {
-        const slots = ["head", "body", "arm", "leg"];
-        const slot = slots[Math.floor(Math.random() * 4)];
-        const newItem = this.buildEquipItem(slot, this.enemy.jobRef);
-        const currentItem = this.p.eq[slot];
-
-        // Show modal
-        document.getElementById('modal-cur-name').textContent = currentItem.name;
-        document.getElementById('modal-cur-eff').innerHTML = this.getEqStr(currentItem).replace(/ /g, '<br>');
-        document.getElementById('modal-new-name').textContent = newItem.name;
-        document.getElementById('modal-new-eff').innerHTML = this.getEqStr(newItem).replace(/ /g, '<br>');
-
-        // Compute diff
-        const keys = ['hp', 'atk', 'def', 'spd'];
-        let diffHtml = '';
-        keys.forEach(k => {
-            const cur = currentItem[k] || 0;
-            const nw = newItem[k] || 0;
-            const diff = nw - cur;
-            if (diff !== 0) {
-                const cls = diff > 0 ? 'pos' : 'neg';
-                const sign = diff > 0 ? '+' : '';
-                diffHtml += `<span class="${cls}">${k.toUpperCase()} ${sign}${diff}</span>  `;
-            }
-        });
-        if (newItem.skillId !== undefined) {
-            const sk = this.jobMaster.find(j => j.id === newItem.skillId);
-            diffHtml += `<span style="color:#6aacff;">技: ${sk?.sk}</span>`;
-        }
-        document.getElementById('modal-diff').innerHTML = diffHtml || '<span style="color:#444;">変化なし</span>';
-
-        this._pendingEquip = { slot, item: newItem };
-        document.getElementById('equip-modal').classList.add('show');
-
-        return new Promise(resolve => { this._equipResolve = resolve; });
-    }
-
-    resolveEquip(doEquip) {
-        document.getElementById('equip-modal').classList.remove('show');
-        if (doEquip && this._pendingEquip) {
-            this.p.eq[this._pendingEquip.slot] = this._pendingEquip.item;
-            this.log(`<span style="color:#8f8;">装備した: ${this._pendingEquip.item.name}</span>`);
-        } else {
-            this.log(`装備を捨てた`);
-        }
-        this._pendingEquip = null;
-        if (this._equipResolve) { this._equipResolve(); this._equipResolve = null; }
-        this.updateUI();
-    }
-
-    nextArea() {
-        const curIdx = this.areaMaster.findIndex(a => a.id === this.seed.id);
-        const nextIdx = (curIdx + 1) % this.areaMaster.length;
-        this.generateArea(nextIdx);
-        this.floor++;
-        const savedEq = this.p.eq;
-        const savedColl = this.p.coll;
-        this.resetStatus(false);
-        this.p.eq = savedEq;
-        this.p.coll = savedColl;
-        this.p.hp = this.stats.hp;
-        this.log(`<span style="color:#fa0; font-weight:bold;">── 領域踏破。魂は浄化され、「${this.seed.name}」へ ──</span>`);
-    }
-
-    gameOver() {
-        this.log(`<span style="color:#555;">── 力尽きた ──</span>`);
-        // HP/MPのみ回復。レベル・ステータス・装備はそのまま
-        this.p.hp = this.stats.hp;
-        this.p.mp = 0;
-        this.spawn();
-    }
-
-    handleMainBtn() {
-        if (this.state === "battle") this.battle('atk');
-        else { this.floor++; this.spawn(); }
-    }
-
-    toggleAuto(on) {
-        this.autoMode = on;
-        if (on && !this.busy) {
-            if (this.state === "win") { this.floor++; this.spawn(); }
-            else this._scheduleAuto();
-        } else {
-            if (this.autoTimer) { clearTimeout(this.autoTimer); this.autoTimer = null; }
-        }
-        document.getElementById('battle-state-text').textContent = on ? "自動" : "";
-    }
-
-    _scheduleAuto() {
-        if (!this.autoMode) return;
-        if (this.autoTimer) clearTimeout(this.autoTimer);
-        const delay = 600 + Math.max(0, 200 - this.stats.spd * 5);
-        this.autoTimer = setTimeout(() => {
-            if (!this.busy) this.battle('atk');
-        }, delay);
-    }
-
-    switchTab(i) {
-        document.querySelectorAll('.tab-btn').forEach((b, idx) => b.classList.toggle('active', i === idx));
-        document.querySelectorAll('.tab-content').forEach((c, idx) => c.classList.toggle('active', i === idx));
-    }
-
-    log(m) {
-        const l = document.getElementById('log');
-        l.innerHTML = `<div class="log-entry">${m}</div>` + l.innerHTML;
-        while (l.children.length > 60) l.removeChild(l.lastChild);
-    }
-
-    updateUI() {
-        const s = this.stats;
-        const areaIdx = this.areaMaster.findIndex(a => a.id === this.seed.id);
-
-        document.getElementById('area-title').textContent = `${this.seed.name}  ${this.floor}層  Tier${this.seed.tier}`;
-        document.getElementById('p-lv').textContent = `Lv.${this.p.lv}`;
-        document.getElementById('p-hp-text').textContent = `HP ${this.p.hp} / ${s.hp}`;
-        document.getElementById('p-kill-count').textContent = `討滅: ${this.kills || 0}`;
-        document.getElementById('p-hp-bar').style.width = (Math.max(0, this.p.hp) / s.hp * 100) + '%';
-        document.getElementById('p-mp-bar').style.width = (this.p.mp / this.MAX_MP * 100) + '%';
-        document.getElementById('p-exp-bar').style.width = (this.p.exp / this.p.next * 100) + '%';
-
-        document.getElementById('enemy-name').textContent = this.enemy.name;
-        document.getElementById('enemy-hp-num').textContent = `HP: ${this.enemy.hp} / ${this.enemy.maxHp}`;
-        document.getElementById('e-hp-bar').style.width = (Math.max(0, this.enemy.hp) / this.enemy.maxHp * 100) + '%';
-
-        // Enemy intent
-        const intent = this.enemy.nextAction;
-        const intentEl = document.getElementById('enemy-intent');
-        if (this.state === "battle") {
-            intentEl.textContent = intent.id !== "atk" ? `▲ ${intent.label}` : "";
-            intentEl.style.color = intent.id === "heavy" ? "#884444" : "#445566";
-        } else {
-            intentEl.textContent = "";
-        }
-
-        document.getElementById('btn-main').textContent = this.state === "battle" ? "こうげき" : "深層へ";
-
-        const sk = this.jobMaster.find(j => j.id === this.p.eq?.arm?.skillId);
-        const mpCost = sk ? sk.mpCost : 0;
-        document.getElementById('btn-skill').textContent = sk ? `${sk.sk} (${mpCost}MP)` : "技なし";
-        document.getElementById('btn-skill').disabled = !sk || this.state !== "battle" || this.p.mp < mpCost;
-
-        // Stats
-        document.getElementById('stat-list').innerHTML = [
-            ['最大HP', s.hp], ['攻撃力', s.atk], ['防御力', s.def], ['俊敏性', s.spd],
-            ['会心率', Math.floor(s.crit * 100) + '%'], ['会心倍率', s.critD.toFixed(1) + 'x'],
-            ['回避率', Math.floor(s.eva * 100) + '%'], ['経験値倍率', s.exp.toFixed(2) + 'x'],
-            ['吸収', s.drain + '%'], ['再生', s.regen]
-        ].map(([l, v]) => `<div class="stat-item"><span class="stat-label">${l}</span><span class="stat-val">${v}</span></div>`).join('');
-        document.getElementById('p-exp-full').textContent = `EXP ${this.p.exp} / ${this.p.next}  MP ${this.p.mp}/${this.MAX_MP}`;
-
-        // Equip
-        document.getElementById('equip-list').innerHTML = ["head", "body", "arm", "leg"].map(k => {
-            const it = this.p.eq[k] || {};
-            return `<div class="equip-slot">
-                <div class="slot-header"><span>${{ head: '頭部', body: '胴体', arm: '腕部', leg: '脚部' }[k]}</span></div>
-                <div class="equip-name">${it.name || '---'}</div>
-                <div class="equip-eff">${this.getEqStr(it)}</div>
-            </div>`;
-        }).join('');
-
-        // Collection
-        const total = this.jobMaster.length * 4;
-        let owned = 0;
-        this.jobMaster.forEach(j => { const c = this.p.coll[j.n] || []; c.forEach(v => { if (v) owned++; }); });
-        document.getElementById('coll-summary').textContent = `収集: ${owned} / ${total}`;
-
-        document.getElementById('coll-list').innerHTML = this.jobMaster.map(j => {
-            const ow = this.p.coll[j.n] || [false, false, false, false];
-            const hasAny = ow.some(v => v);
-            const isComp = ow.every(v => v);
-            const rates = j.rates || [0.15, 0.05, 0.015, 0.004];
-            return `<div class="coll-row">
-                <div class="coll-name ${isComp ? 'comp' : hasAny ? 'has-any' : ''}" title="N:${(rates[0]*100).toFixed(0)}% R:${(rates[1]*100).toFixed(0)}% E:${(rates[2]*100).toFixed(1)}% L:${(rates[3]*100).toFixed(1)}%">${j.n}</div>
-                <div class="coll-chips">
-                    ${["n","r","e","l"].map((r,i) => `<div class="chip ${r} ${ow[i]?'active':''}">${r.toUpperCase()}</div>`).join('')}
-                </div>
-            </div>`;
-        }).join('');
-    }
-
-    getEqStr(it) {
-        if (!it) return '';
-        const parts = [];
-        if (it.hp) parts.push(`HP+${it.hp}`);
-        if (it.atk) parts.push(`ATK+${it.atk}`);
-        if (it.def) parts.push(`DEF+${it.def}`);
-        if (it.spd) parts.push(`SPD+${it.spd}`);
-        if (it.skillId !== undefined) {
-            const sk = this.jobMaster.find(j => j.id === it.skillId);
-            if (sk) parts.push(`[${sk.sk}]`);
-        }
-        return parts.join('  ') || '---';
-    }
+function itemIsEquippable(name) {
+  return !!ITEM_TEMPLATES[name];
 }
 
-const game = new DeaRip();
+function getItemTemplate(name) {
+  return ITEM_TEMPLATES[name] || { slot:'accessory', icon:'📦', rarity:'common', bonus:{} };
+}
+
+const RANK_THRESHOLDS = { E: 0, D: 5, C: 15, B: 30, A: 50, S: 80 };
+
+// ===== LOOT TABLES =====
+const LOOT_TABLES = {
+  E: {
+    weapons:     ['ブロンズの剣','アイアンソード','錆びたナイフ','見習いの杖'],
+    armors:      ['布の鎧','皮の盾','見習いのローブ'],
+    accessories: ['魔力の指輪','魔法の石','お守り'],
+    consumables: ['HPポーション x2','HPポーション x3','MPポーション x2'],
+  },
+  D: {
+    weapons:     ['アイアンソード','銀の短剣','戦士の大剣','魔導師の杖'],
+    armors:      ['アイアンアーマー','毒耐性の盾','騎士の兜'],
+    accessories: ['魔法の石','魔晶石','戦士のお守り'],
+    consumables: ['HPポーション x3','MPポーション x2','エリクシル'],
+  },
+  C: {
+    weapons:     ['フロストソード','炎の剣','雷鳴の弓','影の短剣'],
+    armors:      ['毒耐性の盾','ミスリルアーマー','古代の盾'],
+    accessories: ['魔晶石','魔力の大結晶','古代の護符'],
+    consumables: ['エリクシル','大エリクシル','MPポーション x2'],
+  },
+  B: {
+    weapons:     ['古代の魔剣','悪魔の大剣','混沌の刃','暗黒の鎌'],
+    armors:      ['王者のローブ','悪魔の鎧','闇の外套'],
+    accessories: ['魔力の大結晶','魔力結晶x5','悪魔の指輪'],
+    consumables: ['大エリクシル','神聖な薬'],
+  },
+  A: {
+    weapons:     ['悪魔の大剣','影の王の権杖','覇王の剣','滅亡の刃'],
+    armors:      ['神話の鎧','龍鱗の鎧','天使の外套'],
+    accessories: ['魔力結晶x5','闇の王冠','創造の指輪'],
+    consumables: ['大エリクシル','神聖な薬'],
+  },
+  S: {
+    weapons:     ['影の王の権杖','神話の聖剣','世界樹の弓','虚無の刃'],
+    armors:      ['神話の鎧','創造の鎧','世界の心臓'],
+    accessories: ['創造の指輪','闇の王冠','運命の石'],
+    consumables: ['大エリクシル'],
+  },
+};
+
+// Add missing items to ITEM_TEMPLATES
+Object.assign(ITEM_TEMPLATES, {
+  '錆びたナイフ':      { slot:'weapon', icon:'🔪', rarity:'common',    bonus:{ atk:1 } },
+  '見習いの杖':        { slot:'weapon', icon:'🪄', rarity:'common',    bonus:{ atk:2, mp:10 } },
+  '布の鎧':            { slot:'armor',  icon:'👕', rarity:'common',    bonus:{ def:2, hp:10 } },
+  '皮の盾':            { slot:'armor',  icon:'🔰', rarity:'common',    bonus:{ def:4, hp:15 } },
+  '見習いのローブ':    { slot:'armor',  icon:'🧥', rarity:'common',    bonus:{ def:3, mp:8 } },
+  'お守り':            { slot:'accessory', icon:'🧿', rarity:'common', bonus:{ hp:15 } },
+  '銀の短剣':          { slot:'weapon', icon:'🗡', rarity:'common',    bonus:{ atk:7, spd:2 } },
+  '戦士の大剣':        { slot:'weapon', icon:'⚔', rarity:'common',    bonus:{ atk:9, def:2 } },
+  '魔導師の杖':        { slot:'weapon', icon:'🔮', rarity:'common',    bonus:{ atk:6, mp:30 } },
+  '騎士の兜':          { slot:'armor',  icon:'⛑', rarity:'common',    bonus:{ def:6, hp:25 } },
+  '戦士のお守り':      { slot:'accessory', icon:'🧿', rarity:'common', bonus:{ atk:3, hp:20 } },
+  '炎の剣':            { slot:'weapon', icon:'🔥', rarity:'rare',      bonus:{ atk:18, spd:2 } },
+  '雷鳴の弓':          { slot:'weapon', icon:'⚡', rarity:'rare',      bonus:{ atk:16, spd:6 } },
+  '影の短剣':          { slot:'weapon', icon:'🌑', rarity:'rare',      bonus:{ atk:14, spd:8 } },
+  'ミスリルアーマー':  { slot:'armor',  icon:'🛡', rarity:'rare',      bonus:{ def:16, hp:60 } },
+  '古代の盾':          { slot:'armor',  icon:'🔰', rarity:'rare',      bonus:{ def:20, hp:40 } },
+  '古代の護符':        { slot:'accessory', icon:'📿', rarity:'rare',   bonus:{ atk:10, def:8 } },
+  '混沌の刃':          { slot:'weapon', icon:'💀', rarity:'epic',      bonus:{ atk:30, spd:5 } },
+  '暗黒の鎌':          { slot:'weapon', icon:'⚰', rarity:'epic',      bonus:{ atk:28, mp:30 } },
+  '悪魔の鎧':          { slot:'armor',  icon:'🦾', rarity:'epic',      bonus:{ def:22, hp:80 } },
+  '闇の外套':          { slot:'armor',  icon:'🌑', rarity:'epic',      bonus:{ def:18, mp:60 } },
+  '悪魔の指輪':        { slot:'ring',   icon:'💍', rarity:'epic',      bonus:{ atk:18, def:8, mp:25 } },
+  '神聖な薬':          { slot:null, icon:'💊', rarity:'rare',          bonus:{} },
+  '覇王の剣':          { slot:'weapon', icon:'👑', rarity:'legendary', bonus:{ atk:50, def:15 } },
+  '滅亡の刃':          { slot:'weapon', icon:'☠', rarity:'legendary', bonus:{ atk:55, spd:10 } },
+  '龍鱗の鎧':          { slot:'armor',  icon:'🐉', rarity:'legendary', bonus:{ def:45, hp:150 } },
+  '天使の外套':        { slot:'armor',  icon:'👼', rarity:'legendary', bonus:{ def:40, mp:80 } },
+  '運命の石':          { slot:'accessory', icon:'💫', rarity:'legendary', bonus:{ atk:35, def:25, spd:15 } },
+  '神聖な薬':          { slot:null, icon:'💊', rarity:'rare',          bonus:{} },
+  '神話の聖剣':        { slot:'weapon', icon:'✨', rarity:'legendary', bonus:{ atk:70, hp:50 } },
+  '世界樹の弓':        { slot:'weapon', icon:'🌳', rarity:'legendary', bonus:{ atk:65, spd:20 } },
+  '虚無の刃':          { slot:'weapon', icon:'🌀', rarity:'legendary', bonus:{ atk:80, mp:50 } },
+  '創造の鎧':          { slot:'armor',  icon:'🏛', rarity:'legendary', bonus:{ def:55, hp:200, mp:50 } },
+  '世界の心臓':        { slot:'armor',  icon:'❤', rarity:'legendary', bonus:{ def:50, hp:300 } },
+});
+
+function rollLoot(rank, isBoss=false) {
+  const table = LOOT_TABLES[rank] || LOOT_TABLES['E'];
+  const results = [];
+  const rand = () => Math.random();
+
+  // Consumable: always 1
+  results.push(table.consumables[Math.floor(rand() * table.consumables.length)]);
+
+  // Weapon: boss=80%, normal=30%
+  if (rand() < (isBoss ? 0.85 : 0.35)) {
+    results.push(table.weapons[Math.floor(rand() * table.weapons.length)]);
+  }
+
+  // Armor: boss=70%, normal=20%
+  if (rand() < (isBoss ? 0.75 : 0.22)) {
+    results.push(table.armors[Math.floor(rand() * table.armors.length)]);
+  }
+
+  // Accessory: boss=60%, normal=15%
+  if (rand() < (isBoss ? 0.65 : 0.15)) {
+    results.push(table.accessories[Math.floor(rand() * table.accessories.length)]);
+  }
+
+  // Rare bonus drop: boss=25%, normal=5%
+  if (rand() < (isBoss ? 0.28 : 0.05)) {
+    const nextRanks = {E:'D',D:'C',C:'B',B:'A',A:'S',S:'S'};
+    const higherTable = LOOT_TABLES[nextRanks[rank]] || table;
+    const pool = [...higherTable.weapons, ...higherTable.armors];
+    results.push('✨ ' + pool[Math.floor(rand() * pool.length)]);
+  }
+
+  return results;
+}
+
+// ===== RARE MONSTERS =====
+const RARE_MONSTER_PREFIXES = ['【レア】','【エリート】','【狂化】','【古代】','【呪われし】'];
+const RARE_BOSS_PREFIXES = ['【伝説】','【神話】','【暴走】','【真・】','【覚醒】'];
+
+function makeRareMonster(base) {
+  const prefix = RARE_MONSTER_PREFIXES[Math.floor(Math.random() * RARE_MONSTER_PREFIXES.length)];
+  const mult = 1.8 + Math.random() * 0.7; // 1.8x～2.5x
+  return {
+    ...base,
+    name: prefix + base.name,
+    icon: '⭐',
+    hp:   Math.floor(base.hp  * mult),
+    maxHp:Math.floor(base.hp  * mult),
+    atk:  Math.floor(base.atk * (mult * 0.8)),
+    def:  Math.floor(base.def * (mult * 0.7)),
+    exp:  Math.floor(base.exp * 2.5),
+    gold: Math.floor(base.gold * 2.5),
+    isRare: true,
+    dropBonus: true,
+  };
+}
+
+function makeRareBoss(base) {
+  const prefix = RARE_BOSS_PREFIXES[Math.floor(Math.random() * RARE_BOSS_PREFIXES.length)];
+  return {
+    ...base,
+    name: prefix + base.name,
+    icon: '💥',
+    hp:   Math.floor(base.hp  * 2.0),
+    maxHp:Math.floor(base.hp  * 2.0),
+    atk:  Math.floor(base.atk * 1.5),
+    def:  Math.floor(base.def * 1.4),
+    exp:  Math.floor(base.exp * 3.0),
+    gold: Math.floor(base.gold * 3.0),
+    isRareBoss: true,
+    dropBonus: true,
+  };
+}
+
+// ===== DUNGEON EVENTS =====
+const DUNGEON_EVENTS = [
+  {
+    id: 'ambush',
+    chance: 0.18,
+    label: '⚠ 奇襲！',
+    desc: '複数の敵が一斉に現れた！敵の攻撃力が1.4倍になる！',
+    apply: (state) => { state.eventAtkMult = 1.4; },
+    color: 'var(--red)',
+  },
+  {
+    id: 'enrage',
+    chance: 0.15,
+    label: '🔥 激昂！',
+    desc: '敵が激昂した！HPが2倍・攻撃が1.6倍になる！',
+    apply: (state, enemy) => {
+      enemy.hp = Math.floor(enemy.hp * 2);
+      enemy.maxHp = Math.floor(enemy.maxHp * 2);
+      enemy.atk = Math.floor(enemy.atk * 1.6);
+      state.eventActive = 'enrage';
+    },
+    color: 'var(--red)',
+  },
+  {
+    id: 'curse',
+    chance: 0.14,
+    label: '💀 呪いの間！',
+    desc: 'プレイヤーのATKが半減した！この部屋を抜けるまで解けない！',
+    apply: (state) => { state.eventCurseAtk = true; },
+    color: 'var(--accent2)',
+  },
+  {
+    id: 'treasure',
+    chance: 0.20,
+    label: '💰 宝箱発見！',
+    desc: '隠し宝箱を発見！敵を倒すとボーナスゴールド獲得！',
+    apply: (state) => { state.eventGoldBonus = 2.0; },
+    color: 'var(--gold)',
+  },
+  {
+    id: 'sanctuary',
+    chance: 0.13,
+    label: '✨ 聖域！',
+    desc: '聖域の気が流れている。HP・MPが20%回復した！',
+    apply: (state) => {
+      state.hp = Math.min(state.maxHp, Math.floor(state.hp * 1.2));
+      state.mp = Math.min(state.maxMp, Math.floor(state.mp * 1.2));
+    },
+    color: 'var(--green)',
+  },
+  {
+    id: 'darkness',
+    chance: 0.12,
+    label: '🌑 暗黒の間！',
+    desc: '暗闇が視界を遮る。攻撃の命中率が下がった！',
+    apply: (state) => { state.eventMissChance = 0.25; },
+    color: '#555',
+  },
+  {
+    id: 'berserk',
+    chance: 0.08,
+    label: '💥 狂乱化！',
+    desc: '敵が狂乱化！毎ターン攻撃力が増加し続ける！',
+    apply: (state) => { state.eventBerserk = true; },
+    color: 'var(--red)',
+  },
+];
+
+// Dungeon definitions (updated with loot tables instead of fixed rewards)
+const DUNGEONS = [
+  {
+    id:'goblin-cave', name:'ゴブリンの洞窟', rank:'E',
+    icon:'🪨', desc:'E級ハンター向けの低難易度ダンジョン。ゴブリンが出現する。',
+    floors: 3,
+    enemies: [
+      { name:'ゴブリン', icon:'👺', hp:30, atk:5, def:2, exp:20, gold:15 },
+      { name:'コボルト', icon:'🐺', hp:40, atk:7, def:3, exp:30, gold:20 },
+    ],
+    boss: { name:'ゴブリン族長', icon:'👹', hp:120, atk:12, def:5, exp:100, gold:80 },
+    rareBoss: { name:'古代ゴブリン王', icon:'👑', hp:300, atk:20, def:10, exp:280, gold:220 },
+    rewardGold: 200, rewardExp: 200,
+    minLevel: 1,
+  },
+  {
+    id:'kobold-mine', name:'コボルトの廃坑', rank:'E',
+    icon:'⛏', desc:'廃坑に潜むコボルト達。罠が仕掛けられている。',
+    floors: 4,
+    enemies: [
+      { name:'コボルト戦士', icon:'🐺', hp:55, atk:10, def:5, exp:40, gold:25 },
+      { name:'コボルト鉱夫', icon:'⛏', hp:45, atk:8, def:8, exp:35, gold:20 },
+    ],
+    boss: { name:'コボルト族長', icon:'🐻', hp:180, atk:18, def:8, exp:150, gold:120 },
+    rareBoss: { name:'伝説の鉱山王', icon:'💎', hp:420, atk:28, def:16, exp:400, gold:350 },
+    rewardGold: 350, rewardExp: 300,
+    minLevel: 3,
+  },
+  {
+    id:'orc-fortress', name:'オークの要塞', rank:'D',
+    icon:'🏰', desc:'D級ダンジョン。筋力に優れたオーク達が支配する要塞。',
+    floors: 5,
+    enemies: [
+      { name:'オーク兵士', icon:'🐗', hp:100, atk:18, def:10, exp:60, gold:40 },
+      { name:'オークシャーマン', icon:'🔮', hp:80, atk:22, def:6, exp:70, gold:50 },
+    ],
+    boss: { name:'オーク将軍', icon:'👑', hp:350, atk:30, def:15, exp:300, gold:250 },
+    rareBoss: { name:'覇王オーク・ドラグ', icon:'💥', hp:800, atk:50, def:25, exp:800, gold:700 },
+    rewardGold: 600, rewardExp: 600,
+    minLevel: 8,
+  },
+  {
+    id:'spider-forest', name:'毒蜘蛛の森', rank:'D',
+    icon:'🕷', desc:'巨大な毒蜘蛛が巣食う森のダンジョン。毒に注意が必要。',
+    floors: 5,
+    enemies: [
+      { name:'巨大蜘蛛', icon:'🕷', hp:90, atk:16, def:8, exp:55, gold:35 },
+      { name:'毒蜘蛛', icon:'🕸', hp:70, atk:20, def:5, exp:65, gold:45 },
+    ],
+    boss: { name:'女王蜘蛛アラクネ', icon:'👸', hp:400, atk:28, def:12, exp:350, gold:280 },
+    rareBoss: { name:'古代蜘蛛神アネリス', icon:'🌑', hp:900, atk:45, def:20, exp:950, gold:900 },
+    rewardGold: 700, rewardExp: 700,
+    minLevel: 10,
+  },
+  {
+    id:'ice-cavern', name:'氷の洞窟', rank:'C',
+    icon:'❄', desc:'C級ダンジョン。凍てついた洞窟に氷属性モンスターが潜む。',
+    floors: 6,
+    enemies: [
+      { name:'アイスゴーレム', icon:'🧊', hp:200, atk:30, def:20, exp:100, gold:70 },
+      { name:'フロストウルフ', icon:'🐺', hp:160, atk:35, def:15, exp:90, gold:60 },
+    ],
+    boss: { name:'氷龍イビルフロスト', icon:'🐉', hp:800, atk:55, def:30, exp:600, gold:500 },
+    rareBoss: { name:'永久凍土の龍王', icon:'❄', hp:1800, atk:85, def:50, exp:1600, gold:1500 },
+    rewardGold: 1200, rewardExp: 1200,
+    minLevel: 20,
+  },
+  {
+    id:'ancient-ruins', name:'古代遺跡のアンデッド', rank:'C',
+    icon:'🏛', desc:'C級ダンジョン。古代の遺跡に蘇ったアンデッドが徘徊する。',
+    floors: 7,
+    enemies: [
+      { name:'スケルトン騎士', icon:'💀', hp:180, atk:28, def:22, exp:95, gold:65 },
+      { name:'リッチ', icon:'🧟', hp:220, atk:40, def:15, exp:120, gold:90 },
+    ],
+    boss: { name:'古代魔王バアル', icon:'😈', hp:1000, atk:65, def:35, exp:800, gold:700 },
+    rareBoss: { name:'滅世の魔神バアル＝ゼル', icon:'👿', hp:2200, atk:100, def:55, exp:2200, gold:2000 },
+    rewardGold: 1500, rewardExp: 1500,
+    minLevel: 25,
+  },
+  {
+    id:'demon-castle', name:'魔王城の深淵', rank:'B',
+    icon:'🏯', desc:'B級ダンジョン。強大な悪魔が支配する城。生半可な覚悟では挑めない。',
+    floors: 8,
+    enemies: [
+      { name:'デモンナイト', icon:'⚔', hp:350, atk:55, def:35, exp:200, gold:150 },
+      { name:'ダークメイジ', icon:'🌑', hp:280, atk:70, def:25, exp:220, gold:170 },
+    ],
+    boss: { name:'魔城の王エルシド', icon:'👿', hp:2000, atk:100, def:60, exp:2000, gold:2000 },
+    rareBoss: { name:'真・魔王エルシド＝ヴォルド', icon:'☠', hp:4500, atk:160, def:90, exp:5500, gold:5500 },
+    rewardGold: 3000, rewardExp: 3000,
+    minLevel: 40,
+  },
+  {
+    id:'s-rank-gate', name:'神話級ゲート 〜巨神の神殿〜', rank:'S',
+    icon:'⚡', desc:'S級ダンジョン。かつて仲間を殲滅したカルテノン神殿。伝説の力が待ち受ける。',
+    floors: 10,
+    enemies: [
+      { name:'神殿守護者', icon:'🗿', hp:800, atk:120, def:80, exp:500, gold:400 },
+      { name:'巨神の使徒', icon:'⚡', hp:1000, atk:140, def:90, exp:600, gold:500 },
+    ],
+    boss: { name:'カルテノン巨神像', icon:'🏛', hp:5000, atk:200, def:120, exp:5000, gold:5000 },
+    rareBoss: { name:'神話神 カルテノン＝オリジン', icon:'🌟', hp:12000, atk:300, def:180, exp:14000, gold:14000 },
+    rewardGold: 10000, rewardExp: 10000,
+    minLevel: 70,
+  },
+];
+
+// ===== SKILLS =====
+// type: 'damage'|'heal'|'buff'|'debuff'|'multi'
+// activeSkill: the one shown on the skill button (player picks)
+const ALL_SKILLS = [
+  // ── E級 ──
+  { id:'focus',        name:'集中',           icon:'🎯', desc:'精神を研ぎ澄まし次の攻撃が必ずクリティカル',  mpCost:8,  dmgMult:2.2, type:'damage',   unlockLevel:1,  unlockDesc:'覚醒時に習得' },
+  // ── D級 ──
+  { id:'dash',         name:'シャドウダッシュ', icon:'💨', desc:'瞬速の踏み込みで敵の防御を無視した一撃',     mpCost:12, dmgMult:1.9, type:'damage',   unlockLevel:5,  unlockDesc:'Lv5で習得' },
+  { id:'regen',        name:'影の回復',        icon:'💚', desc:'影の力でHP20%を回復する',                   mpCost:15, dmgMult:0,   type:'heal',    unlockLevel:7,  unlockDesc:'Lv7で習得' },
+  // ── C級 ──
+  { id:'shadow-step',  name:'シャドウステップ', icon:'🌑', desc:'影を踏み台に連続3ヒットの猛攻',             mpCost:20, dmgMult:2.8, type:'multi',   unlockLevel:15, unlockDesc:'Lv15で習得' },
+  { id:'dark-bind',    name:'暗黒縛鎖',        icon:'⛓',  desc:'敵の動きを封じ2ターン攻撃力を半減させる',   mpCost:18, dmgMult:1.2, type:'debuff',  unlockLevel:18, unlockDesc:'Lv18で習得' },
+  { id:'mana-burst',   name:'魔力爆発',        icon:'💥', desc:'溜め込んだ魔力を爆発させる広域攻撃',        mpCost:25, dmgMult:3.2, type:'damage',  unlockLevel:22, unlockDesc:'Lv22で習得' },
+  // ── B級 ──
+  { id:'arise',        name:'アライズ',        icon:'💀', desc:'倒したモンスターを影の兵士として召喚',       mpCost:30, dmgMult:3.0, type:'damage',  unlockLevel:30, unlockDesc:'Lv30で習得（転職後強化）' },
+  { id:'shadow-army',  name:'影の猛攻',        icon:'👥', desc:'全影の兵士が一斉突撃（兵士数×倍率）',       mpCost:35, dmgMult:2.5, type:'multi',   unlockLevel:35, unlockDesc:'Lv35で習得' },
+  { id:'death-mark',   name:'死の刻印',        icon:'☠',  desc:'敵に刻印を刻み受けるダメージを1.5倍にする',  mpCost:28, dmgMult:1.5, type:'debuff',  unlockLevel:40, unlockDesc:'Lv40で習得' },
+  // ── A級 ──
+  { id:'void-slash',   name:'虚無斬',          icon:'🌀', desc:'空間を切り裂く極大の斬撃',                  mpCost:40, dmgMult:4.0, type:'damage',  unlockLevel:50, unlockDesc:'Lv50で習得' },
+  { id:'shadow-veil',  name:'影のヴェール',    icon:'🛡',  desc:'影に包まれ次の被ダメージを80%軽減する',    mpCost:35, dmgMult:0,   type:'buff',    unlockLevel:55, unlockDesc:'Lv55で習得' },
+  // ── S級 ──
+  { id:'domain',       name:'影の君主の領域',  icon:'👑', desc:'影の力で世界を支配する究極奥義',             mpCost:60, dmgMult:6.0, type:'damage',  unlockLevel:60, unlockDesc:'Lv60で習得' },
+  { id:'soul-devour',  name:'魂喰らい',        icon:'🌟', desc:'敵の魂を喰らいHP30%回復＋ATK永続+10',      mpCost:50, dmgMult:3.5, type:'damage',  unlockLevel:70, unlockDesc:'Lv70で習得' },
+  { id:'eternal-night',name:'永劫の夜',        icon:'🌌', desc:'永遠の闇に覆われた最凶の全体殲滅技',        mpCost:80, dmgMult:8.0, type:'damage',  unlockLevel:80, unlockDesc:'Lv80で習得' },
+];
+
+// Active skill selected by player (index into G.skills)
+// G.activeSkillIdx: number
+
+// Particle init
+function initParticles() {
+  const container = document.getElementById('particle-container');
+  for (let i = 0; i < 30; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.left = Math.random() * 100 + 'vw';
+    p.style.animationDuration = (3 + Math.random() * 8) + 's';
+    p.style.animationDelay = (Math.random() * 8) + 's';
+    p.style.setProperty('--drift', (Math.random() * 100 - 50) + 'px');
+    p.style.width = p.style.height = (1 + Math.random() * 3) + 'px';
+    p.style.background = Math.random() > 0.5 ? 'var(--accent)' : 'var(--accent2)';
+    container.appendChild(p);
+  }
+}
+
+initParticles();
+
+function startGame() {
+  showScreen('game-screen');
+  initDailyQuests();
+  renderDungeons();
+  renderShadowSlots();
+  renderSkillsTab();
+  renderEquipTab();
+  updateUI();
+  addActivity('ゲームを開始した');
+  showNotification('システムウィンドウが現れた！', '再覚醒を確認しました', false);
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ===== DAILY QUESTS =====
+function initDailyQuests() {
+  G.dailyQuests = [
+    { id:'q1', name:'モンスターを5体討伐', goal:5, current:0, reward:'EXP+200', done:false },
+    { id:'q2', name:'ダンジョンを1つクリア', goal:1, current:0, reward:'Gold+500', done:false },
+    { id:'q3', name:'戦闘で勝利を3回', goal:3, current:0, reward:'ATK+2', done:false },
+  ];
+  renderQuests();
+}
+
+function renderQuests() {
+  const el = document.getElementById('quest-list');
+  el.innerHTML = G.dailyQuests.map(q => `
+    <div class="quest-item ${q.done ? 'complete' : ''}">
+      <div class="quest-name">${q.done ? '✅' : '📋'} ${q.name}</div>
+      <div class="quest-progress-text">${q.current}/${q.goal} — ${q.reward}</div>
+      <div class="quest-progress-bar-wrap">
+        <div class="quest-progress-bar" style="width:${Math.min(100, q.current/q.goal*100)}%"></div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function updateQuest(type, amount=1) {
+  G.dailyQuests.forEach(q => {
+    if (q.done) return;
+    if (type === 'kills' && q.id === 'q1') {
+      q.current = Math.min(q.goal, q.current + amount);
+      if (q.current >= q.goal) { q.done = true; applyQuestReward(q); }
+    }
+    if (type === 'dungeon' && q.id === 'q2') {
+      q.current = Math.min(q.goal, q.current + 1);
+      if (q.current >= q.goal) { q.done = true; applyQuestReward(q); }
+    }
+    if (type === 'win' && q.id === 'q3') {
+      q.current = Math.min(q.goal, q.current + 1);
+      if (q.current >= q.goal) { q.done = true; applyQuestReward(q); }
+    }
+  });
+  renderQuests();
+}
+
+function applyQuestReward(q) {
+  if (q.reward.includes('EXP')) { gainExp(200); }
+  if (q.reward.includes('Gold')) { G.gold += 500; }
+  if (q.reward.includes('ATK')) { G.atk += 2; }
+  showNotification('🎉 クエスト達成！', q.name + '\n' + q.reward + ' を獲得！', true);
+}
+
+// ===== DUNGEON RENDER =====
+function renderDungeons() {
+  const grid = document.getElementById('dungeon-grid');
+  grid.innerHTML = '';
+  DUNGEONS.forEach(d => {
+    const locked = G.level < d.minLevel;
+    const rankColors = {E:'e',D:'d',C:'c',B:'b',A:'a',S:'S'};
+    const div = document.createElement('div');
+    div.className = `dungeon-card rank-${d.rank}-card ${locked ? 'locked' : ''}`;
+    div.innerHTML = `
+      <div class="dungeon-rank-header">
+        <span class="dungeon-icon">${d.icon}</span>
+        <span class="player-rank-badge rank-${d.rank}">${d.rank}級</span>
+      </div>
+      <div class="dungeon-name">${d.name}</div>
+      <div class="dungeon-desc">${d.desc}</div>
+      <div class="dungeon-reward">
+        <span class="reward-tag">⚔ ${d.floors}フロア</span>
+        <span class="reward-tag">💰 ${d.rewardGold}G</span>
+        <span class="reward-tag">⭐ ${d.rewardExp}EXP</span>
+      </div>
+      ${locked ? `<div class="dungeon-locked-msg">🔒 Lv${d.minLevel}以上が必要</div>` : ''}
+    `;
+    if (!locked) {
+      div.onclick = () => enterDungeon(d);
+    }
+    grid.appendChild(div);
+  });
+}
+
+// ===== DUNGEON ENTER =====
+function enterDungeon(dungeon) {
+  G.currentDungeon = dungeon;
+  G.currentFloor = 1;
+  G.totalFloors = dungeon.floors;
+  G.dungeonEnemiesKilled = 0;
+  resetDungeonEvents();
+  startCombat();
+}
+
+function resetDungeonEvents() {
+  G.eventAtkMult = 1.0;
+  G.eventGoldBonus = 1.0;
+  G.eventCurseAtk = false;
+  G.eventMissChance = 0;
+  G.eventBerserk = false;
+  G.eventActive = null;
+  G.dungeonBerserkTurn = 0;
+}
+
+function rollDungeonEvent() {
+  // Only trigger on non-boss floors
+  for (const ev of DUNGEON_EVENTS) {
+    if (Math.random() < ev.chance) return ev;
+  }
+  return null;
+}
+
+function startCombat() {
+  const d = G.currentDungeon;
+  showScreen('combat-screen');
+  document.getElementById('combat-dungeon-name').textContent = d.name;
+  updateCombatFloor();
+
+  const isBoss = G.currentFloor === G.totalFloors;
+  let baseEnemy;
+
+  if (isBoss) {
+    // 20% chance of rare boss
+    const isRareBoss = d.rareBoss && Math.random() < 0.20;
+    baseEnemy = isRareBoss ? makeRareBoss(d.rareBoss) : {...d.boss};
+  } else {
+    const base = {...d.enemies[Math.floor(Math.random() * d.enemies.length)]};
+    // 12% chance of rare monster
+    baseEnemy = Math.random() < 0.12 ? makeRareMonster(base) : base;
+  }
+
+  baseEnemy.maxHp = baseEnemy.maxHp || baseEnemy.hp;
+  G.currentEnemy = baseEnemy;
+
+  document.getElementById('enemy-sprite').textContent = baseEnemy.icon;
+  document.getElementById('enemy-name').textContent = baseEnemy.name;
+
+  updateCombatSkillButtons();
+
+  const log = document.getElementById('combat-log');
+  let initMsg = `<div class="log-line highlight">【${G.currentFloor}F】`;
+  if (baseEnemy.isRareBoss)  initMsg += `<span style="color:var(--gold)">★ 伝説のボス出現！</span> `;
+  else if (baseEnemy.isRare) initMsg += `<span style="color:var(--gold)">★ レアモンスター！</span> `;
+  else if (isBoss)           initMsg += `<span style="color:var(--red)">⚠ ボス出現！</span> `;
+  initMsg += `「${baseEnemy.name}」が現れた！</div>`;
+  log.innerHTML = initMsg;
+
+  // Roll floor event (non-boss floors only)
+  if (!isBoss) {
+    resetDungeonEvents();
+    const ev = rollDungeonEvent();
+    if (ev) {
+      ev.apply(G, baseEnemy);
+      addLog(`<span style="color:${ev.color}">【フロアイベント】${ev.label} ${ev.desc}</span>`, 'highlight');
+      // Show event banner
+      showEventBanner(ev);
+    }
+  } else {
+    resetDungeonEvents();
+  }
+
+  updateCombatBars();
+  enableCombatActions();
+}
+
+function showEventBanner(ev) {
+  const existing = document.getElementById('event-banner');
+  if (existing) existing.remove();
+  const div = document.createElement('div');
+  div.id = 'event-banner';
+  div.style.cssText = `
+    position:fixed;top:60px;left:50%;transform:translateX(-50%);
+    background:var(--panel);border:2px solid ${ev.color};border-radius:6px;
+    padding:0.6rem 1.4rem;text-align:center;z-index:999;
+    animation:notify-in 0.3s ease, notify-out 0.3s ease 2.7s forwards;
+    font-size:0.85rem;box-shadow:0 0 20px ${ev.color}55;
+  `;
+  div.innerHTML = `<div style="color:${ev.color};font-weight:700;margin-bottom:0.1rem">${ev.label}</div><div style="color:var(--text-dim);font-size:0.75rem">${ev.desc}</div>`;
+  document.body.appendChild(div);
+  setTimeout(() => div.remove(), 3200);
+}
+
+function updateCombatFloor() {
+  const isBoss = G.currentFloor === G.totalFloors;
+  document.getElementById('combat-floor').textContent = `Floor ${G.currentFloor} / ${G.totalFloors}`;
+  document.getElementById('combat-floor-indicator').textContent = isBoss ? '⚠ BOSS' : '';
+  document.getElementById('combat-floor-indicator').style.color = isBoss ? 'var(--red)' : 'var(--accent)';
+}
+
+function updateCombatSkillButtons() {
+  const skill = G.skills.length > 0 ? G.skills[G.activeSkillIdx] || G.skills[G.skills.length - 1] : null;
+
+  if (skill) {
+    document.getElementById('skill-btn-name').textContent = skill.name;
+    document.getElementById('skill-btn-desc').textContent = skill.desc;
+    document.getElementById('skill-btn-cost').textContent = `MP: ${skill.mpCost}`;
+    document.getElementById('btn-skill-action').disabled = G.mp < skill.mpCost;
+  } else {
+    document.getElementById('btn-skill-action').disabled = true;
+    document.getElementById('skill-btn-name').textContent = 'スキル';
+    document.getElementById('skill-btn-desc').textContent = 'スキル未習得';
+    document.getElementById('skill-btn-cost').textContent = '';
+  }
+
+  const hasShadow = G.maxShadows > 0 && G.shadows.length > 0;
+  document.getElementById('btn-shadow-action').disabled = !hasShadow;
+  document.getElementById('shadow-btn-desc').textContent = hasShadow
+    ? `影の兵士 ${G.shadows.length}体で攻撃`
+    : G.maxShadows > 0 ? '影の兵士がいない' : '転職で解放';
+}
+
+function updateCombatBars() {
+  const e = G.currentEnemy;
+  document.getElementById('combat-player-hp').style.width = (G.hp / G.maxHp * 100) + '%';
+  document.getElementById('combat-player-hp-text').textContent = `HP: ${G.hp}/${G.maxHp}`;
+
+  if (e) {
+    const epct = Math.max(0, e.hp / e.maxHp * 100);
+    document.getElementById('combat-enemy-hp').style.width = epct + '%';
+    document.getElementById('combat-enemy-hp-text').textContent = `HP: ${e.hp}/${e.maxHp}`;
+  }
+
+  // EXP bar
+  document.getElementById('combat-lv').textContent = G.level;
+  document.getElementById('combat-exp-fill').style.width = (G.exp / G.expNeeded * 100) + '%';
+  document.getElementById('combat-exp-text').textContent = `${G.exp} / ${G.expNeeded}`;
+
+  updateUI();
+}
+
+function playerAction(type) {
+  if (G.inCombat) return;
+  G.inCombat = true;
+  disableCombatActions();
+
+  const e = G.currentEnemy;
+  let dmg = 0, logMsg = '', logClass = 'damage';
+
+  if (type === 'attack') {
+    // Miss check from darkness event
+    if (G.eventMissChance > 0 && Math.random() < G.eventMissChance) {
+      addLog(`🌑 ミス！暗闇で攻撃が外れた！`, 'log-line');
+      G.inCombat = false;
+      setTimeout(() => enemyAttack(), 250);
+      return;
+    }
+    dmg = Math.max(1, G.atk - e.def + Math.floor(Math.random() * 6) - 2);
+    if (G.eventCurseAtk) dmg = Math.max(1, Math.floor(dmg * 0.5));
+    logMsg = `⚔ 通常攻撃！ 「${e.name}」に <strong style="color:var(--red)">${dmg}</strong> ダメージ！`;
+  } else if (type === 'skill') {
+    const skill = G.skills.length > 0 ? G.skills[G.activeSkillIdx] || G.skills[G.skills.length - 1] : null;
+    if (!skill || G.mp < skill.mpCost) { G.inCombat = false; enableCombatActions(); return; }
+    G.mp -= skill.mpCost;
+
+    if (skill.type === 'heal') {
+      const heal = Math.floor(G.maxHp * 0.20);
+      G.hp = Math.min(G.maxHp, G.hp + heal);
+      addLog(`💚 ${skill.name}！ HP <strong style="color:var(--green)">+${heal}</strong> 回復！`, 'heal');
+      updateCombatBars();
+      setTimeout(() => enemyAttack(), 300);
+      return;
+    }
+    if (skill.type === 'buff') {
+      G.shieldBuff = true;
+      addLog(`🛡 ${skill.name}！ 次の被ダメージを80%軽減！`, 'skill');
+      updateCombatBars();
+      setTimeout(() => enemyAttack(), 300);
+      return;
+    }
+    if (skill.type === 'debuff') {
+      e.debuffAtk = Math.floor(e.atk * 0.5);
+      e.debuffTurns = 2;
+      dmg = Math.max(1, Math.floor(G.atk * skill.dmgMult - e.def * 0.5));
+      logMsg = `⛓ ${skill.name}！ 「${e.name}」に <strong style="color:var(--accent2)">${dmg}</strong> ダメージ＋攻撃力半減！`;
+      logClass = 'skill';
+    } else if (skill.type === 'multi') {
+      const hits = skill.id === 'shadow-army' ? Math.max(2, G.shadows.length) : 3;
+      dmg = 0;
+      for (let h = 0; h < hits; h++) dmg += Math.max(1, Math.floor((G.atk * skill.dmgMult / hits) - e.def * 0.3));
+      logMsg = `${skill.icon} ${skill.name}！ ${hits}ヒット！ 「${e.name}」に <strong style="color:var(--accent2)">${dmg}</strong> ダメージ！`;
+      logClass = 'skill';
+    } else {
+      dmg = Math.max(1, Math.floor(G.atk * skill.dmgMult - e.def * 0.5));
+      if (G.eventCurseAtk) dmg = Math.max(1, Math.floor(dmg * 0.5));
+      // soul-devour: heal on hit
+      if (skill.id === 'soul-devour') {
+        const heal = Math.floor(G.maxHp * 0.3);
+        G.hp = Math.min(G.maxHp, G.hp + heal);
+        G.bonusAtk = (G.bonusAtk||0) + 10;
+        applyEquipStats();
+      }
+      logMsg = `${skill.icon} ${skill.name}！ 「${e.name}」に <strong style="color:var(--accent2)">${dmg}</strong> ダメージ！`;
+      logClass = 'skill';
+    }
+  } else if (type === 'shadow') {
+    dmg = Math.max(1, Math.floor(G.atk * 1.5 * G.shadows.length - e.def * 0.3));
+    logMsg = `👥 影の軍団が攻撃！ 「${e.name}」に <strong style="color:var(--shadow)">${dmg}</strong> ダメージ！`;
+    logClass = 'shadow';
+  } else if (type === 'item') {
+    const heal = Math.floor(G.maxHp * 0.3);
+    G.hp = Math.min(G.maxHp, G.hp + heal);
+    addLog(`🧪 ポーションを使用！ HP <strong style="color:var(--green)">+${heal}</strong> 回復！`, 'heal');
+    updateCombatBars();
+    setTimeout(() => enemyAttack(), 200);
+    return;
+  }
+
+  showDamageNumber(dmg, true);
+  e.hp = Math.max(0, e.hp - dmg);
+  addLog(logMsg, logClass);
+  updateCombatBars();
+
+  if (e.hp <= 0) {
+    setTimeout(() => enemyDefeated(), 300);
+  } else {
+    setTimeout(() => enemyAttack(), 300);
+  }
+}
+
+function enemyAttack() {
+  const e = G.currentEnemy;
+
+  // Apply debuff to enemy atk
+  let enemyAtk = e.atk;
+  if (e.debuffTurns > 0) {
+    enemyAtk = e.debuffAtk;
+    e.debuffTurns--;
+    if (e.debuffTurns === 0) addLog(`⛓ 「${e.name}」の攻撃力デバフが解けた`, 'log-line');
+  }
+
+  // Berserk: enemy ATK increases each turn
+  if (G.eventBerserk) {
+    G.dungeonBerserkTurn++;
+    e.atk = Math.floor(e.atk * 1.08);
+    if (G.dungeonBerserkTurn % 3 === 0) {
+      addLog(`🔥 狂乱化！「${e.name}」の攻撃力がさらに上昇！(${e.atk})`, 'damage');
+    }
+  }
+
+  const atkMult = G.eventAtkMult || 1.0;
+  let dmg = Math.max(1, Math.floor(enemyAtk * atkMult) - G.def + Math.floor(Math.random() * 6) - 2);
+
+  // Shield buff
+  if (G.shieldBuff) {
+    dmg = Math.max(1, Math.floor(dmg * 0.2));
+    G.shieldBuff = false;
+    addLog(`🛡 影のヴェールが攻撃を受け止めた！ダメージ激減！`, 'skill');
+  }
+
+  G.hp = Math.max(0, G.hp - dmg);
+  showDamageNumber(dmg, false);
+  addLog(`💥 「${e.name}」の攻撃！ <strong style="color:var(--red)">${dmg}</strong> ダメージ！`, 'damage');
+  updateCombatBars();
+
+  if (G.hp <= 0) {
+    setTimeout(() => playerDefeated(), 300);
+  } else {
+    G.inCombat = false;
+    enableCombatActions();
+    updateCombatSkillButtons();
+  }
+}
+
+function enemyDefeated() {
+  const e = G.currentEnemy;
+  G.kills++;
+  G.dungeonEnemiesKilled++;
+  updateQuest('kills');
+  updateQuest('win');
+
+  const goldGained = Math.floor(e.gold * (G.eventGoldBonus || 1.0));
+  addLog(`<span class="victory">🏆 「${e.name}」を撃破！ EXP+${e.exp} Gold+${goldGained}</span>`, 'victory');
+  gainExp(e.exp);
+  G.gold += goldGained;
+
+  // Rare drop on rare monsters
+  if (e.dropBonus) {
+    const d = G.currentDungeon;
+    const rank = d.rank;
+    const table = LOOT_TABLES[rank];
+    const pool = [...(table.weapons||[]), ...(table.armors||[]), ...(table.accessories||[])];
+    const drop = pool[Math.floor(Math.random() * pool.length)];
+    addLog(`💎 レアドロップ！「${drop}」を入手！`, 'victory');
+    addInventoryItem(drop, rank);
+  }
+
+  // Shadow absorb
+  if (G.maxShadows > 0 && G.shadows.length < G.maxShadows && Math.random() < 0.5) {
+    const shadowEmoji = ['💀','👻','🧟','👾','🌑'];
+    G.shadows.push({ emoji: shadowEmoji[Math.floor(Math.random() * shadowEmoji.length)], name: e.name });
+    addLog(`👥 「${e.name}」の影を吸収した！`, 'shadow');
+    renderShadowSlots();
+  }
+
+  G.inCombat = false;
+
+  if (G.currentFloor < G.totalFloors) {
+    G.currentFloor++;
+    setTimeout(() => {
+      addLog(`━━━ ${G.currentFloor}F へ進む ━━━`, 'highlight');
+      setTimeout(() => startCombat(), 400);
+    }, 500);
+  } else {
+    setTimeout(() => dungeonClear(), 600);
+  }
+}
+
+function dungeonClear() {
+  const d = G.currentDungeon;
+  G.dungeonsCleared++;
+  updateQuest('dungeon');
+  addActivity(`「${d.name}」をクリアした（${d.rank}級）`);
+
+  // Random loot
+  const rawLoot = rollLoot(d.rank, true);
+  const newItems = [];
+  rawLoot.forEach(r => {
+    const realName = r.startsWith('✨ ') ? r.slice(2) : r;
+    newItems.push({ name: realName, bonus: r.startsWith('✨ ') });
+    addInventoryItem(realName, d.rank);
+  });
+
+  G.gold += d.rewardGold;
+  gainExp(d.rewardExp);
+
+  showRewardModal(d, newItems);
+  saveGame();
+}
+
+function showRewardModal(dungeon, items) {
+  const existing = document.querySelector('.modal-overlay');
+  if (existing) existing.remove();
+
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.innerHTML = `
+    <div class="modal">
+      <div class="modal-icon">🏆</div>
+      <div class="modal-title">DUNGEON CLEAR!</div>
+      <div class="modal-subtitle">${dungeon.name} を制覇した！</div>
+      <div class="reward-list">
+        <div class="reward-item"><span class="reward-item-name">💰 ゴールド</span><span class="reward-item-val">+${dungeon.rewardGold}G</span></div>
+        <div class="reward-item"><span class="reward-item-name">⭐ 経験値</span><span class="reward-item-val">+${dungeon.rewardExp}EXP</span></div>
+        ${items.map(i => `
+          <div class="reward-item">
+            <span class="reward-item-name">${i.bonus ? '✨ ' : '🎁 '}${i.name}</span>
+            <span class="reward-item-val" style="${i.bonus ? 'color:var(--gold)' : ''}">
+              ${i.bonus ? 'ボーナス入手！' : '入手！'}
+            </span>
+          </div>`).join('')}
+      </div>
+      <button class="btn-confirm" onclick="closeRewardModal()">確認</button>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+}
+
+function closeRewardModal() {
+  document.querySelector('.modal-overlay')?.remove();
+  showScreen('game-screen');
+  renderDungeons();
+  updateUI();
+}
+
+function playerDefeated() {
+  addLog(`<span class="defeat">💀 倒れた... HP回復して再挑戦しよう</span>`, 'defeat');
+  disableCombatActions();
+  G.hp = Math.floor(G.maxHp * 0.3); // Recover some HP
+  G.inCombat = false;
+
+  setTimeout(() => {
+    addActivity(`「${G.currentDungeon.name}」で敗北した`);
+    showScreen('game-screen');
+    updateUI();
+    showNotification('💀 敗北', 'HPが30%回復した状態で撤退した', false);
+  }, 1500);
+}
+
+function fleeCombat() {
+  addActivity(`「${G.currentDungeon.name}」から撤退した`);
+  G.gold = Math.max(0, G.gold - 50);
+  showScreen('game-screen');
+  updateUI();
+  showNotification('撤退', 'Gold -50のペナルティ', false);
+}
+
+function gainExp(amount) {
+  G.exp += amount;
+  while (G.exp >= G.expNeeded) {
+    G.exp -= G.expNeeded;
+    levelUp();
+  }
+  updateUI();
+}
+
+function levelUp() {
+  G.level++;
+  G.expNeeded = Math.floor(100 * Math.pow(1.3, G.level - 1));
+  G.hp = G.maxHp; // will be recalculated below
+  G.mp = G.maxMp;
+
+  applyEquipStats(); // recalc with new base stats + equip bonuses
+  G.hp = G.maxHp;
+  G.mp = G.maxMp;
+
+  checkRankUp();
+  checkSkillUnlock();
+  checkJobChange();
+
+  addActivity(`Lv${G.level}にレベルアップ！`);
+  showNotification('🎉 レベルアップ！', `Lv${G.level} 達成！\nHP/MP/ステータスが上昇した！`, true);
+  renderDungeons();
+  saveGame();
+}
+
+function checkRankUp() {
+  const newRank = [...RANKS].reverse().find(r => G.level >= RANK_THRESHOLDS[r]);
+  if (newRank && newRank !== G.rank) {
+    G.rank = newRank;
+    G.ranksUnlocked.push(newRank);
+    addActivity(`${newRank}級ハンターに昇格した！`);
+    showNotification(`🏆 ランクアップ！`, `${newRank}級ハンターに昇格！`, true);
+  }
+}
+
+function checkSkillUnlock() {
+  ALL_SKILLS.forEach(skill => {
+    if (G.level >= skill.unlockLevel && !G.skills.find(s => s.id === skill.id)) {
+      G.skills.push(skill);
+      addActivity(`スキル「${skill.name}」を習得！`);
+      showNotification(`✨ スキル習得！`, `「${skill.name}」を習得した！\n${skill.desc}`, true);
+      renderSkillsTab();
+    }
+  });
+}
+
+function checkJobChange() {
+  if (G.level >= 20 && G.jobClass === 'ハンター') {
+    G.jobClass = 'ネクロマンサー';
+    G.title = '影の君主';
+    G.maxShadows = 5;
+    G.player_avatar = '🌑';
+    addActivity('職業が「ネクロマンサー」に転職した！称号「影の君主」を獲得！');
+    showNotification('⚡ 転職！', '「ネクロマンサー」に転職！\n称号「影の君主」を獲得！', true);
+    document.getElementById('player-avatar').textContent = '⚔️';
+    document.getElementById('shadow-unlock-hint').textContent = '影の兵士を使役できる';
+    renderShadowSlots();
+  }
+  if (G.level >= 50 && G.jobClass === 'ネクロマンサー') {
+    G.maxShadows = 10;
+    G.jobClass = '影の君主';
+  }
+}
+
+function addInventoryItem(name, rank) {
+  const tpl = ITEM_TEMPLATES[name];
+  const rarities = {S:'legendary', A:'legendary', B:'epic', C:'rare', D:'common', E:'common'};
+  const isConsumable = CONSUMABLES.has(name) || (!tpl && !ITEM_TEMPLATES[name]);
+
+  // ── Auto-sell check ──
+  if (G.autoSellRarity && tpl) {
+    const order = ['common','rare','epic','legendary'];
+    const itemIdx = order.indexOf(tpl.rarity);
+    const threshIdx = order.indexOf(G.autoSellRarity);
+    if (itemIdx >= 0 && itemIdx <= threshIdx) {
+      const price = getSellPrice({ rarity: tpl.rarity });
+      G.gold += price;
+      addLog(`💰 自動売却: 「${name}」→ ${price}G`, 'heal');
+      updateUI();
+      return;
+    }
+  }
+
+  // ── Consumable stacking ──
+  if (isConsumable) {
+    const existing = G.fullInventory.find(i => i.name === name && i.slot === null);
+    if (existing) {
+      existing.qty = (existing.qty || 1) + 1;
+      renderEquipTab();
+      renderInventory();
+      return;
+    }
+  }
+
+  const item = {
+    id: Date.now() + Math.random(),
+    name,
+    icon: tpl ? tpl.icon : '🧪',
+    rarity: tpl ? tpl.rarity : (rarities[rank] || 'common'),
+    slot: tpl ? tpl.slot : null,
+    bonus: tpl ? tpl.bonus : {},
+    equippedIn: null,
+    qty: 1,
+  };
+  G.fullInventory.unshift(item);
+  G.inventory.unshift({ name, icon: item.icon, rarity: item.rarity });
+  if (G.inventory.length > 10) G.inventory.pop();
+  renderInventory();
+  renderEquipTab();
+}
+
+function renderInventory() {
+  const el = document.getElementById('inventory-list');
+  if (!G.inventory.length) { el.innerHTML = '<div style="color:var(--text-dim);font-size:0.75rem">アイテムなし</div>'; return; }
+  el.innerHTML = G.inventory.slice(0, 6).map(item => `
+    <div class="item-entry">
+      <span class="item-icon">${item.icon}</span>
+      <span class="item-name">${item.name}</span>
+      <span class="item-rarity rarity-${item.rarity}">${{legendary:'伝説',epic:'epic',rare:'rare',common:'common'}[item.rarity]}</span>
+    </div>
+  `).join('');
+}
+
+// ===== EQUIPMENT TAB =====
+function renderEquipTab() {
+  renderEquipSlots();
+  renderInvList();
+  renderEquipBonus();
+}
+
+function renderEquipSlots() {
+  const el = document.getElementById('equip-slots-ui');
+  const slots = ['weapon','armor','accessory','ring'];
+  el.innerHTML = slots.map(slot => {
+    const item = G.equipped[slot];
+    if (item) {
+      const bonusStr = Object.entries(item.bonus).map(([k,v]) => `${statLabel(k)}+${v}`).join(' ');
+      return `
+        <div class="equip-slot filled rarity-${item.rarity}" onclick="unequipItem('${slot}')" title="クリックで外す">
+          <div class="equip-slot-label">${SLOT_ICONS[slot]} ${SLOT_LABELS[slot]}</div>
+          <div class="equip-slot-name"><span class="equip-slot-icon">${item.icon}</span>${item.name}</div>
+          <div class="equip-slot-bonus">${bonusStr}</div>
+        </div>`;
+    } else {
+      return `
+        <div class="equip-slot" title="${SLOT_LABELS[slot]}スロット（空）">
+          <div class="equip-slot-label">${SLOT_ICONS[slot]} ${SLOT_LABELS[slot]}</div>
+          <div style="font-size:0.75rem;color:var(--text-dim);margin-top:0.3rem">— 空き —</div>
+        </div>`;
+    }
+  }).join('');
+}
+
+function renderEquipBonus() {
+  const summary = document.getElementById('equip-stat-summary');
+  const total = getTotalEquipBonus();
+  const entries = Object.entries(total).filter(([,v]) => v > 0);
+  if (!entries.length) { summary.style.display = 'none'; return; }
+  summary.style.display = 'flex';
+  summary.innerHTML = '<span style="color:var(--text-dim);font-size:0.65rem;width:100%;margin-bottom:0.2rem">装備ボーナス合計</span>' +
+    entries.map(([k,v]) => `<span>${statLabel(k)} <strong>+${v}</strong></span>`).join('');
+}
+
+let currentInvTab = 'all';
+
+function switchInvTab(tab) {
+  currentInvTab = tab;
+  document.querySelectorAll('.inv-tab-btn').forEach(b => b.classList.remove('active'));
+  const btn = document.getElementById('invtab-' + tab);
+  if (btn) btn.classList.add('active');
+  renderInvList();
+}
+
+function getSellPrice(item) {
+  const base = { legendary: 800, epic: 400, rare: 180, common: 60 };
+  return base[item.rarity] || 40;
+}
+
+function renderInvList() {
+  const el = document.getElementById('inv-list');
+  document.getElementById('inv-count').textContent = `${G.fullInventory.length} / ${G.invMax || 30}`;
+
+  let items = G.fullInventory;
+  if (currentInvTab === 'weapon')    items = items.filter(i => i.slot === 'weapon');
+  else if (currentInvTab === 'armor')     items = items.filter(i => i.slot === 'armor');
+  else if (currentInvTab === 'accessory') items = items.filter(i => i.slot === 'accessory');
+  else if (currentInvTab === 'ring')      items = items.filter(i => i.slot === 'ring');
+  else if (currentInvTab === 'consume')   items = items.filter(i => !i.slot || CONSUMABLES.has(i.name));
+
+  const rarityOrder = ['common','rare','epic','legendary'];
+  const autoThreshIdx = G.autoSellRarity ? rarityOrder.indexOf(G.autoSellRarity) : -1;
+
+  // ── 自動売却バー ──
+  const autoSellBar = `
+    <div style="display:flex;align-items:center;gap:0.4rem;margin-bottom:0.7rem;flex-wrap:wrap;padding:0.5rem 0.6rem;background:rgba(0,0,0,0.25);border-radius:4px;border:1px solid var(--border)">
+      <span style="font-size:0.65rem;color:var(--text-dim);flex-shrink:0">🔄 自動売却:</span>
+      ${[
+        { val: null,     label: 'OFF',        col: 'var(--text-dim)' },
+        { val: 'common', label: 'COMMON以下',  col: 'var(--e-rank)' },
+        { val: 'rare',   label: 'RARE以下',    col: 'var(--b-rank)' },
+        { val: 'epic',   label: 'EPIC以下',    col: 'var(--a-rank)' },
+      ].map(o => {
+        const active = G.autoSellRarity === o.val;
+        return `<button onclick="setAutoSell(${o.val === null ? 'null' : `'${o.val}'`})"
+          style="font-size:0.63rem;padding:0.2rem 0.5rem;border-radius:3px;cursor:pointer;transition:all 0.15s;
+          background:${active ? o.col + '33' : 'transparent'};
+          border:1px solid ${active ? o.col : 'rgba(255,255,255,0.1)'};
+          color:${active ? o.col : 'var(--text-dim)'}">
+          ${o.label}
+        </button>`;
+      }).join('')}
+      <button onclick="bulkSellBelow()"
+        style="margin-left:auto;font-size:0.63rem;padding:0.2rem 0.55rem;border-radius:3px;cursor:pointer;
+        background:rgba(255,51,102,0.1);border:1px solid rgba(255,51,102,0.3);color:var(--red);transition:all 0.15s"
+        onmouseover="this.style.background='rgba(255,51,102,0.22)'"
+        onmouseout="this.style.background='rgba(255,51,102,0.1)'">
+        🗑 今すぐ一括売却
+      </button>
+    </div>`;
+
+  if (!items.length) {
+    el.innerHTML = autoSellBar + `<div style="color:var(--text-dim);font-size:0.82rem;text-align:center;padding:1.2rem 0">
+      ${G.fullInventory.length ? 'このカテゴリにアイテムなし' : 'ダンジョン攻略でアイテムを入手しよう'}
+    </div>`;
+    return;
+  }
+
+  const rarityLabel = { legendary:'伝説', epic:'EPIC', rare:'RARE', common:'COMMON' };
+
+  const itemsHtml = items.map(item => {
+    const isEquipped   = item.equippedIn != null;
+    const bonusStr     = Object.entries(item.bonus||{}).map(([k,v]) => `${statLabel(k)}+${v}`).join('  ');
+    const canEquip     = item.slot && !CONSUMABLES.has(item.name);
+    const sellPrice    = getSellPrice(item);
+    const qty          = item.qty || 1;
+    const qtyBadge     = qty > 1
+      ? `<span style="font-size:0.6rem;background:rgba(74,158,255,0.2);border:1px solid var(--accent);color:var(--accent);padding:0.05rem 0.3rem;border-radius:10px;margin-left:0.3rem">×${qty}</span>`
+      : '';
+    const willAutoSell = !isEquipped && canEquip && autoThreshIdx >= 0 && rarityOrder.indexOf(item.rarity) <= autoThreshIdx;
+
+    return `
+      <div class="inv-item ${isEquipped ? 'equipped' : ''}" style="cursor:default;${willAutoSell ? 'opacity:0.5' : ''}">
+        <span class="inv-item-icon">${item.icon}</span>
+        <div class="inv-item-info" style="cursor:${canEquip && !isEquipped ? 'pointer' : 'default'}"
+          onclick="${canEquip && !isEquipped ? `equipItem('${item.id}')` : ''}">
+          <div class="inv-item-name">${item.name}${qtyBadge}${willAutoSell ? ' <span style="font-size:0.58rem;color:var(--red)">自動売却対象</span>' : ''}</div>
+          <div class="inv-item-sub" style="display:flex;align-items:center;gap:0.4rem;flex-wrap:wrap">
+            <span class="item-rarity rarity-${item.rarity}">${rarityLabel[item.rarity]||item.rarity}</span>
+            ${bonusStr
+              ? `<span style="color:var(--green);font-size:0.68rem">${bonusStr}</span>`
+              : `<span style="color:var(--text-dim);font-size:0.68rem">消耗品</span>`}
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.28rem;flex-shrink:0">
+          ${isEquipped
+            ? `<span class="inv-item-equipped-badge" style="cursor:pointer" onclick="unequipItem('${item.equippedIn}')">装備中 ✕</span>`
+            : canEquip
+              ? `<span style="font-size:0.63rem;color:var(--accent);cursor:pointer" onclick="equipItem('${item.id}')">装備する</span>`
+              : ''}
+          ${isEquipped ? '' : `<button class="sell-btn" onclick="sellItem('${item.id}')">売 ${sellPrice}G</button>`}
+        </div>
+      </div>`;
+  }).join('');
+
+  el.innerHTML = autoSellBar + itemsHtml;
+}
+
+function setAutoSell(val) {
+  G.autoSellRarity = val;
+  renderInvList();
+  const labels = { null:'OFF', common:'COMMON以下', rare:'RARE以下', epic:'EPIC以下' };
+  showNotification('🔄 自動売却', `設定を「${labels[val] || 'OFF'}」に変更`, false);
+}
+
+function bulkSellBelow() {
+  if (!G.autoSellRarity) {
+    showNotification('一括売却', '自動売却レベルを先に設定してください', false);
+    return;
+  }
+  const order = ['common','rare','epic','legendary'];
+  const threshIdx = order.indexOf(G.autoSellRarity);
+  let totalGold = 0, count = 0;
+  G.fullInventory = G.fullInventory.filter(item => {
+    if (item.equippedIn) return true;
+    if (!item.slot) return true; // consumables keep
+    const idx = order.indexOf(item.rarity);
+    if (idx >= 0 && idx <= threshIdx) {
+      totalGold += getSellPrice(item);
+      count++;
+      return false;
+    }
+    return true;
+  });
+  if (count === 0) {
+    showNotification('一括売却', '対象アイテムなし', false);
+    return;
+  }
+  G.gold += totalGold;
+  updateUI();
+  renderInvList();
+  renderInventory();
+  showNotification('💰 一括売却完了', `${count}件を売却 → ${totalGold}G 獲得！`, true);
+}
+
+function sellItem(id) {
+  const idx = G.fullInventory.findIndex(i => i.id == id);
+  if (idx === -1) return;
+  const item = G.fullInventory[idx];
+  if (item.equippedIn) { showNotification('売却不可', '装備中のアイテムは外してから売ってください', false); return; }
+  const price = getSellPrice(item);
+  G.gold += price;
+  G.fullInventory.splice(idx, 1);
+  // Remove from right-panel preview list too
+  G.inventory = G.inventory.filter(i => i.name !== item.name || G.fullInventory.some(fi => fi.name === i.name));
+  renderInvList();
+  renderInventory();
+  updateUI();
+  showNotification('💰 売却', `「${item.name}」を ${price}G で売却した`, false);
+}
+
+// ===== SHOP =====
+const SHOP_ITEMS = {
+  消耗品: [
+    { name:'HPポーション',     icon:'🧪', desc:'HP を 30% 回復',          price: 80,   effect: () => { G.hp = Math.min(G.maxHp, G.hp + Math.floor(G.maxHp * 0.3)); } },
+    { name:'MPポーション',     icon:'💧', desc:'MP を 40% 回復',          price: 100,  effect: () => { G.mp = Math.min(G.maxMp, G.mp + Math.floor(G.maxMp * 0.4)); } },
+    { name:'エリクシル',       icon:'⚗',  desc:'HP・MP を 50% 回復',     price: 350,  effect: () => { G.hp = Math.min(G.maxHp, G.hp + Math.floor(G.maxHp*0.5)); G.mp = Math.min(G.maxMp, G.mp + Math.floor(G.maxMp*0.5)); } },
+    { name:'大エリクシル',     icon:'✨',  desc:'HP・MP を全回復',        price: 900,  effect: () => { G.hp = G.maxHp; G.mp = G.maxMp; } },
+    { name:'復活の薬',         icon:'💊',  desc:'敗北時HP20%で復活（1回）', price: 1200, effect: () => { G.revive = (G.revive||0) + 1; } },
+  ],
+  強化: [
+    { name:'ATK強化石 Ⅰ',   icon:'🔴', desc:'ATK基礎値を永続+5',    price: 500,  effect: () => { G.bonusAtk = (G.bonusAtk||0)+5;  applyEquipStats(); } },
+    { name:'DEF強化石 Ⅰ',   icon:'🔵', desc:'DEF基礎値を永続+4',    price: 500,  effect: () => { G.bonusDef = (G.bonusDef||0)+4;  applyEquipStats(); } },
+    { name:'HP強化石 Ⅰ',    icon:'💗', desc:'HP基礎値を永続+50',    price: 600,  effect: () => { G.bonusHp  = (G.bonusHp||0)+50;  applyEquipStats(); } },
+    { name:'ATK強化石 Ⅱ',   icon:'🟠', desc:'ATK基礎値を永続+15',   price: 1800, effect: () => { G.bonusAtk = (G.bonusAtk||0)+15; applyEquipStats(); } },
+    { name:'DEF強化石 Ⅱ',   icon:'🟣', desc:'DEF基礎値を永続+12',   price: 1800, effect: () => { G.bonusDef = (G.bonusDef||0)+12; applyEquipStats(); } },
+    { name:'HP強化石 Ⅱ',    icon:'❤',  desc:'HP基礎値を永続+150',   price: 2200, effect: () => { G.bonusHp  = (G.bonusHp||0)+150; applyEquipStats(); } },
+    { name:'SPD強化石',       icon:'⚡', desc:'SPD基礎値を永続+8',    price: 1200, effect: () => { G.bonusSpd = (G.bonusSpd||0)+8;  applyEquipStats(); } },
+  ],
+  特殊: [
+    { name:'インベントリ拡張',icon:'🎒', desc:'所持枠+10（現在の上限まで）', price: 2000, effect: () => { G.invMax = (G.invMax||30)+10; } },
+    { name:'影の器',          icon:'👥', desc:'影の軍団スロット+1（転職後）', price: 3000, effect: () => { if (G.maxShadows > 0) { G.maxShadows++; renderShadowSlots(); } } },
+    { name:'経験値ブースト',  icon:'⭐', desc:'次のダンジョンEXP+50%（1回）', price: 1500, effect: () => { G.expBoost = (G.expBoost||0)+1; } },
+    { name:'ゴールドブースト', icon:'💰', desc:'次のダンジョンGold+50%（1回）',price: 1000, effect: () => { G.goldBoost = (G.goldBoost||0)+1; } },
+  ],
+};
+
+let currentShopTab = '消耗品';
+
+function openShop() {
+  const existing = document.querySelector('.modal-overlay');
+  if (existing) existing.remove();
+  renderShopModal();
+}
+
+function renderShopModal() {
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.id = 'shop-overlay';
+
+  const tabsHtml = Object.keys(SHOP_ITEMS).map(t =>
+    `<button class="shop-tab ${t===currentShopTab?'active':''}" onclick="switchShopTab('${t}')">${t}</button>`
+  ).join('');
+
+  const itemsHtml = (SHOP_ITEMS[currentShopTab]||[]).map((item, i) => {
+    const canBuy = G.gold >= item.price;
+    return `
+      <div class="shop-item">
+        <span class="shop-item-icon">${item.icon}</span>
+        <div class="shop-item-info">
+          <div class="shop-item-name">${item.name}</div>
+          <div class="shop-item-bonus">${item.desc}</div>
+        </div>
+        <span class="shop-item-price">${item.price.toLocaleString()}G</span>
+        <button class="btn-buy" onclick="buyShopItem('${currentShopTab}',${i})" ${canBuy?'':'disabled'}>購入</button>
+      </div>`;
+  }).join('');
+
+  overlay.innerHTML = `
+    <div class="shop-modal" style="position:relative">
+      <div class="shop-header">
+        <div class="shop-title">🏪 マーケット</div>
+        <div style="display:flex;align-items:center;gap:0.8rem">
+          <div class="shop-gold-display">💰 <span id="shop-gold-disp">${G.gold.toLocaleString()}</span>G</div>
+          <button class="shop-close" onclick="closeShop()">✕ 閉じる</button>
+        </div>
+      </div>
+      <div class="shop-tabs" id="shop-tabs">${tabsHtml}</div>
+      <div class="shop-body" id="shop-body">${itemsHtml}</div>
+    </div>`;
+  document.body.appendChild(overlay);
+}
+
+function switchShopTab(tab) {
+  currentShopTab = tab;
+  renderShopModal();
+  // Re-attach overlay click close behavior lost on re-render
+}
+
+function buyShopItem(category, idx) {
+  const item = SHOP_ITEMS[category][idx];
+  if (!item || G.gold < item.price) return;
+  G.gold -= item.price;
+  item.effect();
+  updateUI();
+  addActivity(`「${item.name}」を購入した`);
+  showNotification('🏪 購入完了', `「${item.name}」を入手！`, true);
+  // Refresh shop gold display & buttons
+  const goldDisp = document.getElementById('shop-gold-disp');
+  if (goldDisp) goldDisp.textContent = G.gold.toLocaleString();
+  const body = document.getElementById('shop-body');
+  if (body) {
+    body.querySelectorAll('.btn-buy').forEach((btn, i) => {
+      const si = SHOP_ITEMS[category][i];
+      btn.disabled = si ? G.gold < si.price : true;
+    });
+  }
+  saveGame();
+}
+
+function closeShop() {
+  document.getElementById('shop-overlay')?.remove();
+}
+
+function statLabel(k) {
+  return {atk:'ATK', def:'DEF', spd:'SPD', hp:'HP', mp:'MP'}[k] || k;
+}
+
+function getTotalEquipBonus() {
+  const total = { atk:0, def:0, spd:0, hp:0, mp:0 };
+  Object.values(G.equipped).forEach(item => {
+    if (!item) return;
+    Object.entries(item.bonus).forEach(([k,v]) => { if (total[k] !== undefined) total[k] += v; });
+  });
+  return total;
+}
+
+function equipItem(id) {
+  const item = G.fullInventory.find(i => i.id == id);
+  if (!item || !item.slot) return;
+  const slot = item.slot;
+  // Unequip current item in slot
+  if (G.equipped[slot]) {
+    const old = G.equipped[slot];
+    const oldInInv = G.fullInventory.find(i => i.id == old.id);
+    if (oldInInv) oldInInv.equippedIn = null;
+  }
+  G.equipped[slot] = item;
+  item.equippedIn = slot;
+  applyEquipStats();
+  renderEquipTab();
+  updateUI();
+  showNotification('⚔ 装備', `「${item.name}」を装備した！`, true);
+}
+
+function unequipItem(slot) {
+  const item = G.equipped[slot];
+  if (!item) return;
+  const inInv = G.fullInventory.find(i => i.id == item.id);
+  if (inInv) inInv.equippedIn = null;
+  G.equipped[slot] = null;
+  applyEquipStats();
+  renderEquipTab();
+  updateUI();
+  showNotification('', `「${item.name}」を外した`, false);
+}
+
+function applyEquipStats() {
+  // Recalculate base stats from level, then add equipment bonuses
+  const base = calcBaseStats(G.level);
+  const bonus = getTotalEquipBonus();
+  G.atk = base.atk + (bonus.atk || 0);
+  G.def = base.def + (bonus.def || 0);
+  G.spd = base.spd + (bonus.spd || 0);
+  G.maxHp = base.maxHp + (bonus.hp || 0);
+  G.maxMp = base.maxMp + (bonus.mp || 0);
+  G.hp = Math.min(G.hp, G.maxHp);
+  G.mp = Math.min(G.mp, G.maxMp);
+}
+
+function calcBaseStats(lv) {
+  return {
+    atk: 10 + (lv - 1) * 3  + (G.bonusAtk||0),
+    def: 5  + (lv - 1) * 2  + (G.bonusDef||0),
+    spd: 8  + (lv - 1) * 1  + (G.bonusSpd||0),
+    maxHp: 100 + (lv - 1) * 20 + (G.bonusHp||0),
+    maxMp: 50  + (lv - 1) * 5,
+  };
+}
+
+function addActivity(msg) {
+  G.activityLog.unshift({ msg, day: G.day });
+  if (G.activityLog.length > 20) G.activityLog.pop();
+  renderActivityLog();
+}
+
+function renderActivityLog() {
+  const el = document.getElementById('activity-log');
+  el.innerHTML = G.activityLog.slice(0, 8).map(a => `
+    <div class="activity-entry">
+      <span class="time">Day${a.day} </span>
+      <span class="content">${a.msg}</span>
+    </div>
+  `).join('');
+}
+
+function renderShadowSlots() {
+  const el = document.getElementById('shadow-slots');
+  el.innerHTML = '';
+  if (G.maxShadows === 0) {
+    el.innerHTML = '<div style="font-size:0.7rem;color:var(--text-dim)">未解放</div>';
+    return;
+  }
+  for (let i = 0; i < G.maxShadows; i++) {
+    const div = document.createElement('div');
+    div.className = 'shadow-slot' + (G.shadows[i] ? ' filled' : '');
+    div.textContent = G.shadows[i] ? G.shadows[i].emoji : '';
+    div.title = G.shadows[i] ? G.shadows[i].name : '空';
+    el.appendChild(div);
+  }
+  document.getElementById('shadow-count').textContent = G.shadows.length;
+  document.getElementById('shadow-max').textContent = G.maxShadows;
+}
+
+function renderSkillsTab() {
+  const el = document.getElementById('skills-list');
+
+  // Show all skills (unlocked + locked preview)
+  const typeColor = { damage:'var(--red)', heal:'var(--green)', buff:'var(--accent)', debuff:'var(--accent2)', multi:'var(--gold)' };
+  const typeLabel = { damage:'攻撃', heal:'回復', buff:'バフ', debuff:'デバフ', multi:'連撃' };
+
+  const unlockedIds = new Set(G.skills.map(s => s.id));
+
+  el.innerHTML = ALL_SKILLS.map((s, i) => {
+    const unlocked = unlockedIds.has(s.id);
+    const isActive = unlocked && G.skills[G.activeSkillIdx]?.id === s.id;
+    const skillIdx = G.skills.findIndex(sk => sk.id === s.id);
+    return `
+      <div style="display:flex;align-items:flex-start;gap:0.7rem;padding:0.7rem;
+        background:${unlocked ? 'var(--bg2)' : 'rgba(0,0,0,0.3)'};
+        border:1px solid ${isActive ? 'var(--accent)' : unlocked ? 'var(--border)' : 'rgba(255,255,255,0.05)'};
+        border-radius:4px;margin-bottom:0.4rem;
+        opacity:${unlocked ? '1' : '0.45'};
+        box-shadow:${isActive ? '0 0 12px rgba(74,158,255,0.3)' : 'none'};
+        transition:all 0.2s;cursor:${unlocked ? 'pointer' : 'default'}"
+        ${unlocked && skillIdx >= 0 ? `onclick="selectSkill(${skillIdx})"` : ''}>
+        <span style="font-size:1.5rem;flex-shrink:0;filter:${unlocked?'none':'grayscale(1)'}">${s.icon}</span>
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.2rem;flex-wrap:wrap">
+            <span style="font-weight:700;color:${unlocked?'#fff':'var(--text-dim)'}">${s.name}</span>
+            <span style="font-size:0.6rem;padding:0.1rem 0.35rem;border-radius:2px;background:${typeColor[s.type]}22;border:1px solid ${typeColor[s.type]}55;color:${typeColor[s.type]}">${typeLabel[s.type]}</span>
+            ${isActive ? '<span style="font-size:0.6rem;padding:0.1rem 0.35rem;border-radius:2px;background:rgba(74,158,255,0.2);border:1px solid var(--accent);color:var(--accent)">セット中</span>' : ''}
+            ${!unlocked ? `<span style="font-size:0.6rem;color:var(--text-dim)">🔒 ${s.unlockDesc}</span>` : ''}
+          </div>
+          <div style="font-size:0.73rem;color:var(--text-dim);margin-bottom:0.25rem">${s.desc}</div>
+          <div style="font-size:0.68rem;color:var(--accent2)">
+            MP: ${s.mpCost}
+            ${s.dmgMult > 0 ? ` | 威力: ${s.dmgMult}x` : ''}
+          </div>
+        </div>
+        ${unlocked && !isActive ? '<span style="font-size:0.65rem;color:var(--text-dim);flex-shrink:0;align-self:center">タップで<br>セット</span>' : ''}
+      </div>`;
+  }).join('');
+}
+
+function selectSkill(idx) {
+  G.activeSkillIdx = idx;
+  renderSkillsTab();
+  updateCombatSkillButtons();
+  const sk = G.skills[idx];
+  if (sk) showNotification('⚔ スキルセット', `「${sk.name}」をセットした`, false);
+}
+
+// ===== UI UPDATE =====
+function updateUI() {
+  // Left panel
+  document.getElementById('stat-level').textContent = G.level;
+  document.getElementById('exp-bar').style.width = (G.exp / G.expNeeded * 100) + '%';
+  document.getElementById('exp-text').textContent = `${G.exp} / ${G.expNeeded} EXP`;
+  document.getElementById('stat-gold').textContent = G.gold.toLocaleString();
+
+  document.getElementById('hp-bar').style.width = (G.hp / G.maxHp * 100) + '%';
+  document.getElementById('hp-label').textContent = `${G.hp} / ${G.maxHp}`;
+  document.getElementById('mp-bar').style.width = (G.mp / G.maxMp * 100) + '%';
+  document.getElementById('mp-label').textContent = `${G.mp} / ${G.maxMp}`;
+
+  document.getElementById('stat-atk').textContent = G.atk;
+  document.getElementById('stat-def').textContent = G.def;
+  document.getElementById('stat-spd').textContent = G.spd;
+
+  const maxStat = 200;
+  document.getElementById('atk-bar').style.width = Math.min(100, G.atk / maxStat * 100) + '%';
+  document.getElementById('def-bar').style.width = Math.min(100, G.def / maxStat * 100) + '%';
+  document.getElementById('spd-bar').style.width = Math.min(100, G.spd / maxStat * 100) + '%';
+
+  // Rank badge
+  const rankColors = { E:'var(--e-rank)', D:'var(--d-rank)', C:'var(--c-rank)', B:'var(--b-rank)', A:'var(--a-rank)', S:'var(--s-rank)' };
+  const badge = document.getElementById('rank-badge');
+  badge.textContent = G.rank + '級';
+  badge.className = 'player-rank-badge rank-' + G.rank;
+
+  document.getElementById('player-title').textContent = G.title ? `『${G.title}』` : '— 称号なし —';
+
+  // Status tab
+  document.getElementById('status-class').textContent = G.jobClass;
+  document.getElementById('status-rank-display').textContent = G.rank + '級';
+  document.getElementById('status-rank-display').style.color = rankColors[G.rank];
+  document.getElementById('status-title-display').textContent = G.title || '—';
+  document.getElementById('st-level').textContent = G.level;
+  document.getElementById('st-hp').textContent = G.maxHp;
+  document.getElementById('st-mp').textContent = G.maxMp;
+  document.getElementById('st-atk').textContent = G.atk;
+  document.getElementById('st-def').textContent = G.def;
+  document.getElementById('st-spd').textContent = G.spd;
+  document.getElementById('st-kills').textContent = G.kills;
+  document.getElementById('st-dungeons').textContent = G.dungeonsCleared;
+
+  document.getElementById('header-day').textContent = `Day ${G.day} | Lv${G.level} ${G.rank}級`;
+}
+
+function addLog(html, cls='') {
+  const log = document.getElementById('combat-log');
+  const div = document.createElement('div');
+  div.className = 'log-line ' + cls;
+  div.innerHTML = html;
+  log.appendChild(div);
+  log.scrollTop = log.scrollHeight;
+}
+
+function disableCombatActions() {
+  document.querySelectorAll('.btn-action').forEach(b => b.disabled = true);
+}
+
+function enableCombatActions() {
+  document.querySelectorAll('.btn-action').forEach(b => b.disabled = false);
+  updateCombatSkillButtons();
+}
+
+function showDamageNumber(dmg, isPlayer) {
+  const num = document.createElement('div');
+  num.className = 'damage-number';
+  num.textContent = (isPlayer ? '' : '-') + dmg;
+  num.style.color = isPlayer ? 'var(--red)' : '#ff8800';
+  num.style.left = (isPlayer ? 60 : 30) + '%';
+  num.style.top = '40%';
+  document.body.appendChild(num);
+  setTimeout(() => num.remove(), 1500);
+}
+
+function showNotification(title, body, isGood) {
+  const existing = document.querySelectorAll('.notification');
+  existing.forEach(e => e.remove());
+
+  const n = document.createElement('div');
+  n.className = 'notification' + (isGood ? ' level-up' : '');
+  n.innerHTML = `
+    <div class="notification-inner">
+      <div style="font-weight:700;margin-bottom:0.2rem;color:${isGood ? 'var(--gold)' : 'var(--accent)'}">${title}</div>
+      <div style="color:var(--text-dim);font-size:0.8rem;white-space:pre-line">${body}</div>
+    </div>
+  `;
+  document.body.appendChild(n);
+  setTimeout(() => n.remove(), 3500);
+}
+
+function switchTab(name) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// ===== SAVE / LOAD =====
+const SAVE_KEY = 'shadowHunterSave_v1';
+
+function saveGame() {
+  const saveData = {
+    ...G,
+    savedAt: new Date().toISOString(),
+  };
+  try {
+    localStorage.setItem(SAVE_KEY, JSON.stringify(saveData));
+  } catch(e) {
+    console.warn('Save failed:', e);
+  }
+}
+
+function loadGame() {
+  try {
+    const raw = localStorage.getItem(SAVE_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch(e) {
+    return null;
+  }
+}
+
+function manualSave() {
+  saveGame();
+  showNotification('💾 セーブ完了', 'データを保存しました', true);
+}
+
+function continueGame() {
+  const data = loadGame();
+  if (!data) return;
+  // Restore state
+  Object.assign(G, data);
+  showScreen('game-screen');
+  renderDungeons();
+  renderShadowSlots();
+  renderSkillsTab();
+  renderQuests();
+  renderInventory();
+  renderEquipTab();
+  renderActivityLog();
+  updateUI();
+  showNotification('↩ ロード完了', `Lv${G.level} ${G.rank}級のデータを読み込みました`, false);
+}
+
+function resetSave() {
+  if (!confirm('セーブデータを削除しますか？この操作は取り消せません。')) return;
+  localStorage.removeItem(SAVE_KEY);
+  document.getElementById('continue-btn-wrap').style.display = 'none';
+  showNotification('🗑 削除完了', 'セーブデータを削除しました', false);
+}
+
+// Auto-save every 30 seconds
+setInterval(() => {
+  if (document.getElementById('game-screen').classList.contains('active')) {
+    saveGame();
+  }
+}, 30000);
+
+// Hook into key events for auto-save
+const _origDungeonClear = dungeonClear;
+const _origLevelUp = levelUp;
+
+// Check for existing save on load
+(function checkSaveOnLoad() {
+  const data = loadGame();
+  if (data) {
+    const wrap = document.getElementById('continue-btn-wrap');
+    const info = document.getElementById('save-info');
+    wrap.style.display = 'block';
+    const d = new Date(data.savedAt);
+    const dateStr = `${d.getMonth()+1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}`;
+    info.textContent = `Lv${data.level} ${data.rank}級｜${data.dungeonsCleared}ダンジョン攻略｜最終セーブ: ${dateStr}`;
+  }
+})();
 </script>
 
 </body>
