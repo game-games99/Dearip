@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Shadow Hunter - 影の君主</title>
+<title>Gate Diver - 影の君主</title>
 <style>
   :root {
     --bg: #050810;
@@ -136,17 +136,18 @@ font-weight: 300;
 }
 
 .title-story {
-max-width: 600px;
-line-height: 1.8;
+max-width: 560px;
+line-height: 2.0;
 color: var(–text-dim);
-font-size: 0.9rem;
-margin-bottom: 3rem;
+font-size: 0.88rem;
+margin-bottom: 2.5rem;
 text-align: left;
-background: rgba(10,16,32,0.8);
+background: rgba(5,8,16,0.9);
 border: 1px solid var(–border);
-padding: 1.5rem;
+padding: 1.8rem 1.8rem;
 border-radius: 4px;
 position: relative;
+letter-spacing: 0.04em;
 }
 
 .title-story::before {
@@ -155,6 +156,23 @@ position: absolute;
 top: -1px; left: -1px; right: -1px;
 height: 2px;
 background: linear-gradient(90deg, transparent, var(–accent), transparent);
+}
+
+.story-line { display: block; margin-bottom: 0; }
+.story-blank { display: block; height: 0.8em; }
+.story-indent { display: block; padding-left: 1em; }
+.story-center { display: block; text-align: center; letter-spacing: 0.3em; }
+.story-em { color: #c8d8f0; }
+.story-key { color: var(–accent); font-weight: 600; }
+.story-dark { color: var(–accent2); }
+.story-choice { color: var(–gold); font-weight: 600; }
+.story-rule {
+display: block;
+text-align: center;
+color: var(–border);
+margin: 0.6em 0;
+letter-spacing: 0.5em;
+font-size: 0.75rem;
 }
 
 .btn-start {
@@ -1214,6 +1232,10 @@ position: relative;
 .inv-item-icon { font-size: 1.3rem; flex-shrink: 0; }
 .inv-item-info { flex: 1; min-width: 0; }
 .inv-item-name { font-size: 0.82rem; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.inv-item-name.rname-legendary { color: var(–s-rank); text-shadow: 0 0 8px rgba(255,102,0,0.5); }
+.inv-item-name.rname-epic      { color: var(–a-rank); text-shadow: 0 0 6px rgba(204,68,255,0.4); }
+.inv-item-name.rname-rare      { color: var(–b-rank); }
+.inv-item-name.rname-common    { color: #ccc; }
 .inv-item-sub  { font-size: 0.68rem; color: var(–text-dim); margin-top: 0.1rem; }
 .inv-item-equipped-badge {
 font-size: 0.6rem;
@@ -1249,6 +1271,59 @@ height: 100%;
 background: linear-gradient(90deg, var(–gold), #ffaa00);
 transition: width 0.6s ease;
 }
+
+/* Random dungeon card */
+.rd-card {
+background: var(–bg2);
+border: 1px solid var(–border);
+border-radius: 6px;
+overflow: hidden;
+cursor: pointer;
+transition: all 0.25s;
+position: relative;
+}
+.rd-card:hover { transform: translateY(-2px); }
+.rd-card-header {
+display: flex;
+align-items: center;
+gap: 0.75rem;
+padding: 0.85rem 1rem 0.6rem;
+border-bottom: 1px solid var(–border);
+}
+.rd-card-icon { font-size: 2rem; flex-shrink: 0; }
+.rd-card-title { font-weight: 700; font-size: 0.95rem; color: #fff; }
+.rd-card-sub   { font-size: 0.7rem; color: var(–text-dim); margin-top: 0.1rem; }
+.rd-card-body  { padding: 0.65rem 1rem; display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; }
+.rd-tag {
+font-size: 0.65rem;
+padding: 0.15rem 0.45rem;
+border-radius: 3px;
+background: rgba(74,158,255,0.1);
+border: 1px solid rgba(74,158,255,0.25);
+color: var(–accent);
+}
+.rd-tag.gold  { background:rgba(255,215,0,0.1);  border-color:rgba(255,215,0,0.3);  color:var(–gold); }
+.rd-tag.red   { background:rgba(255,51,102,0.1); border-color:rgba(255,51,102,0.3); color:var(–red); }
+.rd-tag.green { background:rgba(0,255,136,0.1);  border-color:rgba(0,255,136,0.3);  color:var(–green); }
+.rd-tag.purple{ background:rgba(123,74,255,0.1); border-color:rgba(123,74,255,0.3); color:var(–accent2); }
+.rd-card-footer { padding: 0.6rem 1rem; display:flex; align-items:center; justify-content:space-between; background:rgba(0,0,0,0.2); }
+.rd-difficulty {
+font-size: 0.7rem;
+font-weight: 700;
+letter-spacing: 0.1em;
+}
+.rd-glow-E { border-color: var(–e-rank); box-shadow: 0 0 12px rgba(170,170,170,0.15); }
+.rd-glow-D { border-color: var(–d-rank); box-shadow: 0 0 12px rgba(68,255,136,0.15); }
+.rd-glow-C { border-color: var(–c-rank); box-shadow: 0 0 12px rgba(68,221,255,0.15); }
+.rd-glow-B { border-color: var(–b-rank); box-shadow: 0 0 12px rgba(68,136,255,0.2); }
+.rd-glow-A { border-color: var(–a-rank); box-shadow: 0 0 16px rgba(204,68,255,0.25); }
+.rd-glow-S { border-color: var(–s-rank); box-shadow: 0 0 20px rgba(255,102,0,0.3); }
+.rd-glow-X { border-color: #cc88ff; box-shadow: 0 0 24px rgba(200,100,255,0.4); animation: pillar-pulse 2.5s ease-in-out infinite; }
+@keyframes pillar-pulse {
+0%,100% { box-shadow: 0 0 24px rgba(200,100,255,0.4); }
+50%      { box-shadow: 0 0 40px rgba(200,100,255,0.7), 0 0 80px rgba(100,0,200,0.2); }
+}
+.pillar-defeated { opacity:0.45; filter:grayscale(0.6); }
 
 /* Scrollbar */
 ::-webkit-scrollbar { width: 4px; }
@@ -1408,7 +1483,14 @@ flex-shrink: 0;
 ::-webkit-scrollbar-thumb { background: var(–border); border-radius: 2px; }
 ::-webkit-scrollbar-thumb:hover { background: var(–accent); }
 
-@media (max-width: 900px) {
+@keyframes tap-hint {
+0%, 100% { opacity: 0.3; transform: translateY(0); }
+50%       { opacity: 0.7; transform: translateY(-4px); }
+}
+@keyframes fade-in {
+from { opacity: 0; transform: translateY(12px); }
+to   { opacity: 1; transform: translateY(0); }
+}
 .game-body { grid-template-columns: 1fr; }
 .left-panel, .right-panel { display: none; }
 }
@@ -1423,15 +1505,85 @@ flex-shrink: 0;
 
 <div id="title-screen" class="screen active">
   <div class="title-bg" id="particle-container"></div>
-  <div class="title-content">
-    <div class="title-rank">[ HUNTER SYSTEM ONLINE ]</div>
-    <h1 class="title-main">SHADOW<br>HUNTER</h1>
-    <div class="title-sub">影の君主の覚醒</div>
-    <div class="title-story">
-      <p style="margin-bottom:0.8rem">世界に「亀裂」が走り始めたのは、今から十数年前のことだ。<br>空間の狭間から溢れ出す異形の存在——それを討つ者たちは<br>いつしか<strong style="color:var(--accent)">「ゲートダイバー」</strong>と呼ばれるようになった。</p>
-      <p>底辺ダイバー・<strong style="color:#fff">shadow</strong>。仲間からは足手まといと笑われ、<br>毎回ボロボロになりながらも潜り続けてきた男。<br>だがある深夜、崩壊した封印階層の最深部で<br>彼は<strong style="color:var(--accent2)">「何か」</strong>に選ばれた——</p>
+
+  <!-- ① プロローグ（タップで消える） -->
+
+  <div id="prologue-view" onclick="dismissPrologue()" style="
+    position:absolute;inset:0;z-index:10;
+    display:flex;flex-direction:column;
+    align-items:center;justify-content:flex-start;
+    overflow-y:auto;
+    background:rgba(5,8,16,0.97);
+    cursor:pointer;
+    padding:4rem 1.8rem 3rem;
+    -webkit-tap-highlight-color:transparent;
+  ">
+    <div style="max-width:520px;width:100%;text-align:left;pointer-events:none">
+      <div style="font-family:'Courier New',monospace;font-size:0.72rem;letter-spacing:0.4em;color:var(--accent);margin-bottom:2.5rem;text-align:center;animation:pulse-glow 2s ease-in-out infinite">
+        [ GATE DIVER — PROLOGUE ]
+      </div>
+      <span class="story-line">世界は、ある日<span class="story-key">〝裂けた〟</span>。</span>
+      <span class="story-blank"></span>
+      <span class="story-line">空を走る黒い亀裂——</span>
+      <span class="story-line">そこから現れた無数の<span class="story-key">「ゲート」</span>は、現実を侵食し、</span>
+      <span class="story-line">異形の存在をこの世界へと解き放った。</span>
+      <span class="story-blank"></span>
+      <span class="story-line">人は、無力だった。</span>
+      <span class="story-line">日常は、あまりにも容易く踏み潰された。</span>
+      <span class="story-blank"></span>
+      <span class="story-rule">⸻</span>
+      <span class="story-blank"></span>
+      <span class="story-line">——だが、その絶望の最中。</span>
+      <span class="story-blank"></span>
+      <span class="story-indent"><span class="story-em">ごく一部の人間が、</span><span class="story-dark">〝目覚めた〟</span>。</span>
+      <span class="story-blank"></span>
+      <span class="story-line">理を超えた力を振るい、</span>
+      <span class="story-line">異形を狩る者たち。</span>
+      <span class="story-blank"></span>
+      <span class="story-line">人々は彼らを、いつしかこう呼んだ——</span>
+      <span class="story-blank"></span>
+      <span class="story-center story-key" style="font-size:1.1rem;letter-spacing:0.5em">「 ダイバー 」</span>
+      <span class="story-blank"></span>
+      <span class="story-rule">⸻</span>
+      <span class="story-blank"></span>
+      <span class="story-line">そして今。</span>
+      <span class="story-blank"></span>
+      <span class="story-line">ひとりの<span class="story-em">新米ダイバー</span>が、初めてダンジョンへと足を踏み入れる。</span>
+      <span class="story-blank"></span>
+      <span class="story-line">それが——</span>
+      <span class="story-indent story-dark">運命の分岐点になるとも、知らずに。</span>
+      <span class="story-blank"></span>
+      <span class="story-rule">⸻</span>
+      <span class="story-blank"></span>
+      <span class="story-line">突如発生した<span class="story-key">〝ゲートブレイク〟</span>。</span>
+      <span class="story-blank"></span>
+      <span class="story-line">崩壊する空間。歪む法則。</span>
+      <span class="story-line">逃げ場のない、絶対的な死。</span>
+      <span class="story-blank"></span>
+      <span class="story-line">その極限の中で——</span>
+      <span class="story-blank"></span>
+      <span class="story-indent story-em">主人公は触れた。</span>
+      <span class="story-indent story-dark">〝世界の裏側〟に。</span>
+      <span class="story-blank"></span>
+      <span class="story-rule">⸻</span>
+      <span class="story-blank"></span>
+      <span class="story-center story-choice" style="font-size:1.05rem">主人公は、何かに選ばれた。</span>
+      <span class="story-blank"></span>
+      <span class="story-blank"></span>
     </div>
-    <div id="title-buttons">
+    <!-- タップヒント -->
+    <div style="position:fixed;bottom:2rem;left:0;right:0;text-align:center;pointer-events:none;animation:tap-hint 1.8s ease-in-out infinite">
+      <span style="font-size:0.72rem;letter-spacing:0.25em;color:rgba(255,255,255,0.3)">TAP TO CONTINUE</span>
+    </div>
+  </div>
+
+  <!-- ② タイトル + ボタン（プロローグ消去後に表示） -->
+
+  <div id="title-main-view" class="title-content" style="display:none;animation:fade-in 0.8s ease">
+    <div class="title-rank">[ GATE DIVER — SYSTEM ONLINE ]</div>
+    <h1 class="title-main">GATE<br>DIVER</h1>
+    <div class="title-sub">— 世界が、裂けた日 —</div>
+    <div id="title-buttons" style="margin-top:0.5rem">
       <button class="btn-start" onclick="startGame()" style="margin-bottom:0.8rem;display:block;width:100%"><span>▶ 新しくゲームを開始する</span></button>
       <div id="continue-btn-wrap" style="display:none;margin-bottom:0.8rem">
         <button class="btn-start" onclick="continueGame()" style="border-color:var(--green);color:var(--green);display:block;width:100%;margin-bottom:0.5rem">
@@ -1442,6 +1594,12 @@ flex-shrink: 0;
       <button class="btn-start" onclick="resetSave()" style="border-color:rgba(255,51,102,0.5);color:rgba(255,51,102,0.6);font-size:0.8rem;padding:0.6rem 1.5rem;display:block;width:100%">
         <span>🗑 セーブデータを削除</span>
       </button>
+      <div style="margin-top:1.2rem">
+        <button onclick="document.getElementById('prologue-view').style.display='flex';document.getElementById('title-main-view').style.display='none';"
+          style="font-size:0.68rem;color:var(--text-dim);background:transparent;border:none;cursor:pointer;letter-spacing:0.15em;text-decoration:underline;text-underline-offset:3px">
+          プロローグを読み返す
+        </button>
+      </div>
     </div>
   </div>
 </div>
@@ -1450,8 +1608,8 @@ flex-shrink: 0;
 
 <div id="game-screen" class="screen">
   <div class="game-header">
-    <div class="header-title">⚔ SHADOW HUNTER</div>
-    <div class="header-day" id="header-day">Day 1 | ハンター協会</div>
+    <div class="header-title">⚔ GATE DIVER</div>
+    <div class="header-day" id="header-day">Lv1 E級</div>
     <button onclick="manualSave()" style="font-size:0.72rem;padding:0.3rem 0.8rem;background:transparent;border:1px solid var(--border);color:var(--text-dim);cursor:pointer;border-radius:3px;transition:all 0.2s;font-family:"Hiragino Sans","Yu Gothic",sans-serif;letter-spacing:0.05em" onmouseover="this.style.borderColor='var(--green)';this.style.color='var(--green)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)'">💾 セーブ</button>
   </div>
 
@@ -1460,7 +1618,10 @@ flex-shrink: 0;
     <div class="left-panel">
       <div class="player-card">
         <div class="player-avatar" id="player-avatar">🥷</div>
-        <div class="player-name">shadow</div>
+        <div class="player-name" id="player-name-display" onclick="editPlayerName()" title="タップして名前を変更" style="cursor:pointer;display:flex;align-items:center;gap:0.3rem">
+          <span id="player-name-text">shadow</span>
+          <span style="font-size:0.55rem;color:var(--text-dim);opacity:0.6">✎</span>
+        </div>
         <div class="player-rank-badge" id="rank-badge">E級</div>
         <div class="player-title" id="player-title">— 称号なし —</div>
       </div>
@@ -1512,21 +1673,76 @@ flex-shrink: 0;
 <!-- CENTER PANEL -->
 <div class="center-panel">
   <div class="center-tabs">
-    <button class="tab-btn active" onclick="switchTab('dungeon')">⚔ ダンジョン</button>
-    <button class="tab-btn" onclick="switchTab('equip')">🎒 装備</button>
-    <button class="tab-btn" onclick="switchTab('status')">📊 ステータス</button>
-    <button class="tab-btn" onclick="switchTab('skills')">✨ スキル</button>
+    <button class="tab-btn active" onclick="switchTab('dungeon')" id="maintab-dungeon">⚔ ストーリー</button>
+    <button class="tab-btn" onclick="switchTab('random')" id="maintab-random">🎲 ランダム</button>
+    <button class="tab-btn" onclick="switchTab('equip')" id="maintab-equip">🎒 装備</button>
+    <button class="tab-btn" onclick="switchTab('status')" id="maintab-status">📊 ステータス</button>
+    <button class="tab-btn" onclick="switchTab('skills')" id="maintab-skills">✨ スキル</button>
   </div>
 
   <!-- Dungeon Tab -->
   <div id="tab-dungeon" class="tab-content active">
     <div class="window-panel">
       <div class="window-header">
-        <div class="window-title"><span class="window-title-icon">🏛</span>ハンター協会 — ダンジョン斡旋</div>
+        <div class="window-title"><span class="window-title-icon">🏛</span>ダイバー協会 — ゲート斡旋所</div>
         <div style="font-size:0.7rem;color:var(--text-dim)">攻略可能ダンジョン</div>
       </div>
       <div class="window-body">
         <div class="dungeon-grid" id="dungeon-grid"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Twelve Kings Tab -->
+  <div id="tab-kings" class="tab-content">
+    <div class="window-panel">
+      <div class="window-header">
+        <div class="window-title"><span class="window-title-icon">👑</span>十二王 — 種族の最強戦士</div>
+        <div id="kings-progress-text" style="font-size:0.7rem;color:#cc88aa">0 / 12 撃破</div>
+      </div>
+      <div class="window-body">
+        <div style="font-size:0.73rem;color:var(--text-dim);line-height:1.7;margin-bottom:1rem;padding:0.6rem;background:rgba(200,100,150,0.05);border:1px solid rgba(200,100,150,0.2);border-radius:4px">
+          ⚔ 各種族の頂点に立つ12人の王。Lv75で一斉解放・攻略順自由。<br>
+          🔺 王を1人倒すたびに残りの全ダンジョンの難易度が上昇する。<br>
+          🌌 12人全員撃破後、ラストダンジョンが開放される。
+        </div>
+        <div id="kings-dungeon-grid" style="display:flex;flex-direction:column;gap:0.7rem"></div>
+        <div id="kings-last-panel" style="display:none"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Twelve Pillars Tab -->
+  <div id="tab-pillars" class="tab-content">
+    <div class="window-panel">
+      <div class="window-header">
+        <div class="window-title"><span class="window-title-icon">👑</span>天司十二柱 — 種族の君主たち</div>
+        <div id="pillars-progress-text" style="font-size:0.7rem;color:var(--gold)">0 / 12 撃破</div>
+      </div>
+      <div class="window-body">
+        <div style="font-size:0.73rem;color:var(--text-dim);line-height:1.7;margin-bottom:1rem;padding:0.6rem;background:rgba(255,215,0,0.05);border:1px solid rgba(255,215,0,0.15);border-radius:4px">
+          ⚠ 全君主ダンジョンはLv80到達と同時に一斉解放される。攻略順は自由。<br>
+          👑 君主を1人撃破するたびに残りの全ダンジョンの難易度が上昇する。<br>
+          🌌 12人全員撃破後、ラストダンジョンが開放される。
+        </div>
+        <div id="pillars-dungeon-grid" style="display:flex;flex-direction:column;gap:0.7rem"></div>
+        <div id="last-dungeon-panel" style="display:none;margin-top:1rem"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Random Dungeon Tab -->
+  <div id="tab-random" class="tab-content">
+    <div class="window-panel">
+      <div class="window-header">
+        <div class="window-title"><span class="window-title-icon">🎲</span>ランダムゲート — 未知の亀裂</div>
+        <button onclick="rerollRandomDungeons()" style="font-size:0.68rem;padding:0.2rem 0.6rem;background:rgba(123,74,255,0.15);border:1px solid var(--accent2);color:var(--accent2);cursor:pointer;border-radius:3px;transition:all 0.2s">🔄 再抽選</button>
+      </div>
+      <div class="window-body">
+        <div style="font-size:0.75rem;color:var(--text-dim);margin-bottom:1rem;line-height:1.6">
+          毎回異なる構成のゲートが出現する。難易度・敵・報酬はすべてランダム。3つの中から1つを選んで挑め。
+        </div>
+        <div id="random-dungeon-grid" style="display:flex;flex-direction:column;gap:0.8rem"></div>
       </div>
     </div>
   </div>
@@ -1587,6 +1803,17 @@ flex-shrink: 0;
           <span style="color:var(--red)">🗡 <span id="st-kills">0</span></span>
           <span style="color:var(--accent)">🏛 <span id="st-dungeons">0</span></span>
         </div>
+      </div>
+      <hr style="border:none;border-top:1px solid var(--border);margin:1rem 0">
+      <div>
+        <div style="color:var(--text-dim);font-size:0.65rem;margin-bottom:0.6rem;letter-spacing:0.1em">⚡ クラスチェンジ</div>
+        <div id="job-progress"></div>
+      </div>
+      <hr style="border:none;border-top:1px solid var(--border);margin:1rem 0">
+      <div>
+        <div style="color:var(--text-dim);font-size:0.65rem;margin-bottom:0.6rem;letter-spacing:0.1em">👑 天司十二柱</div>
+        <div style="font-size:0.68rem;color:var(--text-dim);margin-bottom:0.6rem;line-height:1.6">各種族の頂点に君臨する十二の権能者。主人公の権能は<span style="color:var(--accent2)">???（未設定）</span>。</div>
+        <div id="twelve-pillars-list"></div>
       </div>
     </div>
   </div>
@@ -1707,6 +1934,15 @@ flex-shrink: 0;
   <span id="combat-exp-text" style="white-space:nowrap">0 / 100</span>
 </div>
 
+<!-- MP bar -->
+<div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.6rem;font-size:0.7rem;color:var(--text-dim)">
+  <span style="flex-shrink:0">MP</span>
+  <div style="flex:1;height:5px;background:rgba(123,74,255,0.15);border:1px solid rgba(123,74,255,0.3);border-radius:3px;overflow:hidden">
+    <div id="combat-mp-bar" style="height:100%;background:linear-gradient(90deg,var(--accent2),var(--accent));transition:width 0.4s ease;width:100%"></div>
+  </div>
+  <span id="combat-mp-text" style="white-space:nowrap;color:var(--accent2)">50 / 50</span>
+</div>
+
 <div class="combat-log" id="combat-log">
   <div class="log-line">⚔ 戦闘開始...</div>
 </div>
@@ -1747,6 +1983,7 @@ flex-shrink: 0;
 // ===== GAME STATE =====
 let G = {
   day: 1,
+  name: 'shadow',
   level: 1,
   exp: 0,
   expNeeded: 100,
@@ -1759,6 +1996,8 @@ let G = {
   jobClass: 'ハンター',
   kills: 0,
   dungeonsCleared: 0,
+  clearedDungeonIds: [],  // クリア済みダンジョンID記録（段階解放用）
+  lastBossCleared: false, // ラストダンジョンクリア済み
   skills: [],
   shadows: [],
   maxShadows: 0,
@@ -1788,10 +2027,16 @@ let G = {
   // Shop / permanent bonuses
   bonusAtk: 0, bonusDef: 0, bonusSpd: 0, bonusHp: 0,
   revive: 0, expBoost: 0, goldBoost: 0,
+  atkTrainCount: 0, defTrainCount: 0, hpTrainCount: 0, spdTrainCount: 0,
   // Skill selection
   activeSkillIdx: 0,
   // Auto-sell setting: null | 'common' | 'rare' | 'epic'
   autoSellRarity: null,
+  // 天司十二柱 撃破記録
+  pillarsDefeated: [],
+  lastDungeonUnlocked: false,
+  // 十二王 撃破記録
+  kingsDefeated: [],
 };
 
 const RANKS = ['E','D','C','B','A','S'];
@@ -1836,42 +2081,414 @@ function getItemTemplate(name) {
 
 const RANK_THRESHOLDS = { E: 0, D: 5, C: 15, B: 30, A: 50, S: 80 };
 
+// =====================================================
+// ===== EXPANDED ENEMY POOL (100+ enemies) =====
+// =====================================================
+const ENEMY_POOL = {
+  E: [
+    { name:'ゴブリン',       icon:'👺', hp:30,  atk:5,  def:2, exp:20, gold:15 },
+    { name:'コボルト',       icon:'🐺', hp:40,  atk:7,  def:3, exp:28, gold:18 },
+    { name:'スライム',       icon:'🟢', hp:25,  atk:4,  def:1, exp:15, gold:12 },
+    { name:'大ネズミ',       icon:'🐀', hp:20,  atk:6,  def:1, exp:12, gold:8  },
+    { name:'ホブゴブリン',   icon:'👹', hp:50,  atk:9,  def:4, exp:35, gold:22 },
+    { name:'コウモリ',       icon:'🦇', hp:18,  atk:5,  def:0, exp:10, gold:7  },
+    { name:'骸骨兵',         icon:'💀', hp:35,  atk:8,  def:5, exp:30, gold:20 },
+    { name:'毒キノコ',       icon:'🍄', hp:22,  atk:7,  def:2, exp:18, gold:10 },
+  ],
+  D: [
+    { name:'オーク兵士',     icon:'🐗', hp:100, atk:18, def:10, exp:60, gold:40 },
+    { name:'コボルト戦士',   icon:'🐺', hp:80,  atk:15, def:8,  exp:50, gold:32 },
+    { name:'巨大蜘蛛',       icon:'🕷', hp:90,  atk:16, def:7,  exp:55, gold:36 },
+    { name:'リザードマン',   icon:'🦎', hp:110, atk:20, def:12, exp:65, gold:45 },
+    { name:'ゾンビ騎士',     icon:'🧟', hp:120, atk:17, def:15, exp:70, gold:48 },
+    { name:'オークシャーマン',icon:'🔮', hp:75,  atk:22, def:5,  exp:68, gold:50 },
+    { name:'砂漠の蠍',       icon:'🦂', hp:85,  atk:19, def:9,  exp:58, gold:38 },
+    { name:'岩ゴーレム小',   icon:'🪨', hp:140, atk:14, def:20, exp:72, gold:52 },
+    { name:'ハーピー',       icon:'🦅', hp:70,  atk:21, def:6,  exp:62, gold:42 },
+    { name:'バンシー',       icon:'👻', hp:65,  atk:23, def:4,  exp:66, gold:46 },
+  ],
+  C: [
+    { name:'アイスゴーレム', icon:'🧊', hp:200, atk:30, def:20, exp:100, gold:70 },
+    { name:'フロストウルフ', icon:'🐺', hp:160, atk:35, def:15, exp:90,  gold:62 },
+    { name:'スケルトン騎士', icon:'💀', hp:180, atk:28, def:22, exp:95,  gold:65 },
+    { name:'リッチ',         icon:'🧟', hp:220, atk:40, def:15, exp:120, gold:90 },
+    { name:'マンティコア',   icon:'🦁', hp:240, atk:38, def:18, exp:115, gold:82 },
+    { name:'グリフォン',     icon:'🦅', hp:190, atk:42, def:16, exp:110, gold:78 },
+    { name:'ダークエルフ',   icon:'🧝', hp:170, atk:44, def:12, exp:125, gold:92 },
+    { name:'炎の精霊',       icon:'🔥', hp:150, atk:48, def:10, exp:130, gold:95 },
+    { name:'水晶ゴーレム',   icon:'💎', hp:280, atk:25, def:30, exp:108, gold:76 },
+    { name:'ミノタウロス',   icon:'🐂', hp:260, atk:36, def:24, exp:118, gold:85 },
+    { name:'メドゥーサ',     icon:'🐍', hp:200, atk:45, def:14, exp:122, gold:88 },
+    { name:'ワーウルフ',     icon:'🐺', hp:210, atk:39, def:17, exp:112, gold:80 },
+  ],
+  B: [
+    { name:'デモンナイト',   icon:'⚔',  hp:350, atk:55, def:35, exp:200, gold:150 },
+    { name:'ダークメイジ',   icon:'🌑', hp:280, atk:70, def:25, exp:220, gold:170 },
+    { name:'サイクロプス',   icon:'👁',  hp:420, atk:60, def:38, exp:210, gold:160 },
+    { name:'堕天使',         icon:'😈', hp:320, atk:72, def:28, exp:230, gold:180 },
+    { name:'影の暗殺者',     icon:'🌑', hp:270, atk:80, def:22, exp:240, gold:190 },
+    { name:'ドラゴン幼体',   icon:'🐉', hp:450, atk:65, def:40, exp:225, gold:175 },
+    { name:'骨の巨人',       icon:'💀', hp:500, atk:58, def:45, exp:215, gold:165 },
+    { name:'魔法剣士',       icon:'⚡', hp:340, atk:68, def:32, exp:222, gold:172 },
+    { name:'深淵の使者',     icon:'🕳',  hp:300, atk:75, def:26, exp:235, gold:185 },
+    { name:'呪われし騎士',   icon:'🏴', hp:380, atk:62, def:42, exp:218, gold:168 },
+  ],
+  A: [
+    { name:'上位デーモン',   icon:'👿', hp:700, atk:110, def:65, exp:420, gold:380 },
+    { name:'死神の化身',     icon:'💀', hp:600, atk:125, def:55, exp:450, gold:410 },
+    { name:'滅亡の竜',       icon:'🐉', hp:850, atk:105, def:70, exp:440, gold:400 },
+    { name:'次元の侵食者',   icon:'🌀', hp:650, atk:115, def:60, exp:430, gold:390 },
+    { name:'混沌の守護者',   icon:'⚡', hp:750, atk:120, def:62, exp:460, gold:420 },
+    { name:'虚無の騎士',     icon:'🌑', hp:680, atk:118, def:68, exp:445, gold:405 },
+    { name:'炎の大公爵',     icon:'🔥', hp:620, atk:130, def:52, exp:470, gold:430 },
+  ],
+  S: [
+    { name:'神殿守護者',     icon:'🗿', hp:800,  atk:120, def:80,  exp:500, gold:400 },
+    { name:'巨神の使徒',     icon:'⚡', hp:1000, atk:140, def:90,  exp:600, gold:500 },
+    { name:'原初の悪魔',     icon:'😈', hp:900,  atk:150, def:85,  exp:580, gold:480 },
+    { name:'神話の龍',       icon:'🐉', hp:1100, atk:160, def:95,  exp:650, gold:550 },
+    { name:'宇宙の破壊者',   icon:'🌌', hp:1200, atk:170, def:100, exp:700, gold:600 },
+    { name:'影の神格',       icon:'🌑', hp:950,  atk:155, def:90,  exp:620, gold:520 },
+  ],
+};
+
+// =====================================================
+// ===== EXPANDED ITEM TEMPLATES =====
+// =====================================================
+Object.assign(ITEM_TEMPLATES, {
+  // === WEAPONS - 追加 ===
+  '黒鉄の剣':          { slot:'weapon', icon:'🗡', rarity:'common',    bonus:{ atk:6, def:1 } },
+  '呪術師の杖':        { slot:'weapon', icon:'🪄', rarity:'common',    bonus:{ atk:4, mp:25 } },
+  '盗賊のナイフ':      { slot:'weapon', icon:'🔪', rarity:'common',    bonus:{ atk:5, spd:4 } },
+  '聖騎士の剣':        { slot:'weapon', icon:'✝', rarity:'rare',       bonus:{ atk:18, def:5 } },
+  '血の大剣':          { slot:'weapon', icon:'🩸', rarity:'rare',       bonus:{ atk:20, hp:30 } },
+  '嵐の槍':            { slot:'weapon', icon:'🌪', rarity:'rare',       bonus:{ atk:17, spd:5 } },
+  '毒牙の短剣':        { slot:'weapon', icon:'🐍', rarity:'rare',       bonus:{ atk:15, spd:10 } },
+  '大地の槌':          { slot:'weapon', icon:'🔨', rarity:'rare',       bonus:{ atk:22, def:8 } },
+  '深淵の鎌':          { slot:'weapon', icon:'⚰', rarity:'epic',       bonus:{ atk:32, mp:35 } },
+  '天雷の剣':          { slot:'weapon', icon:'⚡', rarity:'epic',       bonus:{ atk:38, spd:8 } },
+  '業火の斧':          { slot:'weapon', icon:'🔥', rarity:'epic',       bonus:{ atk:42, hp:50 } },
+  '影の刃双剣':        { slot:'weapon', icon:'🌑', rarity:'epic',       bonus:{ atk:35, spd:12 } },
+  '龍殺しの剣':        { slot:'weapon', icon:'🐉', rarity:'legendary',  bonus:{ atk:68, def:20 } },
+  '神滅の杖':          { slot:'weapon', icon:'💫', rarity:'legendary',  bonus:{ atk:72, mp:120 } },
+  // === ARMORS - 追加 ===
+  '革の鎧':            { slot:'armor',  icon:'🧥', rarity:'common',    bonus:{ def:5, hp:20 } },
+  '鎖帷子':            { slot:'armor',  icon:'🔗', rarity:'common',    bonus:{ def:7, hp:25 } },
+  '魔導師のローブ':    { slot:'armor',  icon:'👘', rarity:'common',    bonus:{ def:3, mp:30 } },
+  '騎士の甲冑':        { slot:'armor',  icon:'🛡', rarity:'rare',       bonus:{ def:18, hp:70 } },
+  'シャドウコート':    { slot:'armor',  icon:'🌑', rarity:'rare',       bonus:{ def:14, spd:6 } },
+  '聖なる外套':        { slot:'armor',  icon:'✨', rarity:'rare',       bonus:{ def:16, mp:50 } },
+  '竜鱗の盾':          { slot:'armor',  icon:'🐉', rarity:'epic',       bonus:{ def:28, hp:100 } },
+  '闇の鎧':            { slot:'armor',  icon:'🌑', rarity:'epic',       bonus:{ def:24, atk:10 } },
+  '精霊の衣':          { slot:'armor',  icon:'🌿', rarity:'epic',       bonus:{ def:20, mp:80, spd:5 } },
+  '虚空の鎧':          { slot:'armor',  icon:'🌀', rarity:'legendary',  bonus:{ def:60, hp:250 } },
+  // === ACCESSORIES - 追加 ===
+  '力の護符':          { slot:'accessory', icon:'📿', rarity:'common',  bonus:{ atk:4 } },
+  '知恵の護符':        { slot:'accessory', icon:'📿', rarity:'common',  bonus:{ mp:25 } },
+  '速度の護符':        { slot:'accessory', icon:'📿', rarity:'common',  bonus:{ spd:5 } },
+  '竜の爪':            { slot:'accessory', icon:'🐉', rarity:'rare',     bonus:{ atk:14, spd:4 } },
+  '月光の石':          { slot:'accessory', icon:'🌙', rarity:'rare',     bonus:{ mp:45, def:5 } },
+  '影の心臓':          { slot:'accessory', icon:'🖤', rarity:'epic',     bonus:{ atk:22, hp:60 } },
+  '時の砂時計':        { slot:'accessory', icon:'⏳', rarity:'epic',     bonus:{ spd:18, mp:40 } },
+  '破壊の宝珠':        { slot:'accessory', icon:'🔮', rarity:'epic',     bonus:{ atk:28, mp:30 } },
+  '神の欠片':          { slot:'accessory', icon:'✨', rarity:'legendary', bonus:{ atk:40, def:30, spd:20 } },
+  // === RINGS - 追加 ===
+  '力の指輪':          { slot:'ring',   icon:'💍', rarity:'common',    bonus:{ atk:5 } },
+  '守りの指輪':        { slot:'ring',   icon:'💍', rarity:'common',    bonus:{ def:4, hp:20 } },
+  '炎の指輪':          { slot:'ring',   icon:'🔥', rarity:'rare',       bonus:{ atk:12, mp:15 } },
+  '氷の指輪':          { slot:'ring',   icon:'❄', rarity:'rare',        bonus:{ def:10, spd:6 } },
+  '影の指輪':          { slot:'ring',   icon:'🌑', rarity:'epic',       bonus:{ atk:18, spd:8 } },
+  '古代王の指輪':      { slot:'ring',   icon:'👑', rarity:'epic',       bonus:{ atk:16, def:12, hp:40 } },
+  '神話の指輪':        { slot:'ring',   icon:'💫', rarity:'legendary',  bonus:{ atk:35, def:25, mp:60 } },
+});
+
+// =====================================================
+// ===== RANDOM DUNGEON SYSTEM =====
+// =====================================================
+
+// テーマ別ダンジョン名パーツ
+const RD_THEMES = [
+  { name:'深淵の回廊',    icon:'🕳',  desc:'底知れぬ闇が広がる回廊。視界が悪い。',          color:'var(--shadow)' },
+  { name:'炎獄の溶岩洞', icon:'🔥',  desc:'灼熱の溶岩が流れる洞窟。炎系の敵が多い。',      color:'var(--s-rank)' },
+  { name:'腐敗の森',      icon:'🌿',  desc:'呪われた森に毒の霧が立ち込める。',              color:'var(--green)' },
+  { name:'嵐の遺跡',      icon:'⚡',  desc:'古代文明の遺跡。稲妻が荒れ狂う。',             color:'var(--accent)' },
+  { name:'氷結の宮殿',    icon:'❄',   desc:'全てが凍りついた巨大宮殿。',                   color:'var(--c-rank)' },
+  { name:'霊廟の深部',    icon:'💀',  desc:'アンデッドが跋扈する墓地の最深部。',            color:'var(--text-dim)' },
+  { name:'混沌の裂け目',  icon:'🌀',  desc:'次元の狭間。常識が通じない空間。',              color:'var(--accent2)' },
+  { name:'鉄壁の要塞',    icon:'🏯',  desc:'難攻不落の要塞。防御型の敵が多い。',            color:'var(--b-rank)' },
+  { name:'毒沼の迷宮',    icon:'🐍',  desc:'毒沼に覆われた迷宮。油断できない。',            color:'#88ff44' },
+  { name:'神域の試練',    icon:'⛩',   desc:'神に選ばれた者だけが挑める試練の地。',          color:'var(--gold)' },
+  { name:'星墜の廃都',    icon:'🌌',  desc:'隕石で滅んだ都市の廃墟。宇宙の敵が出没。',    color:'#aabbff' },
+  { name:'呪鬼の城塞',    icon:'👿',  desc:'悪鬼が支配する城塞。士気が下がる呪いがある。', color:'var(--a-rank)' },
+];
+
+const RD_DIFFICULTIES = [
+  { id:'easy',   label:'易',     labelFull:'EASY',    color:'var(--d-rank)',  rankRange:['E','D'],    floorMult:0.8, statMult:0.7,  expMult:0.9,  goldMult:0.9  },
+  { id:'normal', label:'普',     labelFull:'NORMAL',  color:'var(--c-rank)', rankRange:['D','C','B'], floorMult:1.0, statMult:1.0,  expMult:1.2,  goldMult:1.1  },
+  { id:'hard',   label:'難',     labelFull:'HARD',    color:'var(--b-rank)', rankRange:['C','B','A'], floorMult:1.2, statMult:1.4,  expMult:1.6,  goldMult:1.4  },
+  { id:'chaos',  label:'混沌',   labelFull:'CHAOS',   color:'var(--a-rank)', rankRange:['B','A','S'], floorMult:1.5, statMult:2.0,  expMult:2.2,  goldMult:2.0  },
+  { id:'abyss',  label:'奈落',   labelFull:'ABYSS',   color:'var(--s-rank)', rankRange:['A','S'],     floorMult:2.0, statMult:3.0,  expMult:3.5,  goldMult:3.0  },
+];
+
+// ランダムダンジョンのボス候補
+const RD_BOSSES = [
+  { name:'深淵の番人',   icon:'🗿', baseHp:300,  baseAtk:40, baseDef:20, baseExp:300, baseGold:280 },
+  { name:'炎の覇者',     icon:'🔥', baseHp:280,  baseAtk:48, baseDef:16, baseExp:320, baseGold:300 },
+  { name:'腐敗の女王',   icon:'👸', baseHp:350,  baseAtk:38, baseDef:22, baseExp:310, baseGold:290 },
+  { name:'嵐の龍',       icon:'🐉', baseHp:400,  baseAtk:52, baseDef:18, baseExp:360, baseGold:340 },
+  { name:'氷の魔神',     icon:'🧊', baseHp:380,  baseAtk:44, baseDef:28, baseExp:340, baseGold:320 },
+  { name:'死霊王',       icon:'💀', baseHp:320,  baseAtk:55, baseDef:14, baseExp:380, baseGold:360 },
+  { name:'混沌の体現者', icon:'🌀', baseHp:450,  baseAtk:60, baseDef:20, baseExp:400, baseGold:380 },
+  { name:'鉄壁の将軍',   icon:'⚔',  baseHp:500,  baseAtk:45, baseDef:40, baseExp:370, baseGold:350 },
+  { name:'毒牙の魔王',   icon:'🐍', baseHp:340,  baseAtk:58, baseDef:18, baseExp:390, baseGold:370 },
+  { name:'宇宙の侵略者', icon:'🌌', baseHp:600,  baseAtk:70, baseDef:30, baseExp:500, baseGold:480 },
+];
+
+// ランダムダンジョンの特殊修飾（良い・悪い）
+const RD_MODIFIERS = [
+  { id:'rich',      label:'💰 財宝の間あり',  type:'good',  desc:'ゴールド報酬+50%',          apply: d => d.rewardGold = Math.floor(d.rewardGold * 1.5) },
+  { id:'exp',       label:'⭐ 修羅の間あり',  type:'good',  desc:'EXP報酬+50%',               apply: d => d.rewardExp  = Math.floor(d.rewardExp  * 1.5) },
+  { id:'loot',      label:'🎁 宝物庫あり',    type:'good',  desc:'クリア報酬アイテム+1',       apply: d => d.bonusLoot  = true },
+  { id:'rare',      label:'⭐ レア出現率UP',  type:'good',  desc:'レアモンスター出現率2倍',    apply: d => d.rareBoost  = true },
+  { id:'cursed',    label:'💀 呪いの迷宮',    type:'bad',   desc:'敵HP+30%',                   apply: d => d.enemyHpMod = 1.3 },
+  { id:'berserk',   label:'🔥 狂乱状態',      type:'bad',   desc:'敵ATK+20%',                  apply: d => d.enemyAtkMod= 1.2 },
+  { id:'elites',    label:'⚡ 精鋭部隊',      type:'bad',   desc:'全敵がエリート化',            apply: d => d.allElite   = true },
+  { id:'healing',   label:'✨ 聖域の恵み',    type:'good',  desc:'各フロアHP5%自動回復',        apply: d => d.floorHeal  = 0.05 },
+  { id:'doublexp',  label:'🌟 二重亀裂',      type:'good',  desc:'EXPとGold両方+30%',          apply: d => { d.rewardExp = Math.floor(d.rewardExp*1.3); d.rewardGold = Math.floor(d.rewardGold*1.3); } },
+  { id:'miniboss',  label:'👹 中ボス出現',    type:'bad',   desc:'中間フロアに追加ボス',        apply: d => d.midBoss    = true },
+];
+
+// 現在表示中のランダムダンジョン候補
+let G_randomDungeons = [];
+
+function generateRandomDungeon() {
+  const theme = RD_THEMES[Math.floor(Math.random() * RD_THEMES.length)];
+
+  // プレイヤーレベルに応じた難易度選択（低レベルはABYSS除外）
+  const availDiff = RD_DIFFICULTIES.filter(d => {
+    if (d.id === 'abyss'  && G.level < 60) return false;
+    if (d.id === 'chaos'  && G.level < 35) return false;
+    if (d.id === 'hard'   && G.level < 15) return false;
+    return true;
+  });
+  const diff = availDiff[Math.floor(Math.random() * availDiff.length)];
+
+  // 難易度に合った敵ランク選択
+  const ranks = diff.rankRange;
+  const rank  = ranks[Math.floor(Math.random() * ranks.length)];
+
+  // 敵プール
+  const enemyPool = ENEMY_POOL[rank] || ENEMY_POOL['E'];
+  const pickedEnemies = [];
+  const shuffled = [...enemyPool].sort(() => Math.random()-0.5);
+  for (let i = 0; i < Math.min(3, shuffled.length); i++) pickedEnemies.push(shuffled[i]);
+
+  // ボス
+  const bossBase  = RD_BOSSES[Math.floor(Math.random() * RD_BOSSES.length)];
+  const statM     = diff.statMult * (0.9 + Math.random()*0.2);
+  const levelScale = Math.max(1, G.level / 10);
+  const boss = {
+    name: bossBase.name,
+    icon: bossBase.icon,
+    hp:   Math.floor(bossBase.baseHp  * statM * levelScale),
+    atk:  Math.floor(bossBase.baseAtk * statM * levelScale),
+    def:  Math.floor(bossBase.baseDef * statM * levelScale),
+    exp:  Math.floor(bossBase.baseExp * diff.expMult  * levelScale),
+    gold: Math.floor(bossBase.baseGold* diff.goldMult * levelScale),
+  };
+  boss.maxHp = boss.hp;
+
+  // レアボス候補
+  const rareBoss = { ...boss,
+    name: '【神話】' + boss.name,
+    icon: '🌟',
+    hp: Math.floor(boss.hp * 2.2), maxHp: Math.floor(boss.hp * 2.2),
+    atk: Math.floor(boss.atk * 1.6),
+    def: Math.floor(boss.def * 1.5),
+    exp: Math.floor(boss.exp * 3.2),
+    gold: Math.floor(boss.gold * 3.2),
+    isRareBoss: true, dropBonus: true,
+  };
+
+  // フロア数
+  const floors = Math.max(3, Math.floor((4 + Math.random()*4) * diff.floorMult));
+
+  // 報酬
+  const baseGold = Math.floor(300 * diff.goldMult * levelScale * (0.8 + Math.random()*0.4));
+  const baseExp  = Math.floor(400 * diff.expMult  * levelScale * (0.8 + Math.random()*0.4));
+
+  // 修飾語（1〜2個）
+  const modCount = 1 + (Math.random() < 0.5 ? 1 : 0);
+  const shuffledMods = [...RD_MODIFIERS].sort(() => Math.random()-0.5);
+  const mods = shuffledMods.slice(0, modCount);
+
+  const dungeon = {
+    id: 'random_' + Date.now() + Math.random(),
+    name: theme.name,
+    icon: theme.icon,
+    themeColor: theme.color,
+    desc: theme.desc,
+    rank, diff,
+    floors,
+    enemies: pickedEnemies.map(e => {
+      const s = diff.statMult * levelScale * (0.8 + Math.random()*0.2);
+      return { ...e,
+        hp:   Math.floor(e.hp   * s), maxHp: Math.floor(e.hp * s),
+        atk:  Math.floor(e.atk  * s),
+        def:  Math.floor(e.def  * s),
+        exp:  Math.floor(e.exp  * diff.expMult),
+        gold: Math.floor(e.gold * diff.goldMult),
+      };
+    }),
+    boss, rareBoss,
+    rewardGold: baseGold,
+    rewardExp:  baseExp,
+    modifiers: mods,
+    rareBoost: false, bonusLoot: false, allElite: false,
+    floorHeal: 0, enemyHpMod: 1, enemyAtkMod: 1, midBoss: false,
+    isRandom: true,
+  };
+
+  // 修飾語効果適用
+  mods.forEach(m => m.apply(dungeon));
+
+  return dungeon;
+}
+
+function rerollRandomDungeons() {
+  G_randomDungeons = [
+    generateRandomDungeon(),
+    generateRandomDungeon(),
+    generateRandomDungeon(),
+  ];
+  // 3つが全部同じ難易度にならないよう1つだけ差し替え試行
+  if (G_randomDungeons[0].diff.id === G_randomDungeons[1].diff.id &&
+      G_randomDungeons[1].diff.id === G_randomDungeons[2].diff.id) {
+    G_randomDungeons[2] = generateRandomDungeon();
+  }
+
+  // ラストダンジョンクリア後：天司ダンジョンが低確率でランダム枠に出現
+  if (G.lastBossCleared) {
+    const pillarKeys = Object.keys(TWELVE_PILLARS);
+    G_randomDungeons = G_randomDungeons.map(d => {
+      if (Math.random() < 0.08) { // 8%確率
+        const key = pillarKeys[Math.floor(Math.random() * pillarKeys.length)];
+        const pillarList = buildPillarDungeons();
+        const pd = pillarList.find(p => p.pillarKey === key);
+        if (pd) {
+          // ランダムダンジョンとして扱えるよう必要プロパティを補完
+          return {
+            ...pd,
+            isRandom: true,
+            diff: { id:'pillar', labelFull:'天司級', color:'#cc88ff' },
+            modifiers: [{ label:'👑 天司降臨', type:'bad', desc:'天司十二柱が降臨している' }],
+            desc: pd.desc,
+          };
+        }
+      }
+      return d;
+    });
+  }
+
+  renderRandomDungeons();
+}
+
+function renderRandomDungeons() {
+  const el = document.getElementById('random-dungeon-grid');
+  if (!el) return;
+  if (!G_randomDungeons.length) { rerollRandomDungeons(); return; }
+
+  el.innerHTML = G_randomDungeons.map((d, i) => {
+    const diff    = d.diff;
+    const modHtml = (d.modifiers||[]).map(m =>
+      `<span class="rd-tag ${m.type==='good'?'green':'red'}">${m.label}</span>`
+    ).join('');
+    const enemyNames = d.enemies.slice(0,3).map(e => e.name).join('・');
+    const isPillar = d.diff && d.diff.id === 'pillar';
+    const glowClass = isPillar ? 'rd-glow-X' : `rd-glow-${d.rank||'E'}`;
+    const diffColor = diff.color || 'var(--accent)';
+
+    return `
+      <div class="rd-card ${glowClass}" onclick="enterRandomDungeon(${i})">
+        <div class="rd-card-header">
+          <span class="rd-card-icon">${d.icon}</span>
+          <div style="flex:1;min-width:0">
+            <div class="rd-card-title">${d.name}</div>
+            <div class="rd-card-sub">${d.desc}</div>
+          </div>
+          <div style="text-align:right;flex-shrink:0">
+            <div class="rd-difficulty" style="color:${diffColor}">${diff.labelFull}</div>
+            <div style="font-size:0.65rem;color:var(--text-dim);margin-top:0.2rem">${isPillar ? '天司級' : (d.rank||'?')+'級相当'}</div>
+          </div>
+        </div>
+        <div class="rd-card-body">
+          <span class="rd-tag">⚔ ${d.floors}F</span>
+          <span class="rd-tag gold">💰 ~${(d.rewardGold||0).toLocaleString()}G</span>
+          <span class="rd-tag purple">⭐ ~${(d.rewardExp||0).toLocaleString()}EXP</span>
+          ${modHtml}
+        </div>
+        <div style="padding:0.4rem 1rem 0.6rem;font-size:0.68rem;color:var(--text-dim)">
+          出現: ${enemyNames} ほか ／ ボス: ${d.boss.name}
+        </div>
+        <div class="rd-card-footer">
+          <div style="font-size:0.7rem;color:var(--text-dim)">
+            BOSS HP: ${d.boss.hp.toLocaleString()} / ATK: ${d.boss.atk}
+          </div>
+          <button style="font-size:0.75rem;padding:0.35rem 1rem;background:${isPillar ? 'linear-gradient(135deg,#6622aa,#cc88ff)' : 'linear-gradient(135deg,var(--accent2),var(--accent))'};border:none;color:#fff;border-radius:4px;cursor:pointer;font-weight:700">
+            挑戦 →
+          </button>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function enterRandomDungeon(idx) {
+  const d = G_randomDungeons[idx];
+  if (!d) return;
+  G.currentDungeon = d;
+  G.currentFloor   = 1;
+  G.totalFloors    = d.floors;
+  G.dungeonEnemiesKilled = 0;
+  resetDungeonEvents();
+  startCombat();
+}
+
 // ===== LOOT TABLES =====
 const LOOT_TABLES = {
   E: {
-    weapons:     ['ブロンズの剣','アイアンソード','錆びたナイフ','見習いの杖'],
-    armors:      ['布の鎧','皮の盾','見習いのローブ'],
-    accessories: ['魔力の指輪','魔法の石','お守り'],
+    weapons:     ['ブロンズの剣','アイアンソード','錆びたナイフ','見習いの杖','黒鉄の剣','呪術師の杖','盗賊のナイフ'],
+    armors:      ['布の鎧','皮の盾','見習いのローブ','革の鎧','鎖帷子','魔導師のローブ'],
+    accessories: ['魔力の指輪','魔法の石','お守り','力の護符','知恵の護符','速度の護符','力の指輪','守りの指輪'],
     consumables: ['HPポーション x2','HPポーション x3','MPポーション x2'],
   },
   D: {
-    weapons:     ['アイアンソード','銀の短剣','戦士の大剣','魔導師の杖'],
-    armors:      ['アイアンアーマー','毒耐性の盾','騎士の兜'],
-    accessories: ['魔法の石','魔晶石','戦士のお守り'],
+    weapons:     ['アイアンソード','銀の短剣','戦士の大剣','魔導師の杖','黒鉄の剣','盗賊のナイフ','聖騎士の剣','嵐の槍'],
+    armors:      ['アイアンアーマー','毒耐性の盾','騎士の兜','革の鎧','鎖帷子','騎士の甲冑'],
+    accessories: ['魔法の石','魔晶石','戦士のお守り','力の護符','速度の護符','炎の指輪','氷の指輪'],
     consumables: ['HPポーション x3','MPポーション x2','エリクシル'],
   },
   C: {
-    weapons:     ['フロストソード','炎の剣','雷鳴の弓','影の短剣'],
-    armors:      ['毒耐性の盾','ミスリルアーマー','古代の盾'],
-    accessories: ['魔晶石','魔力の大結晶','古代の護符'],
+    weapons:     ['フロストソード','炎の剣','雷鳴の弓','影の短剣','聖騎士の剣','血の大剣','嵐の槍','毒牙の短剣','大地の槌'],
+    armors:      ['毒耐性の盾','ミスリルアーマー','古代の盾','騎士の甲冑','シャドウコート','聖なる外套'],
+    accessories: ['魔晶石','魔力の大結晶','古代の護符','竜の爪','月光の石','炎の指輪','氷の指輪'],
     consumables: ['エリクシル','大エリクシル','MPポーション x2'],
   },
   B: {
-    weapons:     ['古代の魔剣','悪魔の大剣','混沌の刃','暗黒の鎌'],
-    armors:      ['王者のローブ','悪魔の鎧','闇の外套'],
-    accessories: ['魔力の大結晶','魔力結晶x5','悪魔の指輪'],
+    weapons:     ['古代の魔剣','悪魔の大剣','混沌の刃','暗黒の鎌','深淵の鎌','天雷の剣','業火の斧','影の刃双剣'],
+    armors:      ['王者のローブ','悪魔の鎧','闇の外套','竜鱗の盾','闇の鎧','精霊の衣'],
+    accessories: ['魔力の大結晶','魔力結晶x5','悪魔の指輪','影の心臓','時の砂時計','破壊の宝珠','古代王の指輪','影の指輪'],
     consumables: ['大エリクシル','神聖な薬'],
   },
   A: {
-    weapons:     ['悪魔の大剣','影の王の権杖','覇王の剣','滅亡の刃'],
-    armors:      ['神話の鎧','龍鱗の鎧','天使の外套'],
-    accessories: ['魔力結晶x5','闇の王冠','創造の指輪'],
+    weapons:     ['悪魔の大剣','影の王の権杖','覇王の剣','滅亡の刃','天雷の剣','深淵の鎌','業火の斧','龍殺しの剣','神滅の杖'],
+    armors:      ['神話の鎧','龍鱗の鎧','天使の外套','竜鱗の盾','虚空の鎧','精霊の衣'],
+    accessories: ['魔力結晶x5','闇の王冠','創造の指輪','神の欠片','影の心臓','時の砂時計','破壊の宝珠','神話の指輪'],
     consumables: ['大エリクシル','神聖な薬'],
   },
   S: {
-    weapons:     ['影の王の権杖','神話の聖剣','世界樹の弓','虚無の刃'],
-    armors:      ['神話の鎧','創造の鎧','世界の心臓'],
-    accessories: ['創造の指輪','闇の王冠','運命の石'],
+    weapons:     ['影の王の権杖','神話の聖剣','世界樹の弓','虚無の刃','龍殺しの剣','神滅の杖','覇王の剣','滅亡の刃'],
+    armors:      ['神話の鎧','創造の鎧','世界の心臓','虚空の鎧','龍鱗の鎧','天使の外套'],
+    accessories: ['創造の指輪','闇の王冠','運命の石','神の欠片','神話の指輪','時の砂時計'],
     consumables: ['大エリクシル'],
   },
 };
@@ -2056,137 +2673,437 @@ const DUNGEON_EVENTS = [
 ];
 
 // Dungeon definitions (updated with loot tables instead of fixed rewards)
+// =====================================================
+// ===== 属性・種族システム =====
+// =====================================================
+const ELEMENTS = {
+  fire:  { label:'🔥 火', color:'#ff4422', weakTo:'water', resistTo:'wind',  icon:'🔥' },
+  wind:  { label:'💨 風', color:'#88ddff', weakTo:'fire',  resistTo:'earth', icon:'💨' },
+  earth: { label:'🌿 土', color:'#88cc44', weakTo:'wind',  resistTo:'water', icon:'🌿' },
+  water: { label:'💧 水', color:'#44aaff', weakTo:'earth', resistTo:'fire',  icon:'💧' },
+  light: { label:'✨ 光', color:'#ffee88', weakTo:'dark',  resistTo:'light', icon:'✨' },
+  dark:  { label:'🌑 闇', color:'#aa66ff', weakTo:'light', resistTo:'dark',  icon:'🌑' },
+  none:  { label:'— 無', color:'#aaaaaa', weakTo:null,     resistTo:null,    icon:'⬜' },
+};
+function getElementMult(atkElem, defElem) {
+  if (!atkElem||atkElem==='none'||!defElem||defElem==='none') return 1.0;
+  const d=ELEMENTS[defElem]; if (!d) return 1.0;
+  if (d.weakTo===atkElem)   return 1.5;
+  if (d.resistTo===atkElem) return 0.7;
+  return 1.0;
+}
+
+// ── 13種族（◯◯族呼称統一） ──
+// wyrm廃止→dragonに統合、spirit→wraith、insect追加、human追加
+const RACES = {
+  humanoid: { label:'亜人族',  icon:'👤' },
+  human:    { label:'人族',    icon:'🧑' },
+  beast:    { label:'獣族',    icon:'🐾' },
+  insect:   { label:'昆虫族',  icon:'🪲' },
+  demon:    { label:'悪魔族',  icon:'😈' },
+  angel:    { label:'天使族',  icon:'👼' },
+  fiend:    { label:'魔人族',  icon:'👹' },
+  plant:    { label:'植物族',  icon:'🌿' },
+  aquatic:  { label:'水生族',  icon:'🌊' },
+  dragon:   { label:'龍族',    icon:'🐉' },
+  wraith:   { label:'霊体族',  icon:'👻' },
+  material: { label:'物質族',  icon:'🪨' },
+  divine:   { label:'神族',    icon:'⭐' },
+};
+
+function elemBadge(elem) {
+  if (!elem||elem==='none') return '';
+  const e=ELEMENTS[elem]; if (!e) return '';
+  return `<span style="font-size:0.62rem;padding:0.05rem 0.28rem;border-radius:3px;background:${e.color}33;border:1px solid ${e.color}66;color:${e.color};margin-left:0.25rem">${e.icon}</span>`;
+}
+function raceBadge(race) {
+  const r=RACES[race]||RACES['humanoid'];
+  return `<span style="font-size:0.6rem;color:#777;margin-left:0.2rem">[${r.label}]</span>`;
+}
+
+// =====================================================
+// ===== 天司十二柱（種族の長・ボス設計） =====
+// 主人公の権能：???（未設定）
+// 各司は「◯◯の(権能)君主 + 名前」形式
+// =====================================================
+const TWELVE_PILLARS = {
+  humanoid: { title:'亜人の君主',  name:'幻惑のミラファクタム', icon:'🎭', element:'dark',  desc:'亜人族を統べる幻術と変化の権能を持つ君主。真の姿を誰も知らない。' },
+  beast:    { title:'獣の君主',    name:'原初のグラウル',        icon:'🦁', element:'earth', desc:'獣族の頂点に立つ、本能と野性の権能を体現する王者。' },
+  insect:   { title:'昆虫の君主',  name:'統率のヴェスパ',        icon:'🦂', element:'wind',  desc:'昆虫族の女王。無数の群体を意のままに操る群知の権能を持つ。' },
+  demon:    { title:'悪魔の君主',  name:'滅焔のインフェルノ',    icon:'☠',  element:'fire',  desc:'悪魔族の王。世界を焼き尽くす滅焔の権能を振るう最強の悪魔。' },
+  angel:    { title:'天使の君主',  name:'光輝のアウレウス',      icon:'⚔',  element:'light', desc:'天使族の長。神の代理として裁きを下す聖裁の権能の体現者。' },
+  fiend:    { title:'魔人の君主',  name:'歪曲のザルヴァトール',  icon:'🌀', element:'dark',  desc:'魔人族の原初。空間と法則を歪める混沌の権能を持つ。' },
+  plant:    { title:'植物の君主',  name:'再生のヴェルダント',    icon:'🌳', element:'earth', desc:'植物族の根源。死を無力化する生命循環の権能を持つ君主。' },
+  aquatic:  { title:'水生の君主',  name:'深淵のアビサル',        icon:'🌊', element:'water', desc:'水生族の王。海の底から万物を呑み込む潮流の権能を持つ。' },
+  dragon:   { title:'龍の君主',    name:'覇天のヴァルドレス',      icon:'🐉', element:'wind',  desc:'龍族の始祖。天を支配する龍気と嵐の権能を体現する王者。' },
+  wraith:   { title:'霊体の君主',  name:'冥府のエレボス',        icon:'💀', element:'dark',  desc:'霊体族の支配者。生者と死者の境界を操る魂喰の権能を持つ。' },
+  material: { title:'物質の君主',  name:'不壊のフォルゴ',        icon:'⚙',  element:'earth', desc:'物質族の具現。あらゆる破壊を無効化する鋼鉄の権能を体現する。' },
+  divine:   { title:'神の君主',    name:'神威のアルケイオス',     icon:'🌟', element:'light', desc:'神族の頂点。世界の創造と消滅を司る神威の権能を持つ究極存在。' },
+};
+
 const DUNGEONS = [
+  // ── E級 ──
   {
     id:'goblin-cave', name:'ゴブリンの洞窟', rank:'E',
-    icon:'🪨', desc:'E級ハンター向けの低難易度ダンジョン。ゴブリンが出現する。',
+    icon:'🪨', desc:'複数属性の亜人族が潜む初心者向けダンジョン。属性の違いに注意。',
     floors: 3,
     enemies: [
-      { name:'ゴブリン', icon:'👺', hp:30, atk:5, def:2, exp:20, gold:15 },
-      { name:'コボルト', icon:'🐺', hp:40, atk:7, def:3, exp:30, gold:20 },
+      { name:'ゴブリン',           icon:'👺', race:'humanoid', element:'none',  hp:30,  atk:5,  def:2,  exp:20, gold:15 },
+      { name:'コボルト',           icon:'🐺', race:'beast',    element:'none',  hp:40,  atk:7,  def:3,  exp:30, gold:20 },
+      { name:'ウォーターゴブリン', icon:'💧', race:'humanoid', element:'water', hp:35,  atk:6,  def:2,  exp:26, gold:18 },
+      { name:'ファイアゴブリン',   icon:'🔥', race:'humanoid', element:'fire',  hp:32,  atk:8,  def:1,  exp:24, gold:17 },
     ],
-    boss: { name:'ゴブリン族長', icon:'👹', hp:120, atk:12, def:5, exp:100, gold:80 },
-    rareBoss: { name:'古代ゴブリン王', icon:'👑', hp:300, atk:20, def:10, exp:280, gold:220 },
-    rewardGold: 200, rewardExp: 200,
-    minLevel: 1,
+    boss:     { name:'ゴブリン族長',   icon:'👹', race:'humanoid', element:'earth', hp:120,  atk:12,  def:5,  exp:100,  gold:80  },
+    rareBoss: { name:'古代ゴブリン王', icon:'👑', race:'humanoid', element:'dark',  hp:300,  atk:20,  def:10, exp:280,  gold:220 },
+    rewardGold:200, rewardExp:200, minLevel:1,
   },
   {
     id:'kobold-mine', name:'コボルトの廃坑', rank:'E',
-    icon:'⛏', desc:'廃坑に潜むコボルト達。罠が仕掛けられている。',
+    icon:'⛏', desc:'土・炎属性の獣族コボルトが支配する廃坑。',
     floors: 4,
     enemies: [
-      { name:'コボルト戦士', icon:'🐺', hp:55, atk:10, def:5, exp:40, gold:25 },
-      { name:'コボルト鉱夫', icon:'⛏', hp:45, atk:8, def:8, exp:35, gold:20 },
+      { name:'コボルト戦士',       icon:'🐺', race:'beast', element:'earth', hp:55,  atk:10, def:5, exp:40, gold:25 },
+      { name:'コボルト鉱夫',       icon:'⛏', race:'beast', element:'earth', hp:45,  atk:8,  def:8, exp:35, gold:20 },
+      { name:'フレイムコボルト',   icon:'🔥', race:'beast', element:'fire',  hp:50,  atk:12, def:4, exp:42, gold:28 },
     ],
-    boss: { name:'コボルト族長', icon:'🐻', hp:180, atk:18, def:8, exp:150, gold:120 },
-    rareBoss: { name:'伝説の鉱山王', icon:'💎', hp:420, atk:28, def:16, exp:400, gold:350 },
-    rewardGold: 350, rewardExp: 300,
-    minLevel: 3,
+    boss:     { name:'コボルト族長',   icon:'🐻', race:'beast', element:'earth', hp:180,  atk:18, def:8,  exp:150, gold:120 },
+    rareBoss: { name:'伝説の鉱山王',   icon:'💎', race:'beast', element:'fire',  hp:420,  atk:28, def:16, exp:400, gold:350 },
+    rewardGold:350, rewardExp:300, minLevel:3,
   },
+  // ── D級 ──
   {
     id:'orc-fortress', name:'オークの要塞', rank:'D',
-    icon:'🏰', desc:'D級ダンジョン。筋力に優れたオーク達が支配する要塞。',
+    icon:'🏰', desc:'炎・土・風属性の亜人族オーク達が支配する要塞。',
     floors: 5,
     enemies: [
-      { name:'オーク兵士', icon:'🐗', hp:100, atk:18, def:10, exp:60, gold:40 },
-      { name:'オークシャーマン', icon:'🔮', hp:80, atk:22, def:6, exp:70, gold:50 },
+      { name:'オーク兵士',       icon:'🐗', race:'humanoid', element:'fire',  hp:100, atk:18, def:10, exp:60, gold:40 },
+      { name:'オークシャーマン', icon:'🔮', race:'humanoid', element:'earth', hp:80,  atk:22, def:6,  exp:70, gold:50 },
+      { name:'ストームオーク',   icon:'💨', race:'humanoid', element:'wind',  hp:90,  atk:20, def:8,  exp:65, gold:45 },
     ],
-    boss: { name:'オーク将軍', icon:'👑', hp:350, atk:30, def:15, exp:300, gold:250 },
-    rareBoss: { name:'覇王オーク・ドラグ', icon:'💥', hp:800, atk:50, def:25, exp:800, gold:700 },
-    rewardGold: 600, rewardExp: 600,
-    minLevel: 8,
+    boss:     { name:'オーク将軍',        icon:'👑', race:'humanoid', element:'fire', hp:350,  atk:30, def:15, exp:300, gold:250 },
+    rareBoss: { name:'覇王オーク・ドラグ', icon:'💥', race:'humanoid', element:'fire', hp:800,  atk:50, def:25, exp:800, gold:700 },
+    rewardGold:600, rewardExp:600, minLevel:8,
   },
   {
-    id:'spider-forest', name:'毒蜘蛛の森', rank:'D',
-    icon:'🕷', desc:'巨大な毒蜘蛛が巣食う森のダンジョン。毒に注意が必要。',
+    id:'insect-swamp', name:'大蟲の沼地', rank:'D',
+    icon:'🪲', desc:'D級ダンジョン。昆虫族が群れをなす毒の沼地。風属性スキルが有効。',
     floors: 5,
     enemies: [
-      { name:'巨大蜘蛛', icon:'🕷', hp:90, atk:16, def:8, exp:55, gold:35 },
-      { name:'毒蜘蛛', icon:'🕸', hp:70, atk:20, def:5, exp:65, gold:45 },
+      { name:'毒バッタ',         icon:'🦗', race:'insect', element:'wind',  hp:75,  atk:17, def:5,  exp:52, gold:33 },
+      { name:'スティングビー',   icon:'🐝', race:'insect', element:'wind',  hp:65,  atk:20, def:4,  exp:58, gold:38 },
+      { name:'アーマービートル', icon:'🪲', race:'insect', element:'earth', hp:100, atk:15, def:15, exp:60, gold:40 },
+      { name:'ポイズンスパイダー',icon:'🕷', race:'insect', element:'water', hp:80,  atk:19, def:7,  exp:56, gold:36 },
     ],
-    boss: { name:'女王蜘蛛アラクネ', icon:'👸', hp:400, atk:28, def:12, exp:350, gold:280 },
-    rareBoss: { name:'古代蜘蛛神アネリス', icon:'🌑', hp:900, atk:45, def:20, exp:950, gold:900 },
-    rewardGold: 700, rewardExp: 700,
-    minLevel: 10,
+    boss:     { name:'ヘルスコーピオン',  icon:'🦂', race:'insect', element:'earth', hp:380, atk:32, def:18, exp:340, gold:280 },
+    rareBoss: { name:'蟲の女王ヴェスパ', icon:'🐛', race:'insect', element:'wind',  hp:900, atk:48, def:28, exp:920, gold:860 },
+    rewardGold:650, rewardExp:650, minLevel:12,
   },
+  // ── C級 ──
   {
     id:'ice-cavern', name:'氷の洞窟', rank:'C',
-    icon:'❄', desc:'C級ダンジョン。凍てついた洞窟に氷属性モンスターが潜む。',
+    icon:'❄', desc:'水・光属性の龍族・霊体族が潜む凍てついた洞窟。',
     floors: 6,
     enemies: [
-      { name:'アイスゴーレム', icon:'🧊', hp:200, atk:30, def:20, exp:100, gold:70 },
-      { name:'フロストウルフ', icon:'🐺', hp:160, atk:35, def:15, exp:90, gold:60 },
+      { name:'アイスゴーレム',     icon:'🧊', race:'material', element:'water', hp:200, atk:30, def:20, exp:100, gold:70 },
+      { name:'フロストウルフ',     icon:'🐺', race:'beast',    element:'water', hp:160, atk:35, def:15, exp:90,  gold:60 },
+      { name:'ブリザードレイス',   icon:'👻', race:'wraith',   element:'water', hp:145, atk:38, def:12, exp:95,  gold:65 },
     ],
-    boss: { name:'氷龍イビルフロスト', icon:'🐉', hp:800, atk:55, def:30, exp:600, gold:500 },
-    rareBoss: { name:'永久凍土の龍王', icon:'❄', hp:1800, atk:85, def:50, exp:1600, gold:1500 },
-    rewardGold: 1200, rewardExp: 1200,
-    minLevel: 20,
+    boss:     { name:'氷龍イビルフロスト', icon:'🐉', race:'dragon', element:'water', hp:800,  atk:55, def:30, exp:600,  gold:500  },
+    rareBoss: { name:'永久凍土の龍王',     icon:'❄',  race:'dragon', element:'light', hp:1800, atk:85, def:50, exp:1600, gold:1500 },
+    rewardGold:1200, rewardExp:1200, minLevel:20,
   },
   {
     id:'ancient-ruins', name:'古代遺跡のアンデッド', rank:'C',
-    icon:'🏛', desc:'C級ダンジョン。古代の遺跡に蘇ったアンデッドが徘徊する。',
+    icon:'🏛', desc:'闇属性の霊体族・悪魔族が徘徊する古代遺跡。光属性が有効。',
     floors: 7,
     enemies: [
-      { name:'スケルトン騎士', icon:'💀', hp:180, atk:28, def:22, exp:95, gold:65 },
-      { name:'リッチ', icon:'🧟', hp:220, atk:40, def:15, exp:120, gold:90 },
+      { name:'スケルトン騎士',   icon:'💀', race:'wraith', element:'dark', hp:180, atk:28, def:22, exp:95,  gold:65 },
+      { name:'リッチ',           icon:'🧟', race:'wraith', element:'dark', hp:220, atk:40, def:15, exp:120, gold:90 },
+      { name:'シャドウリーパー', icon:'🌑', race:'wraith', element:'dark', hp:170, atk:42, def:12, exp:110, gold:80 },
     ],
-    boss: { name:'古代魔王バアル', icon:'😈', hp:1000, atk:65, def:35, exp:800, gold:700 },
-    rareBoss: { name:'滅世の魔神バアル＝ゼル', icon:'👿', hp:2200, atk:100, def:55, exp:2200, gold:2000 },
-    rewardGold: 1500, rewardExp: 1500,
-    minLevel: 25,
+    boss:     { name:'古代魔王バアル',        icon:'😈', race:'demon', element:'dark', hp:1000, atk:65,  def:35, exp:800,  gold:700  },
+    rareBoss: { name:'滅世の魔神バアル＝ゼル', icon:'👿', race:'demon', element:'dark', hp:2200, atk:100, def:55, exp:2200, gold:2000 },
+    rewardGold:1500, rewardExp:1500, minLevel:25,
   },
+  // ── B級 ──
   {
     id:'demon-castle', name:'魔王城の深淵', rank:'B',
-    icon:'🏯', desc:'B級ダンジョン。強大な悪魔が支配する城。生半可な覚悟では挑めない。',
+    icon:'🏯', desc:'炎・闇属性の悪魔族が支配する城。',
     floors: 8,
     enemies: [
-      { name:'デモンナイト', icon:'⚔', hp:350, atk:55, def:35, exp:200, gold:150 },
-      { name:'ダークメイジ', icon:'🌑', hp:280, atk:70, def:25, exp:220, gold:170 },
+      { name:'デモンナイト',     icon:'⚔',  race:'demon', element:'dark', hp:350, atk:55, def:35, exp:200, gold:150 },
+      { name:'ダークメイジ',     icon:'🌑', race:'demon', element:'dark', hp:280, atk:70, def:25, exp:220, gold:170 },
+      { name:'フレイムデーモン', icon:'🔥', race:'demon', element:'fire', hp:320, atk:60, def:28, exp:210, gold:160 },
     ],
-    boss: { name:'魔城の王エルシド', icon:'👿', hp:2000, atk:100, def:60, exp:2000, gold:2000 },
-    rareBoss: { name:'真・魔王エルシド＝ヴォルド', icon:'☠', hp:4500, atk:160, def:90, exp:5500, gold:5500 },
-    rewardGold: 3000, rewardExp: 3000,
-    minLevel: 40,
+    boss:     { name:'魔城の王エルシド',          icon:'👿', race:'demon', element:'dark', hp:2000, atk:100, def:60, exp:2000, gold:2000 },
+    rareBoss: { name:'真・魔王エルシド＝ヴォルド', icon:'☠',  race:'demon', element:'dark', hp:4500, atk:160, def:90, exp:5500, gold:5500 },
+    rewardGold:3000, rewardExp:3000, minLevel:40,
   },
   {
+    id:'villain-diver-clash', name:'ヴィランダイバーの巣窟', rank:'B',
+    icon:'🗡', desc:'B級ダンジョン。ゲートを悪用する人族ヴィランダイバー達の拠点。同じダイバーとの戦いが待つ。',
+    floors: 8,
+    storyNote: 'ヴィランダイバー編',
+    enemies: [
+      { name:'ヴィラン狙撃手',   icon:'🎯', race:'human', element:'wind',  hp:300, atk:58, def:28, exp:195, gold:145 },
+      { name:'ヴィラン格闘家',   icon:'👊', race:'human', element:'fire',  hp:380, atk:62, def:32, exp:205, gold:155 },
+      { name:'ヴィラン魔術師',   icon:'🔮', race:'human', element:'dark',  hp:260, atk:72, def:22, exp:215, gold:165 },
+      { name:'ヴィラン毒使い',   icon:'💀', race:'human', element:'water', hp:290, atk:65, def:25, exp:200, gold:150 },
+    ],
+    boss:     { name:'ヴィランS級 ブレイズ・クロウ',    icon:'🗡', race:'human', element:'fire', hp:2200, atk:110, def:65, exp:2200, gold:2200 },
+    rareBoss: { name:'覚醒体 ブレイズ・クロウ＝炎禍',   icon:'🔥', race:'human', element:'fire', hp:5000, atk:175, def:95, exp:6000, gold:6000 },
+    rewardGold:3200, rewardExp:3200, minLevel:45,
+  },
+  // ── A級 ──
+  {
+    id:'celestial-tower', name:'天空神殿 〜裁きの塔〜', rank:'A',
+    icon:'☁', desc:'光属性の天使族が守護する神殿。闇スキルが特効。',
+    floors: 9,
+    enemies: [
+      { name:'聖騎士セラフ',   icon:'⚔',  race:'angel',    element:'light', hp:600, atk:90,  def:60, exp:380, gold:320 },
+      { name:'裁きの天使',     icon:'👼', race:'angel',    element:'light', hp:550, atk:100, def:50, exp:400, gold:340 },
+      { name:'光の幻霊',       icon:'✨', race:'wraith',   element:'light', hp:500, atk:95,  def:55, exp:390, gold:330 },
+      { name:'神聖ゴーレム',   icon:'🗿', race:'material', element:'light', hp:700, atk:85,  def:70, exp:370, gold:310 },
+    ],
+    boss:     { name:'天空の審判者アリエル',     icon:'☁',  race:'angel', element:'light', hp:3500, atk:140, def:90,  exp:3500, gold:3000 },
+    rareBoss: { name:'堕天使アリエル＝ノワール', icon:'🌑', race:'angel', element:'dark',  hp:7000, atk:200, def:130, exp:8000, gold:7000 },
+    rewardGold:6000, rewardExp:6000, minLevel:55,
+  },
+  {
+    id:'chaos-labyrinth', name:'混沌の迷宮 〜無属性の深淵〜', rank:'A',
+    icon:'🌀', desc:'全属性の魔人族が入り乱れる迷宮。属性耐性が重要。',
+    floors: 9,
+    enemies: [
+      { name:'炎の魔人', icon:'🔥', race:'fiend', element:'fire',  hp:580, atk:95, def:55, exp:390, gold:330 },
+      { name:'嵐の魔人', icon:'💨', race:'fiend', element:'wind',  hp:560, atk:98, def:52, exp:395, gold:335 },
+      { name:'大地の魔人',icon:'🌿', race:'fiend', element:'earth', hp:620, atk:88, def:65, exp:385, gold:325 },
+      { name:'深海の魔人',icon:'💧', race:'fiend', element:'water', hp:590, atk:92, def:58, exp:392, gold:332 },
+    ],
+    boss:     { name:'魔人の君主 歪曲のザルヴァトール', icon:'🌀', race:'fiend',  element:'dark', hp:4000, atk:150, def:100, isPillar:true, exp:4000, gold:3500 },
+    rareBoss: { name:'真・混沌神 カオスドラール＝アビス',       icon:'🌌', race:'divine', element:'dark', hp:8500, atk:220, def:150, exp:9000, gold:8500 },
+    rewardGold:7000, rewardExp:7000, minLevel:62,
+  },
+  // ── S級 ──
+  {
     id:'s-rank-gate', name:'神話級ゲート 〜巨神の神殿〜', rank:'S',
-    icon:'⚡', desc:'S級ダンジョン。かつて仲間を殲滅したカルテノン神殿。伝説の力が待ち受ける。',
+    icon:'⚡', desc:'S級ダンジョン。かつて仲間を殲滅したカルテノン神殿。神族・龍族が待つ。',
     floors: 10,
     enemies: [
-      { name:'神殿守護者', icon:'🗿', hp:800, atk:120, def:80, exp:500, gold:400 },
-      { name:'巨神の使徒', icon:'⚡', hp:1000, atk:140, def:90, exp:600, gold:500 },
+      { name:'神殿守護者',   icon:'🗿', race:'divine', element:'light', hp:800,  atk:120, def:80, exp:500, gold:400 },
+      { name:'巨神の使徒',   icon:'⚡', race:'divine', element:'light', hp:1000, atk:140, def:90, exp:600, gold:500 },
+      { name:'神話の龍騎士', icon:'🐉', race:'dragon', element:'wind',  hp:900,  atk:130, def:85, exp:550, gold:450 },
     ],
-    boss: { name:'カルテノン巨神像', icon:'🏛', hp:5000, atk:200, def:120, exp:5000, gold:5000 },
-    rareBoss: { name:'神話神 カルテノン＝オリジン', icon:'🌟', hp:12000, atk:300, def:180, exp:14000, gold:14000 },
-    rewardGold: 10000, rewardExp: 10000,
-    minLevel: 70,
+    boss:     { name:'神の君主 神威のアルケイオス', icon:'🌟', race:'divine', element:'light', isPillar:true, hp:5000,  atk:200, def:120, exp:5000,  gold:5000  },
+    rareBoss: { name:'神の根源 カルテノン＝アーケイン',     icon:'💫', race:'divine', element:'light', hp:12000, atk:300, def:180, exp:14000, gold:14000 },
+    rewardGold:10000, rewardExp:10000, minLevel:70,
   },
 ];
 
-// ===== SKILLS =====
-// type: 'damage'|'heal'|'buff'|'debuff'|'multi'
-// activeSkill: the one shown on the skill button (player picks)
+// =====================================================
+// ===== 天司十二柱ダンジョン（rank:'X'） =====
+// =====================================================
+function buildPillarDungeons() {
+  const defeated = new Set(G.pillarsDefeated || []);
+  const count    = defeated.size;
+  const scale    = 1.0 + count * (2.0 / 12);
+  const s = (v) => Math.floor(v * scale);
+
+  return [
+    { pillarKey:'humanoid', id:'pillar-humanoid', name:"幻惑の迷宮 〜ミラファクタムの間〜", icon:'🎭', rank:'X',
+      desc:'亜人の君主が待ち受ける幻惑の迷宮。真の姿なき者との戦い。',
+      floors:10, minLevel:80, rewardGold:s(12000), rewardExp:s(12000),
+      enemies:[
+        { name:'幻惑の亜人剣士', icon:'👤', race:'humanoid', element:'dark',  hp:s(800),  atk:s(110), def:s(70), exp:s(480), gold:s(420) },
+        { name:'変化する暗殺者', icon:'🎭', race:'humanoid', element:'dark',  hp:s(700),  atk:s(125), def:s(60), exp:s(500), gold:s(440) },
+        { name:'幻影の魔術師',   icon:'🌑', race:'humanoid', element:'dark',  hp:s(650),  atk:s(130), def:s(55), exp:s(510), gold:s(450) },
+      ],
+      boss:{ name:'亜人の君主 幻惑のミラファクタム', icon:'🎭', race:'humanoid', element:'dark',  isPillar:true, pillarKey:'humanoid',
+        hp:s(6000), atk:s(180), def:s(110), exp:s(6000), gold:s(5500) },
+      rareBoss:null,
+    },
+    { pillarKey:'beast', id:'pillar-beast', name:"原野の試練 〜グラウルの牙〜", icon:'🦁', rank:'X',
+      desc:'獣の君主が守る弱肉強食の原野。本能が全てを支配する。',
+      floors:10, minLevel:80, rewardGold:s(12500), rewardExp:s(12500),
+      enemies:[
+        { name:'獣の精鋭戦士', icon:'🐾', race:'beast', element:'earth', hp:s(900),  atk:s(120), def:s(80), exp:s(490), gold:s(430) },
+        { name:'原初の獣王',   icon:'🦁', race:'beast', element:'earth', hp:s(1000), atk:s(130), def:s(75), exp:s(510), gold:s(450) },
+        { name:'嵐の獣使い',   icon:'🌿', race:'beast', element:'wind',  hp:s(800),  atk:s(125), def:s(65), exp:s(500), gold:s(440) },
+      ],
+      boss:{ name:'獣の君主 原初のグラウル', icon:'🦁', race:'beast', element:'earth', isPillar:true, pillarKey:'beast',
+        hp:s(6500), atk:s(195), def:s(115), exp:s(6500), gold:s(6000) },
+      rareBoss:null,
+    },
+    { pillarKey:'insect', id:'pillar-insect', name:"蟲渦の深淵 〜ヴェスパの巣〜", icon:'🦂', rank:'X',
+      desc:'昆虫の君主が統べる群体の巣。無数の群れが押し寄せる。',
+      floors:10, minLevel:80, rewardGold:s(11500), rewardExp:s(11500),
+      enemies:[
+        { name:'女王の近衛兵',   icon:'🪲', race:'insect', element:'wind',  hp:s(750),  atk:s(115), def:s(72), exp:s(485), gold:s(425) },
+        { name:'毒針の精鋭隊',   icon:'🦗', race:'insect', element:'wind',  hp:s(680),  atk:s(128), def:s(62), exp:s(505), gold:s(445) },
+        { name:'装甲甲虫兵',     icon:'🪲', race:'insect', element:'earth', hp:s(950),  atk:s(108), def:s(90), exp:s(495), gold:s(435) },
+      ],
+      boss:{ name:'昆虫の君主 統率のヴェスパ', icon:'🦂', race:'insect', element:'wind', isPillar:true, pillarKey:'insect',
+        hp:s(5800), atk:s(175), def:s(105), exp:s(5800), gold:s(5300) },
+      rareBoss:null,
+    },
+    { pillarKey:'demon', id:'pillar-demon', name:"滅焔の城塞 〜インフェルノの座〜", icon:'☠', rank:'X',
+      desc:'悪魔の君主が君臨する滅焔の城塞。灼熱の業火が全てを焼き尽くす。',
+      floors:10, minLevel:80, rewardGold:s(13500), rewardExp:s(13500),
+      enemies:[
+        { name:'滅焔の上位悪魔', icon:'😈', race:'demon', element:'fire', hp:s(870),  atk:s(128), def:s(78), exp:s(500), gold:s(440) },
+        { name:'炎の暴君兵',     icon:'🔥', race:'demon', element:'fire', hp:s(800),  atk:s(135), def:s(68), exp:s(515), gold:s(455) },
+        { name:'深淵の門番',     icon:'🌑', race:'demon', element:'dark', hp:s(920),  atk:s(122), def:s(82), exp:s(495), gold:s(435) },
+      ],
+      boss:{ name:'悪魔の君主 滅焔のインフェルノ', icon:'☠', race:'demon', element:'fire', isPillar:true, pillarKey:'demon',
+        hp:s(7000), atk:s(205), def:s(118), exp:s(7000), gold:s(6500) },
+      rareBoss:null,
+    },
+    { pillarKey:'angel', id:'pillar-angel', name:"聖裁の高天原 〜アウレウスの光〜", icon:'⚔', rank:'X',
+      desc:'天使の君主が支配する聖裁の天上域。純粋な光が罪を滅ぼす。',
+      floors:10, minLevel:80, rewardGold:s(12200), rewardExp:s(12200),
+      enemies:[
+        { name:'聖裁の大天使',   icon:'👼', race:'angel', element:'light', hp:s(820),  atk:s(118), def:s(88), exp:s(495), gold:s(435) },
+        { name:'光翼の審判者',   icon:'✨', race:'angel', element:'light', hp:s(750),  atk:s(130), def:s(75), exp:s(508), gold:s(448) },
+        { name:'霊光の守護聖',   icon:'⚔',  race:'angel', element:'light', hp:s(900),  atk:s(115), def:s(92), exp:s(492), gold:s(432) },
+      ],
+      boss:{ name:'天使の君主 光輝のアウレウス', icon:'⚔', race:'angel', element:'light', isPillar:true, pillarKey:'angel',
+        hp:s(6200), atk:s(185), def:s(125), exp:s(6200), gold:s(5700) },
+      rareBoss:null,
+    },
+    { pillarKey:'fiend', id:'pillar-fiend', name:"歪曲の迷宮 〜ザルヴァトールの狭間〜", icon:'🌀', rank:'X',
+      desc:'魔人の君主が作り出した法則の歪んだ空間。方向感覚すら失われる。',
+      floors:10, minLevel:80, rewardGold:s(13000), rewardExp:s(13000),
+      enemies:[
+        { name:'歪曲の魔人兵', icon:'👹', race:'fiend', element:'dark', hp:s(840),  atk:s(122), def:s(76), exp:s(498), gold:s(438) },
+        { name:'空間裂き',     icon:'🌀', race:'fiend', element:'wind', hp:s(780),  atk:s(132), def:s(66), exp:s(512), gold:s(452) },
+        { name:'虚無の魔将',   icon:'🌑', race:'fiend', element:'dark', hp:s(910),  atk:s(118), def:s(84), exp:s(496), gold:s(436) },
+      ],
+      boss:{ name:'魔人の君主 歪曲のザルヴァトール', icon:'🌀', race:'fiend', element:'dark', isPillar:true, pillarKey:'fiend',
+        hp:s(6800), atk:s(200), def:s(112), exp:s(6800), gold:s(6300) },
+      rareBoss:null,
+    },
+    { pillarKey:'plant', id:'pillar-plant', name:"輪廻の大樹 〜ヴェルダントの根〜", icon:'🌳', rank:'X',
+      desc:'植物の君主が宿る生命の大樹。死すら意味を持たない再生の聖域。',
+      floors:10, minLevel:80, rewardGold:s(14000), rewardExp:s(14000),
+      enemies:[
+        { name:'再生の古樹霊', icon:'🌿', race:'plant', element:'earth', hp:s(1100), atk:s(105), def:s(95), exp:s(488), gold:s(428) },
+        { name:'生命の蔓兵',   icon:'🌱', race:'plant', element:'earth', hp:s(950),  atk:s(118), def:s(82), exp:s(502), gold:s(442) },
+        { name:'毒花の精霊',   icon:'🌸', race:'plant', element:'water', hp:s(820),  atk:s(128), def:s(72), exp:s(506), gold:s(446) },
+      ],
+      boss:{ name:'植物の君主 再生のヴェルダント', icon:'🌳', race:'plant', element:'earth', isPillar:true, pillarKey:'plant',
+        hp:s(7500), atk:s(170), def:s(130), exp:s(7500), gold:s(7000) },
+      rareBoss:null,
+    },
+    { pillarKey:'aquatic', id:'pillar-aquatic', name:"深海の王宮 〜アビサルの淵〜", icon:'🌊', rank:'X',
+      desc:'水生の君主が統べる深海の王宮。光の届かぬ暗黒の水底。',
+      floors:10, minLevel:80, rewardGold:s(12800), rewardExp:s(12800),
+      enemies:[
+        { name:'深海の近衛鮫',   icon:'🦈', race:'aquatic', element:'water', hp:s(880),  atk:s(116), def:s(80), exp:s(492), gold:s(432) },
+        { name:'渦潮の支配者',   icon:'🌊', race:'aquatic', element:'water', hp:s(800),  atk:s(126), def:s(70), exp:s(506), gold:s(446) },
+        { name:'深淵の触手獣',   icon:'🐙', race:'aquatic', element:'dark',  hp:s(960),  atk:s(112), def:s(85), exp:s(498), gold:s(438) },
+      ],
+      boss:{ name:'水生の君主 深淵のアビサル', icon:'🌊', race:'aquatic', element:'water', isPillar:true, pillarKey:'aquatic',
+        hp:s(6600), atk:s(188), def:s(120), exp:s(6600), gold:s(6100) },
+      rareBoss:null,
+    },
+    { pillarKey:'dragon', id:'pillar-dragon', name:"覇天の頂 〜ヴァルドレスの嵐〜", icon:'🐉', rank:'X',
+      desc:'龍の君主が君臨する天頂の試練場。嵐と龍気が世界を砕く。',
+      floors:10, minLevel:80, rewardGold:s(13800), rewardExp:s(13800),
+      enemies:[
+        { name:'嵐龍の親衛隊',   icon:'🐉', race:'dragon', element:'wind',  hp:s(950),  atk:s(125), def:s(85), exp:s(502), gold:s(442) },
+        { name:'覇天の龍騎士',   icon:'⚡', race:'dragon', element:'wind',  hp:s(880),  atk:s(132), def:s(78), exp:s(510), gold:s(450) },
+        { name:'龍気の守護者',   icon:'🌪', race:'dragon', element:'earth', hp:s(1020), atk:s(118), def:s(90), exp:s(496), gold:s(436) },
+      ],
+      boss:{ name:'龍の君主 覇天のヴァルドレス', icon:'🐉', race:'dragon', element:'wind', isPillar:true, pillarKey:'dragon',
+        hp:s(7200), atk:s(210), def:s(122), exp:s(7200), gold:s(6700) },
+      rareBoss:null,
+    },
+    { pillarKey:'wraith', id:'pillar-wraith', name:"冥府の淵 〜エレボスの廻〜", icon:'💀', rank:'X',
+      desc:'霊体の君主が支配する冥府の境界。生と死の狭間に迷い込む。',
+      floors:10, minLevel:80, rewardGold:s(12500), rewardExp:s(12500),
+      enemies:[
+        { name:'冥府の上位亡霊', icon:'👻', race:'wraith', element:'dark', hp:s(780),  atk:s(120), def:s(68), exp:s(494), gold:s(434) },
+        { name:'魂喰いの死神',   icon:'💀', race:'wraith', element:'dark', hp:s(850),  atk:s(128), def:s(72), exp:s(508), gold:s(448) },
+        { name:'境界の番人',     icon:'🌑', race:'wraith', element:'dark', hp:s(920),  atk:s(115), def:s(80), exp:s(496), gold:s(436) },
+      ],
+      boss:{ name:'霊体の君主 冥府のエレボス', icon:'💀', race:'wraith', element:'dark', isPillar:true, pillarKey:'wraith',
+        hp:s(6400), atk:s(183), def:s(108), exp:s(6400), gold:s(5900) },
+      rareBoss:null,
+    },
+    { pillarKey:'material', id:'pillar-material', name:"不壊の要塞 〜フォルゴの鋼〜", icon:'⚙', rank:'X',
+      desc:'物質の君主が作り上げた破壊不能の要塞。あらゆる攻撃を無効化する。',
+      floors:10, minLevel:80, rewardGold:s(15000), rewardExp:s(15000),
+      enemies:[
+        { name:'不壊の鋼鉄兵', icon:'⚙', race:'material', element:'earth', hp:s(1200), atk:s(108), def:s(100), exp:s(490), gold:s(430) },
+        { name:'砕けぬ岩巨人', icon:'🪨', race:'material', element:'earth', hp:s(1300), atk:s(102), def:s(110), exp:s(486), gold:s(426) },
+        { name:'磁場の操作者', icon:'🔩', race:'material', element:'wind',  hp:s(900),  atk:s(120), def:s(88),  exp:s(502), gold:s(442) },
+      ],
+      boss:{ name:'物質の君主 不壊のフォルゴ', icon:'⚙', race:'material', element:'earth', isPillar:true, pillarKey:'material',
+        hp:s(8000), atk:s(165), def:s(140), exp:s(8000), gold:s(7500) },
+      rareBoss:null,
+    },
+    { pillarKey:'divine', id:'pillar-divine', name:"神域の最深部 〜アルケイオスの座〜", icon:'🌟', rank:'X',
+      desc:'神の君主が待ち受ける最果ての神域。神威が世界の果てを照らす。',
+      floors:12, minLevel:80, rewardGold:s(18000), rewardExp:s(18000),
+      enemies:[
+        { name:'神威の上位神格', icon:'⭐', race:'divine', element:'light', hp:s(1000), atk:s(128), def:s(95),  exp:s(510), gold:s(450) },
+        { name:'創造の守護神',   icon:'🌟', race:'divine', element:'light', hp:s(1100), atk:s(135), def:s(100), exp:s(520), gold:s(460) },
+        { name:'審判の天位神',   icon:'✨', race:'divine', element:'light', hp:s(950),  atk:s(130), def:s(90),  exp:s(508), gold:s(448) },
+      ],
+      boss:{ name:'神の君主 神威のアルケイオス', icon:'🌟', race:'divine', element:'light', isPillar:true, pillarKey:'divine',
+        hp:s(10000), atk:s(230), def:s(150), exp:s(10000), gold:s(9500) },
+      rareBoss:null,
+    },
+  ];
+}
+
+// =====================================================
+// ===== ラストダンジョン =====
+// =====================================================
+const LAST_DUNGEON = {
+  id:'last-dungeon',
+  name:'虚座の間 〜ドミニウスの玉座〜',
+  icon:'🌌', rank:'X',
+  desc:'天司十二柱が全て滅びた後、世界の裂け目の奥に現れた禁断の空間。全てはここから始まっていた。',
+  storyNote:'最終章 — 支配の真実',
+  floors:15, minLevel:90,
+  enemies:[
+    { name:'支配された神格', icon:'⭐', race:'divine',   element:'light', hp:1500, atk:180, def:130, exp:800, gold:700 },
+    { name:'操られし龍王',   icon:'🐉', race:'dragon',   element:'dark',  hp:1400, atk:190, def:120, exp:820, gold:720 },
+    { name:'傀儡の天使',     icon:'👼', race:'angel',    element:'dark',  hp:1300, atk:185, def:115, exp:810, gold:710 },
+    { name:'幻影の亜人族長', icon:'🎭', race:'humanoid', element:'dark',  hp:1250, atk:192, def:108, exp:815, gold:715 },
+  ],
+  boss:{
+    name:'支配の君主 絶対のドミニウス',
+    icon:'🖤', race:'divine', element:'dark',
+    isLastBoss:true,
+    hp:25000, atk:320, def:200, exp:50000, gold:50000,
+  },
+  rareBoss:{
+    name:'支配の根源 ドミニウス＝アブソルート',
+    icon:'♾', race:'divine', element:'dark',
+    isLastBoss:true,
+    hp:60000, atk:450, def:280, exp:120000, gold:120000,
+  },
+  rewardGold:100000, rewardExp:100000,
+};
+
+
 const ALL_SKILLS = [
-  // ── E級 ──
-  { id:'focus',        name:'集中',           icon:'🎯', desc:'精神を研ぎ澄まし次の攻撃が必ずクリティカル',  mpCost:8,  dmgMult:2.2, type:'damage',   unlockLevel:1,  unlockDesc:'覚醒時に習得' },
-  // ── D級 ──
-  { id:'dash',         name:'シャドウダッシュ', icon:'💨', desc:'瞬速の踏み込みで敵の防御を無視した一撃',     mpCost:12, dmgMult:1.9, type:'damage',   unlockLevel:5,  unlockDesc:'Lv5で習得' },
-  { id:'regen',        name:'影の回復',        icon:'💚', desc:'影の力でHP20%を回復する',                   mpCost:15, dmgMult:0,   type:'heal',    unlockLevel:7,  unlockDesc:'Lv7で習得' },
-  // ── C級 ──
-  { id:'shadow-step',  name:'シャドウステップ', icon:'🌑', desc:'影を踏み台に連続3ヒットの猛攻',             mpCost:20, dmgMult:2.8, type:'multi',   unlockLevel:15, unlockDesc:'Lv15で習得' },
-  { id:'dark-bind',    name:'暗黒縛鎖',        icon:'⛓',  desc:'敵の動きを封じ2ターン攻撃力を半減させる',   mpCost:18, dmgMult:1.2, type:'debuff',  unlockLevel:18, unlockDesc:'Lv18で習得' },
-  { id:'mana-burst',   name:'魔力爆発',        icon:'💥', desc:'溜め込んだ魔力を爆発させる広域攻撃',        mpCost:25, dmgMult:3.2, type:'damage',  unlockLevel:22, unlockDesc:'Lv22で習得' },
-  // ── B級 ──
-  { id:'arise',        name:'アライズ',        icon:'💀', desc:'倒したモンスターを影の兵士として召喚',       mpCost:30, dmgMult:3.0, type:'damage',  unlockLevel:30, unlockDesc:'Lv30で習得（転職後強化）' },
-  { id:'shadow-army',  name:'影の猛攻',        icon:'👥', desc:'全影の兵士が一斉突撃（兵士数×倍率）',       mpCost:35, dmgMult:2.5, type:'multi',   unlockLevel:35, unlockDesc:'Lv35で習得' },
-  { id:'death-mark',   name:'死の刻印',        icon:'☠',  desc:'敵に刻印を刻み受けるダメージを1.5倍にする',  mpCost:28, dmgMult:1.5, type:'debuff',  unlockLevel:40, unlockDesc:'Lv40で習得' },
-  // ── A級 ──
-  { id:'void-slash',   name:'虚無斬',          icon:'🌀', desc:'空間を切り裂く極大の斬撃',                  mpCost:40, dmgMult:4.0, type:'damage',  unlockLevel:50, unlockDesc:'Lv50で習得' },
-  { id:'shadow-veil',  name:'影のヴェール',    icon:'🛡',  desc:'影に包まれ次の被ダメージを80%軽減する',    mpCost:35, dmgMult:0,   type:'buff',    unlockLevel:55, unlockDesc:'Lv55で習得' },
-  // ── S級 ──
-  { id:'domain',       name:'影の君主の領域',  icon:'👑', desc:'影の力で世界を支配する究極奥義',             mpCost:60, dmgMult:6.0, type:'damage',  unlockLevel:60, unlockDesc:'Lv60で習得' },
-  { id:'soul-devour',  name:'魂喰らい',        icon:'🌟', desc:'敵の魂を喰らいHP30%回復＋ATK永続+10',      mpCost:50, dmgMult:3.5, type:'damage',  unlockLevel:70, unlockDesc:'Lv70で習得' },
-  { id:'eternal-night',name:'永劫の夜',        icon:'🌌', desc:'永遠の闇に覆われた最凶の全体殲滅技',        mpCost:80, dmgMult:8.0, type:'damage',  unlockLevel:80, unlockDesc:'Lv80で習得' },
+  { id:'focus',        name:'集中',            icon:'🎯', desc:'精神を研ぎ澄まし次の攻撃が必ずクリティカル',            mpCost:8,  dmgMult:2.2, type:'damage', element:'none',  unlockLevel:1,  unlockDesc:'覚醒時に習得' },
+  { id:'dash',         name:'シャドウダッシュ', icon:'💨', desc:'瞬速の踏み込みで敵の防御を無視した一撃 [風]',          mpCost:12, dmgMult:1.9, type:'damage', element:'wind',  unlockLevel:5,  unlockDesc:'Lv5で習得' },
+  { id:'regen',        name:'影の回復',         icon:'💚', desc:'影の力でHP20%を回復する',                              mpCost:15, dmgMult:0,   type:'heal',   element:'dark',  unlockLevel:7,  unlockDesc:'Lv7で習得' },
+  { id:'shadow-step',  name:'シャドウステップ', icon:'🌑', desc:'影を踏み台に連続3ヒット [闇] 光属性に特効',           mpCost:20, dmgMult:2.8, type:'multi',  element:'dark',  unlockLevel:15, unlockDesc:'Lv15で習得' },
+  { id:'dark-bind',    name:'暗黒縛鎖',         icon:'⛓', desc:'敵ATKを2ターン半減 [闇]',                              mpCost:18, dmgMult:1.2, type:'debuff', element:'dark',  unlockLevel:18, unlockDesc:'Lv18で習得' },
+  { id:'mana-burst',   name:'魔力爆発',         icon:'💥', desc:'溜め込んだ魔力を爆発させる広域攻撃 [火]',             mpCost:25, dmgMult:3.2, type:'damage', element:'fire',  unlockLevel:22, unlockDesc:'Lv22で習得' },
+  { id:'arise',        name:'アライズ',         icon:'💀', desc:'倒したモンスターを影の兵士として召喚 [闇]',           mpCost:30, dmgMult:3.0, type:'damage', element:'dark',  unlockLevel:30, unlockDesc:'Lv30で習得' },
+  { id:'shadow-army',  name:'影の猛攻',         icon:'👥', desc:'全影の兵士が一斉突撃（兵士数×倍率）[闇]',            mpCost:35, dmgMult:2.5, type:'multi',  element:'dark',  unlockLevel:35, unlockDesc:'Lv35で習得' },
+  { id:'death-mark',   name:'死の刻印',         icon:'☠', desc:'敵に刻印を刻み受けるダメージを1.5倍 [闇]',            mpCost:28, dmgMult:1.5, type:'debuff', element:'dark',  unlockLevel:40, unlockDesc:'Lv40で習得' },
+  { id:'void-slash',   name:'虚無斬',           icon:'🌀', desc:'空間を切り裂く極大の斬撃 [闇]',                       mpCost:40, dmgMult:4.0, type:'damage', element:'dark',  unlockLevel:50, unlockDesc:'Lv50で習得' },
+  { id:'shadow-veil',  name:'影のヴェール',     icon:'🛡', desc:'次の被ダメージを80%軽減する [闇]',                    mpCost:35, dmgMult:0,   type:'buff',   element:'dark',  unlockLevel:55, unlockDesc:'Lv55で習得' },
+  { id:'flame-slash',  name:'烈火の斬撃',       icon:'🔥', desc:'炎を纏う強力な斬撃 [火] 水属性が弱点',               mpCost:38, dmgMult:3.5, type:'damage', element:'fire',  unlockLevel:58, unlockDesc:'Lv58で習得' },
+  { id:'domain',       name:'???の領域',        icon:'👑', desc:'未知の権能が世界を支配する究極奥義 [闇]',             mpCost:60, dmgMult:6.0, type:'damage', element:'dark',  unlockLevel:60, unlockDesc:'Lv60で習得' },
+  { id:'soul-devour',  name:'魂喰らい',         icon:'🌟', desc:'敵の魂を喰らいHP30%回復＋ATK永続+10 [闇]',           mpCost:50, dmgMult:3.5, type:'damage', element:'dark',  unlockLevel:70, unlockDesc:'Lv70で習得' },
+  { id:'eternal-night',name:'永劫の夜',         icon:'🌌', desc:'永遠の闇に覆われた最凶の全体殲滅技 [闇] 全属性特効', mpCost:80, dmgMult:8.0, type:'damage', element:'dark',  unlockLevel:80, unlockDesc:'Lv80で習得' },
 ];
 
 // Active skill selected by player (index into G.skills)
@@ -2214,9 +3131,14 @@ function startGame() {
   showScreen('game-screen');
   initDailyQuests();
   renderDungeons();
+  rerollRandomDungeons();
   renderShadowSlots();
   renderSkillsTab();
   renderEquipTab();
+  renderJobProgress();
+  renderTwelvePillars();
+  renderPillarDungeons();
+  renderKingDungeons();
   updateUI();
   addActivity('ゲームを開始した');
   showNotification('システムウィンドウが現れた！', '再覚醒を確認しました', false);
@@ -2280,30 +3202,50 @@ function applyQuestReward(q) {
 function renderDungeons() {
   const grid = document.getElementById('dungeon-grid');
   grid.innerHTML = '';
-  DUNGEONS.forEach(d => {
-    const locked = G.level < d.minLevel;
-    const rankColors = {E:'e',D:'d',C:'c',B:'b',A:'a',S:'S'};
+  const cleared = new Set(G.clearedDungeonIds || []);
+
+  // 段階解放ロジック：1つ前のダンジョンをクリアしていると解放
+  // 最初のダンジョンは最初から開放
+  DUNGEONS.forEach((d, idx) => {
+    const levelLocked  = G.level < d.minLevel;
+    const prevCleared  = idx === 0 || cleared.has(DUNGEONS[idx - 1].id);
+    const isUnlocked   = prevCleared && !levelLocked;
+    const isHidden     = !prevCleared;      // 前をクリアしていなければ非表示
+    const isCleared    = cleared.has(d.id);
+
+    if (isHidden) return; // 前をクリアしていないものは表示しない
+
     const div = document.createElement('div');
-    div.className = `dungeon-card rank-${d.rank}-card ${locked ? 'locked' : ''}`;
+    div.className = `dungeon-card rank-${d.rank}-card ${levelLocked ? 'locked' : ''}`;
+
+    let statusBadge = '';
+    if (isCleared) {
+      statusBadge = `<span style="font-size:0.65rem;color:var(--green);margin-left:0.4rem">✓ 攻略済</span>`;
+    }
+
     div.innerHTML = `
       <div class="dungeon-rank-header">
         <span class="dungeon-icon">${d.icon}</span>
         <span class="player-rank-badge rank-${d.rank}">${d.rank}級</span>
+        ${statusBadge}
       </div>
       <div class="dungeon-name">${d.name}</div>
       <div class="dungeon-desc">${d.desc}</div>
       <div class="dungeon-reward">
         <span class="reward-tag">⚔ ${d.floors}フロア</span>
-        <span class="reward-tag">💰 ${d.rewardGold}G</span>
-        <span class="reward-tag">⭐ ${d.rewardExp}EXP</span>
+        <span class="reward-tag">💰 ${d.rewardGold.toLocaleString()}G</span>
+        <span class="reward-tag">⭐ ${d.rewardExp.toLocaleString()}EXP</span>
       </div>
-      ${locked ? `<div class="dungeon-locked-msg">🔒 Lv${d.minLevel}以上が必要</div>` : ''}
+      ${levelLocked ? `<div class="dungeon-locked-msg">🔒 Lv${d.minLevel}以上が必要</div>` : ''}
     `;
-    if (!locked) {
+    if (isUnlocked) {
       div.onclick = () => enterDungeon(d);
     }
     grid.appendChild(div);
   });
+
+  // 十二王ダンジョン（S級ラストダンジョンクリア後に解放）
+  // ここには表示しない（ストーリー最終盤として別途実装）
 }
 
 // ===== DUNGEON ENTER =====
@@ -2338,6 +3280,15 @@ function startCombat() {
   const d = G.currentDungeon;
   showScreen('combat-screen');
   document.getElementById('combat-dungeon-name').textContent = d.name;
+  // ストーリーノートがあれば表示
+  const storyEl = document.getElementById('combat-story-note') || (() => {
+    const el = document.createElement('div');
+    el.id = 'combat-story-note';
+    el.style.cssText = 'font-size:0.65rem;color:var(--accent2);margin-top:0.1rem;';
+    document.getElementById('combat-dungeon-name').after(el);
+    return el;
+  })();
+  storyEl.textContent = d.storyNote ? `【${d.storyNote}】` : '';
   updateCombatFloor();
 
   const isBoss = G.currentFloor === G.totalFloors;
@@ -2359,13 +3310,30 @@ function startCombat() {
   document.getElementById('enemy-sprite').textContent = baseEnemy.icon;
   document.getElementById('enemy-name').textContent = baseEnemy.name;
 
+  // 属性・種族バッジ更新
+  let badgeEl = document.getElementById('enemy-badges');
+  if (!badgeEl) {
+    badgeEl = document.createElement('div');
+    badgeEl.id = 'enemy-badges';
+    badgeEl.style.cssText = 'text-align:center;margin-top:0.2rem;min-height:1rem';
+    document.getElementById('enemy-name').after(badgeEl);
+  }
+  const eElem = ELEMENTS[baseEnemy.element];
+  const eRace = RACES[baseEnemy.race];
+  badgeEl.innerHTML = (eElem && baseEnemy.element !== 'none'
+    ? `<span style="font-size:0.65rem;padding:0.1rem 0.4rem;border-radius:3px;background:${eElem.color}33;border:1px solid ${eElem.color}66;color:${eElem.color};margin-right:0.3rem">${eElem.icon} ${eElem.label.replace(/^[^ ]+ /,'')}</span>` : '')
+    + (eRace
+    ? `<span style="font-size:0.62rem;color:#888;padding:0.05rem 0.3rem;border-radius:3px;border:1px solid #333">${eRace.icon} ${eRace.label}</span>` : '');
+
   updateCombatSkillButtons();
 
   const log = document.getElementById('combat-log');
   let initMsg = `<div class="log-line highlight">【${G.currentFloor}F】`;
-  if (baseEnemy.isRareBoss)  initMsg += `<span style="color:var(--gold)">★ 伝説のボス出現！</span> `;
-  else if (baseEnemy.isRare) initMsg += `<span style="color:var(--gold)">★ レアモンスター！</span> `;
-  else if (isBoss)           initMsg += `<span style="color:var(--red)">⚠ ボス出現！</span> `;
+  if (baseEnemy.isRareBoss)        initMsg += `<span style="color:var(--gold)">★ 伝説のボス出現！</span> `;
+  else if (baseEnemy.isPillar)     initMsg += `<span style="color:var(--gold)">👑 天司十二柱 降臨！</span> `;
+  else if (baseEnemy.isRare)       initMsg += `<span style="color:var(--gold)">★ レアモンスター！</span> `;
+  else if (isBoss)                 initMsg += `<span style="color:var(--red)">⚠ ボス出現！</span> `;
+  else if (baseEnemy.race === 'human') initMsg += `<span style="color:var(--s-rank)">⚔ ヴィランダイバー出現！</span> `;
   initMsg += `「${baseEnemy.name}」が現れた！</div>`;
   log.innerHTML = initMsg;
 
@@ -2411,13 +3379,33 @@ function updateCombatFloor() {
   document.getElementById('combat-floor-indicator').style.color = isBoss ? 'var(--red)' : 'var(--accent)';
 }
 
+function updateItemButton() {
+  const potionNames = ['大エリクシル','エリクシル','HPポーション x3','HPポーション x2','HPポーション'];
+  let found = null;
+  for (const pname of potionNames) {
+    const item = G.fullInventory.find(i => i.name === pname && !i.slot);
+    if (item) { found = item; break; }
+  }
+  const btn = document.querySelector('.btn-item');
+  if (!btn) return;
+  const descEl = btn.querySelector('.action-desc');
+  if (found) {
+    btn.disabled = false;
+    if (descEl) descEl.textContent = `${found.name} ×${found.qty || 1}`;
+  } else {
+    btn.disabled = false; // 押せるが「なし」表示（押したときにログで通知）
+    if (descEl) descEl.textContent = 'ポーションなし';
+  }
+}
+
 function updateCombatSkillButtons() {
   const skill = G.skills.length > 0 ? G.skills[G.activeSkillIdx] || G.skills[G.skills.length - 1] : null;
 
   if (skill) {
     document.getElementById('skill-btn-name').textContent = skill.name;
     document.getElementById('skill-btn-desc').textContent = skill.desc;
-    document.getElementById('skill-btn-cost').textContent = `MP: ${skill.mpCost}`;
+    const mpColor = G.mp >= skill.mpCost ? 'var(--accent2)' : 'var(--red)';
+    document.getElementById('skill-btn-cost').innerHTML = `<span style="color:${mpColor}">MP: ${skill.mpCost}</span>`;
     document.getElementById('btn-skill-action').disabled = G.mp < skill.mpCost;
   } else {
     document.getElementById('btn-skill-action').disabled = true;
@@ -2431,6 +3419,8 @@ function updateCombatSkillButtons() {
   document.getElementById('shadow-btn-desc').textContent = hasShadow
     ? `影の兵士 ${G.shadows.length}体で攻撃`
     : G.maxShadows > 0 ? '影の兵士がいない' : '転職で解放';
+
+  updateItemButton();
 }
 
 function updateCombatBars() {
@@ -2448,6 +3438,11 @@ function updateCombatBars() {
   document.getElementById('combat-lv').textContent = G.level;
   document.getElementById('combat-exp-fill').style.width = (G.exp / G.expNeeded * 100) + '%';
   document.getElementById('combat-exp-text').textContent = `${G.exp} / ${G.expNeeded}`;
+
+  // MP bar
+  const mpPct = G.maxMp > 0 ? Math.max(0, G.mp / G.maxMp * 100) : 0;
+  document.getElementById('combat-mp-bar').style.width = mpPct + '%';
+  document.getElementById('combat-mp-text').textContent = `${G.mp} / ${G.maxMp}`;
 
   updateUI();
 }
@@ -2476,6 +3471,14 @@ function playerAction(type) {
     if (!skill || G.mp < skill.mpCost) { G.inCombat = false; enableCombatActions(); return; }
     G.mp -= skill.mpCost;
 
+    // 属性倍率
+    const elemMult = getElementMult(skill.element, e.element);
+    const elemLabel = elemMult >= 1.5
+      ? `<span style="color:var(--s-rank);font-size:0.75rem;margin-left:0.3rem">▲弱点！×${elemMult}</span>`
+      : elemMult <= 0.7
+        ? `<span style="color:var(--text-dim);font-size:0.75rem;margin-left:0.3rem">▼耐性 ×${elemMult}</span>`
+        : '';
+
     if (skill.type === 'heal') {
       const heal = Math.floor(G.maxHp * 0.20);
       G.hp = Math.min(G.maxHp, G.hp + heal);
@@ -2494,26 +3497,25 @@ function playerAction(type) {
     if (skill.type === 'debuff') {
       e.debuffAtk = Math.floor(e.atk * 0.5);
       e.debuffTurns = 2;
-      dmg = Math.max(1, Math.floor(G.atk * skill.dmgMult - e.def * 0.5));
-      logMsg = `⛓ ${skill.name}！ 「${e.name}」に <strong style="color:var(--accent2)">${dmg}</strong> ダメージ＋攻撃力半減！`;
+      dmg = Math.max(1, Math.floor(G.atk * skill.dmgMult * elemMult - e.def * 0.5));
+      logMsg = `⛓ ${skill.name}！ 「${e.name}」に <strong style="color:var(--accent2)">${dmg}</strong> ダメージ＋攻撃力半減！${elemLabel}`;
       logClass = 'skill';
     } else if (skill.type === 'multi') {
       const hits = skill.id === 'shadow-army' ? Math.max(2, G.shadows.length) : 3;
       dmg = 0;
-      for (let h = 0; h < hits; h++) dmg += Math.max(1, Math.floor((G.atk * skill.dmgMult / hits) - e.def * 0.3));
-      logMsg = `${skill.icon} ${skill.name}！ ${hits}ヒット！ 「${e.name}」に <strong style="color:var(--accent2)">${dmg}</strong> ダメージ！`;
+      for (let h = 0; h < hits; h++) dmg += Math.max(1, Math.floor((G.atk * skill.dmgMult * elemMult / hits) - e.def * 0.3));
+      logMsg = `${skill.icon} ${skill.name}！ ${hits}ヒット！ 「${e.name}」に <strong style="color:var(--accent2)">${dmg}</strong> ダメージ！${elemLabel}`;
       logClass = 'skill';
     } else {
-      dmg = Math.max(1, Math.floor(G.atk * skill.dmgMult - e.def * 0.5));
+      dmg = Math.max(1, Math.floor(G.atk * skill.dmgMult * elemMult - e.def * 0.5));
       if (G.eventCurseAtk) dmg = Math.max(1, Math.floor(dmg * 0.5));
-      // soul-devour: heal on hit
       if (skill.id === 'soul-devour') {
         const heal = Math.floor(G.maxHp * 0.3);
         G.hp = Math.min(G.maxHp, G.hp + heal);
         G.bonusAtk = (G.bonusAtk||0) + 10;
         applyEquipStats();
       }
-      logMsg = `${skill.icon} ${skill.name}！ 「${e.name}」に <strong style="color:var(--accent2)">${dmg}</strong> ダメージ！`;
+      logMsg = `${skill.icon} ${skill.name}！ 「${e.name}」に <strong style="color:var(--accent2)">${dmg}</strong> ダメージ！${elemLabel}`;
       logClass = 'skill';
     }
   } else if (type === 'shadow') {
@@ -2521,10 +3523,43 @@ function playerAction(type) {
     logMsg = `👥 影の軍団が攻撃！ 「${e.name}」に <strong style="color:var(--shadow)">${dmg}</strong> ダメージ！`;
     logClass = 'shadow';
   } else if (type === 'item') {
-    const heal = Math.floor(G.maxHp * 0.3);
+    // インベントリからHPポーション系を探して消費
+    const potionNames = ['大エリクシル','エリクシル','HPポーション x3','HPポーション x2','HPポーション'];
+    let usedPotion = null;
+    for (const pname of potionNames) {
+      const idx = G.fullInventory.findIndex(i => i.name === pname && !i.slot);
+      if (idx !== -1) {
+        usedPotion = G.fullInventory[idx];
+        if ((usedPotion.qty || 1) <= 1) {
+          G.fullInventory.splice(idx, 1);
+        } else {
+          usedPotion.qty--;
+        }
+        break;
+      }
+    }
+
+    let heal = 0;
+    let potionLabel = '';
+    if (!usedPotion) {
+      addLog(`🧪 ポーションがない！`, 'damage');
+      G.inCombat = false;
+      enableCombatActions();
+      updateCombatSkillButtons();
+      return;
+    }
+
+    if (usedPotion.name.includes('大エリクシル') || usedPotion.name === 'エリクシル') {
+      heal = Math.floor(G.maxHp * 0.5);
+      potionLabel = usedPotion.name;
+    } else {
+      heal = Math.floor(G.maxHp * 0.3);
+      potionLabel = usedPotion.name;
+    }
     G.hp = Math.min(G.maxHp, G.hp + heal);
-    addLog(`🧪 ポーションを使用！ HP <strong style="color:var(--green)">+${heal}</strong> 回復！`, 'heal');
+    addLog(`🧪 ${potionLabel}を使用！ HP <strong style="color:var(--green)">+${heal}</strong> 回復！`, 'heal');
     updateCombatBars();
+    updateItemButton();
     setTimeout(() => enemyAttack(), 200);
     return;
   }
@@ -2592,10 +3627,29 @@ function enemyDefeated() {
   updateQuest('kills');
   updateQuest('win');
 
-  const goldGained = Math.floor(e.gold * (G.eventGoldBonus || 1.0));
-  addLog(`<span class="victory">🏆 「${e.name}」を撃破！ EXP+${e.exp} Gold+${goldGained}</span>`, 'victory');
-  gainExp(e.exp);
+  // ── EXP にランダム幅を持たせる ──
+  // 基本: ±30% のぶれ。レアモンスターは基礎値が2.5倍なので更に大きい
+  const expVariance = 0.7 + Math.random() * 0.6;          // 0.70 〜 1.30
+  const isBossFloor  = G.currentFloor === G.totalFloors;
+  const bossBonus    = isBossFloor ? (1.2 + Math.random() * 0.6) : 1.0; // ボス: +20〜+80%
+  const rareBonus    = e.isRare ? (1.5 + Math.random() * 1.0) : 1.0;    // レア: +50〜+150%
+  const rareBossBonus = e.isRareBoss ? (2.0 + Math.random() * 2.0) : 1.0; // 伝説ボス: +100〜+300%
+  const boostMult    = G.expBoost > 0 ? 1.5 : 1.0;
+
+  const rawExp   = Math.floor(e.exp * expVariance * bossBonus * rareBonus * rareBossBonus * boostMult);
+  const goldGained = Math.floor(e.gold * (G.eventGoldBonus || 1.0) * (G.goldBoost > 0 ? 1.5 : 1.0));
+
+  // EXP色: 通常=accent, レア=gold, 伝説ボス=赤
+  const expColor = e.isRareBoss ? 'var(--s-rank)' : e.isRare ? 'var(--gold)' : 'var(--accent)';
+  const expTag   = e.isRareBoss ? '【伝説ボス特別報酬】' : e.isRare ? '【レアボーナス】' : '';
+
+  addLog(`<span class="victory">🏆 「${e.name}」を撃破！ <span style="color:${expColor}">EXP+${rawExp}${expTag}</span> Gold+${goldGained}</span>`, 'victory');
+  gainExp(rawExp);
   G.gold += goldGained;
+
+  // ブースト消費
+  if (G.expBoost > 0)  G.expBoost--;
+  if (G.goldBoost > 0) G.goldBoost--;
 
   // Rare drop on rare monsters
   if (e.dropBonus) {
@@ -2632,56 +3686,154 @@ function enemyDefeated() {
 function dungeonClear() {
   const d = G.currentDungeon;
   G.dungeonsCleared++;
+  // クリア済みID記録（段階解放・ラスト解放用）
+  if (!G.clearedDungeonIds) G.clearedDungeonIds = [];
+  if (d.id && !G.clearedDungeonIds.includes(d.id)) {
+    G.clearedDungeonIds.push(d.id);
+  }
   updateQuest('dungeon');
-  addActivity(`「${d.name}」をクリアした（${d.rank}級）`);
+  addActivity(`「${d.name}」をクリアした（${d.rank}級${d.isRandom?' ランダム':''}）`);
 
-  // Random loot
-  const rawLoot = rollLoot(d.rank, true);
+  // 十二王・天司 専用装備ドロップ
+  if (d.boss && (d.boss.isKing || d.boss.isPillar)) {
+    const dropKey = d.boss.kingKey || d.boss.pillarKey;
+    const dropSrc = d.boss.isKing ? KING_DROPS : PILLAR_DROPS;
+    const dropSet = dropSrc[dropKey];
+    if (dropSet) {
+      // 4種からランダムに1〜2個ドロップ
+      const shuffled = [...dropSet.items].sort(() => Math.random()-0.5);
+      const dropCount = Math.random() < 0.4 ? 2 : 1;
+      shuffled.slice(0, dropCount).forEach(item => {
+        // ITEM_TEMPLATESに未登録なら動的登録
+        if (!ITEM_TEMPLATES[item.name]) {
+          ITEM_TEMPLATES[item.name] = { slot: item.slot, icon: item.icon, rarity: item.rarity, bonus: item.bonus };
+        }
+        addInventoryItem(item.name, 'S');
+        addLog(`🌟 専用装備ドロップ！「${item.name}」を入手！`, 'victory');
+      });
+    }
+  }
+  // 十二王 撃破記録
+  if (d.boss && d.boss.isKing && d.boss.kingKey) {
+    if (!G.kingsDefeated) G.kingsDefeated = [];
+    if (!G.kingsDefeated.includes(d.boss.kingKey)) {
+      G.kingsDefeated.push(d.boss.kingKey);
+      const king = TWELVE_KINGS[d.boss.kingKey];
+      const count = G.kingsDefeated.length;
+      addActivity(`十二王「${d.boss.name}」を撃破！（${count}/12）`);
+      showNotification('👑 王を撃破！',
+        `${king.title} ${king.name}\n残り ${12 - count} 体 / 難易度が上昇`, true);
+      if (count >= 12) {
+        showNotification('🌌 ラストダンジョン解放！',
+          '十二王を全て撃破した！\n「虚座の間」への扉が開いた——', true);
+      }
+      setTimeout(() => renderKingDungeons(), 400);
+    }
+  }
+  // 天司十二柱 撃破記録
+  if (d.boss && d.boss.isPillar && d.boss.pillarKey) {
+    if (!G.pillarsDefeated) G.pillarsDefeated = [];
+    if (!G.pillarsDefeated.includes(d.boss.pillarKey)) {
+      G.pillarsDefeated.push(d.boss.pillarKey);
+      const count = G.pillarsDefeated.length;
+      addActivity(`天司「${d.boss.name}」を撃破！（${count}/12）`);
+      showNotification('🌟 天司撃破！', `${d.boss.name}\n残り ${12 - count} 柱`, true);
+      setTimeout(() => renderPillarDungeons(), 500);
+    }
+  }
+  // ラストボス撃破
+  if (d.boss && d.boss.isLastBoss) {
+    if (!G.pillarsDefeated) G.pillarsDefeated = [];
+    if (!G.pillarsDefeated.includes('last')) {
+      G.pillarsDefeated.push('last');
+      G.lastBossCleared = true;
+      addActivity('真の黒幕「絶対のドミニウス」を撃破した！');
+      showNotification('🎉 GAME CLEAR！',
+        '支配の君主ドミニウスを倒した！\n全ての種族に平和が戻った——\n\nありがとう、Gate Diver', true);
+      setTimeout(() => renderKingDungeons(), 500);
+    }
+  }
+
+  const goldVar = Math.floor(d.rewardGold * (0.85 + Math.random() * 0.5));
+  const expVar  = Math.floor(d.rewardExp  * (0.85 + Math.random() * 0.5));
+
+  const lootRank = d.rank || 'E';
+  const rawLoot  = rollLoot(lootRank, true);
+  // ボーナスルート（修飾語）
+  if (d.bonusLoot) rawLoot.push(...rollLoot(lootRank, false));
+
   const newItems = [];
   rawLoot.forEach(r => {
     const realName = r.startsWith('✨ ') ? r.slice(2) : r;
     newItems.push({ name: realName, bonus: r.startsWith('✨ ') });
-    addInventoryItem(realName, d.rank);
+    addInventoryItem(realName, lootRank);
   });
 
-  G.gold += d.rewardGold;
-  gainExp(d.rewardExp);
+  G.gold += goldVar;
+  gainExp(expVar);
 
-  showRewardModal(d, newItems);
+  showRewardModal(d, newItems, goldVar, expVar);
   saveGame();
 }
 
-function showRewardModal(dungeon, items) {
+function showRewardModal(dungeon, items, goldVar, expVar) {
   const existing = document.querySelector('.modal-overlay');
   if (existing) existing.remove();
 
   const overlay = document.createElement('div');
   overlay.className = 'modal-overlay';
   overlay.innerHTML = `
-    <div class="modal">
+    <div class="modal" style="max-width:460px">
       <div class="modal-icon">🏆</div>
       <div class="modal-title">DUNGEON CLEAR!</div>
       <div class="modal-subtitle">${dungeon.name} を制覇した！</div>
       <div class="reward-list">
-        <div class="reward-item"><span class="reward-item-name">💰 ゴールド</span><span class="reward-item-val">+${dungeon.rewardGold}G</span></div>
-        <div class="reward-item"><span class="reward-item-name">⭐ 経験値</span><span class="reward-item-val">+${dungeon.rewardExp}EXP</span></div>
+        <div class="reward-item">
+          <span class="reward-item-name">💰 ゴールド</span>
+          <span class="reward-item-val">+${goldVar.toLocaleString()}G</span>
+        </div>
+        <div class="reward-item">
+          <span class="reward-item-name">⭐ 経験値</span>
+          <span class="reward-item-val" style="color:var(--accent)">+${expVar.toLocaleString()} EXP</span>
+        </div>
         ${items.map(i => `
           <div class="reward-item">
-            <span class="reward-item-name">${i.bonus ? '✨ ' : '🎁 '}${i.name}</span>
+            <span class="reward-item-name">${i.bonus ? '✨ ' : '🎁 '}<span style="color:${(()=>{const tpl=ITEM_TEMPLATES[i.name];if(!tpl)return'#fff';return{'legendary':'var(--s-rank)','epic':'var(--a-rank)','rare':'var(--b-rank)','common':'#ccc'}[tpl.rarity]||'#fff';})()}">${i.name}</span></span>
             <span class="reward-item-val" style="${i.bonus ? 'color:var(--gold)' : ''}">
-              ${i.bonus ? 'ボーナス入手！' : '入手！'}
+              ${i.bonus ? 'ボーナス！' : '入手！'}
             </span>
           </div>`).join('')}
       </div>
-      <button class="btn-confirm" onclick="closeRewardModal()">確認</button>
+
+      <!-- ── ボタン行 ── -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;margin-top:0.5rem">
+        <button class="btn-confirm" style="background:linear-gradient(135deg,var(--accent2),var(--accent))"
+          onclick="reExplore()">
+          🔄 再探索
+        </button>
+        <button class="btn-confirm" style="background:rgba(74,158,255,0.15);border:1px solid var(--accent);color:var(--accent);box-shadow:none"
+          onclick="closeRewardModal()">
+          🏠 ホームへ
+        </button>
+      </div>
     </div>
   `;
   document.body.appendChild(overlay);
 }
 
+function reExplore() {
+  document.querySelector('.modal-overlay')?.remove();
+  // HPを20%回復してそのままリスタート
+  const healAmt = Math.floor(G.maxHp * 0.20);
+  G.hp = Math.min(G.maxHp, G.hp + healAmt);
+  enterDungeon(G.currentDungeon);
+}
+
 function closeRewardModal() {
   document.querySelector('.modal-overlay')?.remove();
   showScreen('game-screen');
+  // ランダムダンジョンをクリアしたら再抽選
+  if (G.currentDungeon?.isRandom) rerollRandomDungeons();
   renderDungeons();
   updateUI();
 }
@@ -2719,11 +3871,17 @@ function gainExp(amount) {
 
 function levelUp() {
   G.level++;
-  G.expNeeded = Math.floor(100 * Math.pow(1.3, G.level - 1));
-  G.hp = G.maxHp; // will be recalculated below
-  G.mp = G.maxMp;
 
-  applyEquipStats(); // recalc with new base stats + equip bonuses
+  // EXP必要量 3段階スケーリング
+  // Lv1-20: 緩やか, Lv21-50: 中程度, Lv51+: 重め
+  const lv = G.level;
+  let needed;
+  if      (lv <= 20) needed = Math.floor(80  + lv * 40);
+  else if (lv <= 50) needed = Math.floor(800 + (lv - 20) * 120);
+  else               needed = Math.floor(4400 + (lv - 50) * 350);
+  G.expNeeded = needed;
+
+  applyEquipStats();
   G.hp = G.maxHp;
   G.mp = G.maxMp;
 
@@ -2731,8 +3889,11 @@ function levelUp() {
   checkSkillUnlock();
   checkJobChange();
 
+  const base = calcBaseStats(lv);
+  const prev = calcBaseStats(lv - 1);
   addActivity(`Lv${G.level}にレベルアップ！`);
-  showNotification('🎉 レベルアップ！', `Lv${G.level} 達成！\nHP/MP/ステータスが上昇した！`, true);
+  showNotification('🎉 レベルアップ！',
+    `Lv${G.level} 達成！\nATK+${base.atk - prev.atk}  DEF+${base.def - prev.def}  HP+${base.maxHp - prev.maxHp}`, true);
   renderDungeons();
   saveGame();
 }
@@ -2763,17 +3924,691 @@ function checkJobChange() {
     G.jobClass = 'ネクロマンサー';
     G.title = '影の君主';
     G.maxShadows = 5;
-    G.player_avatar = '🌑';
     addActivity('職業が「ネクロマンサー」に転職した！称号「影の君主」を獲得！');
-    showNotification('⚡ 転職！', '「ネクロマンサー」に転職！\n称号「影の君主」を獲得！', true);
+    showNotification('⚡ 転職！', '「ネクロマンサー」に転職！\n称号「影の君主」を獲得！\n影の軍団が解放された！', true);
     document.getElementById('player-avatar').textContent = '⚔️';
     document.getElementById('shadow-unlock-hint').textContent = '影の兵士を使役できる';
     renderShadowSlots();
+    renderJobProgress();
   }
   if (G.level >= 50 && G.jobClass === 'ネクロマンサー') {
     G.maxShadows = 10;
     G.jobClass = '影の君主';
+    G.title = '影の王';
+    addActivity('「影の君主」に昇格した！称号「影の王」を獲得！');
+    showNotification('👑 昇格！', '「影の君主」に昇格！\n称号「影の王」を獲得！\n影の軍団スロットが10に拡張！', true);
+    renderJobProgress();
   }
+  if (G.level >= 80 && G.jobClass === '影の君主') {
+    G.jobClass = '影の神格';
+    G.title = '絶対なる影';
+    G.maxShadows = 15;
+    addActivity('「影の神格」に覚醒した！');
+    showNotification('🌑 神格覚醒！', '最終形態「影の神格」に覚醒！\n全スキルが強化された！', true);
+    renderJobProgress();
+  }
+}
+
+function renderJobProgress() {
+  const el = document.getElementById('job-progress');
+  if (!el) return;
+  const stages = [
+    { job:'ハンター',     req:1,  icon:'🥷', desc:'初期クラス',                  color:'var(--e-rank)' },
+    { job:'ネクロマンサー',req:20, icon:'💀', desc:'影の軍団を使役できる',         color:'var(--accent2)' },
+    { job:'影の君主',     req:50, icon:'👑', desc:'影の力が極限まで高まる',        color:'var(--s-rank)' },
+    { job:'影の神格',     req:80, icon:'🌑', desc:'影そのものと化した究極の存在', color:'var(--shadow)' },
+  ];
+  el.innerHTML = stages.map(s => {
+    const isCurrent = G.jobClass === s.job;
+    const isDone    = G.level >= s.req;
+    return `
+      <div style="display:flex;align-items:center;gap:0.6rem;padding:0.5rem 0.6rem;border-radius:4px;margin-bottom:0.35rem;
+        background:${isCurrent ? 'rgba(74,158,255,0.08)' : 'rgba(0,0,0,0.2)'};
+        border:1px solid ${isCurrent ? s.color : isDone ? 'rgba(255,255,255,0.08)' : 'var(--border)'}">
+        <span style="font-size:1.3rem;flex-shrink:0;filter:${isDone?'none':'grayscale(1) opacity(0.4)'}">${s.icon}</span>
+        <div style="flex:1">
+          <div style="font-size:0.82rem;font-weight:700;color:${isCurrent ? s.color : isDone ? '#ccc' : 'var(--text-dim)'}">
+            ${s.job}${isCurrent ? ' <span style="font-size:0.6rem;padding:0.1rem 0.3rem;background:rgba(74,158,255,0.2);border:1px solid var(--accent);border-radius:2px;color:var(--accent)">現在</span>' : ''}
+          </div>
+          <div style="font-size:0.68rem;color:var(--text-dim)">${s.desc}</div>
+        </div>
+        <div style="font-size:0.7rem;text-align:right;flex-shrink:0;color:${isDone ? 'var(--green)' : 'var(--text-dim)'}">
+          ${isDone ? '✓ 解放済' : `Lv${s.req}`}
+          ${!isDone ? `<div style="font-size:0.6rem;color:var(--text-dim)">あと${s.req - G.level}Lv</div>` : ''}
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function renderPillarDungeons() {
+  const grid = document.getElementById('pillars-dungeon-grid');
+  const lastPanel = document.getElementById('last-dungeon-panel');
+  const progressText = document.getElementById('pillars-progress-text');
+  if (!grid) return;
+
+  const defeated   = new Set(G.pillarsDefeated || []);
+  const count      = defeated.size;
+  const allDone    = count >= 12;
+  const unlocked   = G.level >= 80;
+
+  if (progressText) progressText.textContent = `${count} / 12 撃破`;
+
+  if (!unlocked) {
+    grid.innerHTML = `<div style="text-align:center;padding:2rem;color:var(--text-dim);font-size:0.85rem">
+      🔒 Lv80に到達すると天司十二柱のダンジョンが一斉解放される<br>
+      <span style="font-size:0.75rem;color:var(--accent2)">現在: Lv${G.level} / 必要: Lv80</span>
+    </div>`;
+    if (lastPanel) lastPanel.style.display = 'none';
+    return;
+  }
+
+  const dungeons = buildPillarDungeons();
+
+  grid.innerHTML = dungeons.map(d => {
+    const isDef = defeated.has(d.pillarKey);
+    const pillar = TWELVE_PILLARS[d.pillarKey];
+    const elem   = ELEMENTS[d.boss.element];
+    const defCount = defeated.size;
+    const scale    = 1.0 + defCount * (2.0 / 12);
+    const bossHp   = Math.floor(6000 * scale); // approximate display
+
+    return `
+      <div class="rd-card rd-glow-X ${isDef ? 'pillar-defeated' : ''}" onclick="${isDef ? '' : `enterPillarDungeon('${d.pillarKey}')`}" style="${isDef ? 'cursor:default' : ''}">
+        <div class="rd-card-header">
+          <span class="rd-card-icon">${d.icon}</span>
+          <div style="flex:1;min-width:0">
+            <div class="rd-card-title">${d.name}</div>
+            <div class="rd-card-sub">${d.desc}</div>
+          </div>
+          <div style="text-align:right;flex-shrink:0">
+            <div style="font-size:0.72rem;font-weight:700;color:#cc88ff">X級</div>
+            ${isDef ? '<div style="font-size:0.68rem;color:var(--green);margin-top:0.2rem">✓ 撃破済</div>' : ''}
+          </div>
+        </div>
+        <div class="rd-card-body">
+          <span class="rd-tag">⚔ ${d.floors}F</span>
+          <span class="rd-tag gold">💰 ~${d.rewardGold.toLocaleString()}G</span>
+          ${elem ? `<span style="font-size:0.65rem;padding:0.15rem 0.45rem;border-radius:3px;background:${elem.color}22;border:1px solid ${elem.color}55;color:${elem.color}">${elem.icon}</span>` : ''}
+        </div>
+        <div style="padding:0.3rem 1rem 0.6rem;font-size:0.7rem">
+          <span style="color:#cc88ff">👑 ${pillar.title}</span>
+          <span style="color:#aaa;margin-left:0.5rem">${pillar.name}</span>
+        </div>
+        <div class="rd-card-footer">
+          <div style="font-size:0.68rem;color:var(--text-dim)">難易度: <span style="color:#cc88ff">Lv+${defCount}補正</span></div>
+          ${isDef
+            ? '<span style="font-size:0.72rem;color:var(--green)">撃破済み</span>'
+            : `<button style="font-size:0.75rem;padding:0.35rem 1rem;background:linear-gradient(135deg,#8844cc,#cc88ff);border:none;color:#fff;border-radius:4px;cursor:pointer;font-weight:700">挑戦 →</button>`}
+        </div>
+      </div>`;
+  }).join('');
+
+  // Last dungeon panel
+  if (lastPanel) {
+    if (allDone) {
+      lastPanel.style.display = 'block';
+      const ld = LAST_DUNGEON;
+      const ldDefeated = G.pillarsDefeated.includes('last');
+      lastPanel.innerHTML = `
+        <div class="rd-card" style="border:2px solid #333;background:rgba(0,0,0,0.6);box-shadow:0 0 40px rgba(0,0,0,0.8);${ldDefeated ? 'opacity:0.5' : ''}" onclick="${ldDefeated ? '' : 'enterLastDungeon()'}">
+          <div class="rd-card-header">
+            <span class="rd-card-icon" style="font-size:2.5rem">🌌</span>
+            <div style="flex:1">
+              <div style="font-size:1rem;font-weight:700;color:#ccc">${ld.name}</div>
+              <div style="font-size:0.72rem;color:#888;margin-top:0.2rem">${ld.desc}</div>
+            </div>
+          </div>
+          <div style="padding:0.5rem 1rem;font-size:0.75rem;color:#aa66ff;font-style:italic">
+            ⚠ 最終章 — 支配の真実<br>
+            <span style="color:#888;font-size:0.68rem">ラスボス「支配の君主 絶対のドミニウス」が待ち受ける</span>
+          </div>
+          <div class="rd-card-footer" style="background:rgba(0,0,0,0.4)">
+            <div style="font-size:0.7rem;color:#666">${ld.floors}F / Lv${ld.minLevel}以上</div>
+            ${ldDefeated
+              ? '<span style="color:var(--green);font-size:0.75rem">✓ 撃破済み — END</span>'
+              : '<button style="font-size:0.78rem;padding:0.4rem 1.2rem;background:linear-gradient(135deg,#111,#333);border:1px solid #555;color:#ccc;border-radius:4px;cursor:pointer;font-weight:700">最終決戦へ →</button>'}
+          </div>
+        </div>`;
+    } else {
+      lastPanel.style.display = 'none';
+    }
+  }
+}
+
+function enterPillarDungeon(pillarKey) {
+  const dungeons = buildPillarDungeons();
+  const d = dungeons.find(x => x.pillarKey === pillarKey);
+  if (!d) return;
+  G.currentDungeon = d;
+  G.currentFloor   = 1;
+  G.totalFloors    = d.floors;
+  G.dungeonEnemiesKilled = 0;
+  resetDungeonEvents();
+  startCombat();
+}
+
+function enterLastDungeon() {
+  if ((G.kingsDefeated || []).length < 12) {
+    showNotification('🔒 未解放', '十二王を全て撃破してください', false);
+    return;
+  }
+  G.currentDungeon = LAST_DUNGEON;
+  G.currentFloor   = 1;
+  G.totalFloors    = LAST_DUNGEON.floors;
+  G.dungeonEnemiesKilled = 0;
+  resetDungeonEvents();
+  startCombat();
+}
+
+function renderTwelvePillars() {
+  const el = document.getElementById('twelve-pillars-list');
+  if (!el) return;
+  el.innerHTML = Object.entries(TWELVE_PILLARS).map(([key, p]) => {
+    const race = RACES[key];
+    const elem = ELEMENTS[p.element];
+    return `
+      <div style="display:flex;align-items:flex-start;gap:0.6rem;padding:0.55rem 0.6rem;
+        border-radius:4px;margin-bottom:0.35rem;background:rgba(0,0,0,0.25);
+        border:1px solid var(--border)">
+        <span style="font-size:1.4rem;flex-shrink:0">${p.icon}</span>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:0.75rem;font-weight:700;color:#fff;margin-bottom:0.1rem">${p.title}</div>
+          <div style="font-size:0.7rem;color:${elem?.color||'#aaa'};margin-bottom:0.15rem">${p.name}</div>
+          <div style="display:flex;gap:0.35rem;flex-wrap:wrap;margin-bottom:0.2rem">
+            <span style="font-size:0.6rem;padding:0.05rem 0.3rem;border-radius:3px;background:rgba(170,170,170,0.15);border:1px solid #444;color:#aaa">${race?.label||key}</span>
+            ${elem ? `<span style="font-size:0.6rem;padding:0.05rem 0.3rem;border-radius:3px;background:${elem.color}22;border:1px solid ${elem.color}55;color:${elem.color}">${elem.icon}</span>` : ''}
+          </div>
+          <div style="font-size:0.65rem;color:var(--text-dim);line-height:1.5">${p.desc}</div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+// =====================================================
+// ===== 十二王システム（SS級・ラスト前コンテンツ） =====
+// =====================================================
+const TWELVE_KINGS = {
+  humanoid: { title:'亜人の王',  name:'幻刃のファルサス',    icon:'🗡', element:'dark',  desc:'亜人族最強の剣士。幻術を纏った剣技は敵の目を惑わせる。' },
+  beast:    { title:'獣の王',    name:'咆哮のベイルガン',    icon:'🦁', element:'earth', desc:'獣族の頂点。大地を揺るがす咆哮が全てを圧倒する。' },
+  insect:   { title:'昆虫の王',  name:'猛毒のスカラベ',      icon:'🦂', element:'wind',  desc:'昆虫族の王。致死毒と無数の群体で敵を滅ぼす。' },
+  demon:    { title:'悪魔の王',  name:'炎獄のバルザロス',    icon:'🔥', element:'fire',  desc:'悪魔族最強の王。全てを溶かす業火の権能を持つ。' },
+  angel:    { title:'天使の王',  name:'聖剣のレヴァニア',    icon:'⚔',  element:'light', desc:'天使族の武人王。裁きの聖剣は一撃で魂を断ち切る。' },
+  fiend:    { title:'魔人の王',  name:'断空のグリザール',    icon:'🌀', element:'wind',  desc:'魔人族の王。空間を断ち切る斬撃は回避不能とされる。' },
+  plant:    { title:'植物の王',  name:'絡縛のソルネット',    icon:'🌿', element:'earth', desc:'植物族の王。万物を縛る蔓と侵食の力を持つ。' },
+  aquatic:  { title:'水生の王',  name:'渦潮のネレイス',      icon:'🌊', element:'water', desc:'水生族の王。海流を意のままに操り敵を呑み込む。' },
+  dragon:   { title:'龍の王',    name:'烈嵐のゼファドン',    icon:'🐉', element:'wind',  desc:'龍族最強の戦士王。嵐を呼ぶ龍気が全てを薙ぎ払う。' },
+  wraith:   { title:'霊体の王',  name:'冥刃のモルテス',      icon:'💀', element:'dark',  desc:'霊体族の王。死の刃は生者の魂さえも斬り裂く。' },
+  material: { title:'物質の王',  name:'砕岩のゴルダム',      icon:'⚙',  element:'earth', desc:'物質族の王。その一撃は岩盤を砕き大地を割る。' },
+  divine:   { title:'神族の王',  name:'天光のセレスティア',  icon:'✨', element:'light', desc:'神族の王。神の光そのものが体現された神格の頂点。' },
+};
+
+// =====================================================
+// ===== 王・君主 専用装備ドロップ & セット効果 =====
+// =====================================================
+const KING_DROPS = {
+  humanoid: {
+    setName:'幻刃セット',
+    items:[
+      { name:'幻刃ファルサスの剣',    slot:'weapon',    icon:'🗡', rarity:'legendary', bonus:{ atk:80, spd:20 },       desc:'亜人の王が振るった幻惑の剣' },
+      { name:'幻影のコート',          slot:'armor',     icon:'🎭', rarity:'legendary', bonus:{ def:55, spd:15 },       desc:'敵の目を欺く幻術の外套' },
+      { name:'幻惑の護符',            slot:'accessory', icon:'🔮', rarity:'legendary', bonus:{ atk:30, def:20 },       desc:'真偽を惑わせる幻の護符' },
+      { name:'ファルサスの指輪',      slot:'ring',      icon:'💍', rarity:'legendary', bonus:{ atk:25, spd:12, mp:50 }, desc:'幻刃の権能が宿る指輪' },
+    ],
+    setEffect:{ pieces:4, bonus:{ atk:60, spd:30, mp:100 }, desc:'幻刃4セット：ATK+60, SPD+30, MP+100。スキルダメージが全体+25%' },
+  },
+  beast: {
+    setName:'咆哮セット',
+    items:[
+      { name:'ベイルガンの牙剣',      slot:'weapon',    icon:'🦷', rarity:'legendary', bonus:{ atk:90, hp:80 },        desc:'獣の王の牙から作られた剣' },
+      { name:'原初の獣皮鎧',          slot:'armor',     icon:'🐾', rarity:'legendary', bonus:{ def:60, hp:120 },       desc:'最強の獣の皮から作られた鎧' },
+      { name:'野性の爪飾り',          slot:'accessory', icon:'🦁', rarity:'legendary', bonus:{ atk:35, hp:60 },        desc:'本能の力が宿る爪の装飾' },
+      { name:'咆哮の指輪',            slot:'ring',      icon:'💍', rarity:'legendary', bonus:{ atk:28, hp:50, def:18 }, desc:'咆哮の権能が宿る指輪' },
+    ],
+    setEffect:{ pieces:4, bonus:{ atk:70, hp:200, def:40 }, desc:'咆哮4セット：ATK+70, HP+200, DEF+40。通常攻撃に20%の確率で咆哮が発動（×1.8ダメージ）' },
+  },
+  insect: {
+    setName:'猛毒セット',
+    items:[
+      { name:'スカラベの毒牙刃',      slot:'weapon',    icon:'🦂', rarity:'legendary', bonus:{ atk:72, spd:25 },       desc:'猛毒を帯びた蠍の刃' },
+      { name:'甲虫の外殻鎧',          slot:'armor',     icon:'🪲', rarity:'legendary', bonus:{ def:65, hp:90 },        desc:'最硬の甲虫の外殻を加工した鎧' },
+      { name:'群体の指揮符',          slot:'accessory', icon:'🐝', rarity:'legendary', bonus:{ atk:28, spd:20, mp:60 }, desc:'無数の群体を束ねる符' },
+      { name:'女王の指輪',            slot:'ring',      icon:'💍', rarity:'legendary', bonus:{ atk:22, spd:18, def:15 }, desc:'昆虫族女王の指輪' },
+    ],
+    setEffect:{ pieces:4, bonus:{ atk:55, spd:45, mp:80 }, desc:'猛毒4セット：ATK+55, SPD+45, MP+80。全攻撃に毒エフェクト追加（敵ATK-10%）' },
+  },
+  demon: {
+    setName:'炎獄セット',
+    items:[
+      { name:'バルザロスの業炎剣',    slot:'weapon',    icon:'🔥', rarity:'legendary', bonus:{ atk:95, mp:60 },        desc:'業火を纏う悪魔の大剣' },
+      { name:'滅焔の魔将鎧',          slot:'armor',     icon:'😈', rarity:'legendary', bonus:{ def:58, hp:100 },       desc:'業火の中で鍛えられた鎧' },
+      { name:'炎獄の核石',            slot:'accessory', icon:'💎', rarity:'legendary', bonus:{ atk:40, mp:80 },        desc:'炎獄の中心にある核の石' },
+      { name:'バルザロスの指輪',      slot:'ring',      icon:'💍', rarity:'legendary', bonus:{ atk:30, mp:60, def:12 }, desc:'炎の権能が宿る指輪' },
+    ],
+    setEffect:{ pieces:4, bonus:{ atk:80, mp:150 }, desc:'炎獄4セット：ATK+80, MP+150。火属性スキルの威力+40%、MP消費-20%' },
+  },
+  angel: {
+    setName:'聖裁セット',
+    items:[
+      { name:'レヴァニアの聖剣',      slot:'weapon',    icon:'⚔',  rarity:'legendary', bonus:{ atk:78, def:30 },       desc:'天使の王が持つ神聖な剣' },
+      { name:'光輝の聖騎士鎧',        slot:'armor',     icon:'🛡',  rarity:'legendary', bonus:{ def:75, hp:100 },       desc:'神の光を纏った聖なる鎧' },
+      { name:'裁きの聖印',            slot:'accessory', icon:'✨', rarity:'legendary', bonus:{ def:35, hp:80, atk:20 }, desc:'裁きの権能が宿る聖印' },
+      { name:'天使の指輪',            slot:'ring',      icon:'💍', rarity:'legendary', bonus:{ def:28, hp:60, mp:40 },  desc:'神聖な光が宿る指輪' },
+    ],
+    setEffect:{ pieces:4, bonus:{ def:80, hp:200, atk:40 }, desc:'聖裁4セット：DEF+80, HP+200, ATK+40。被ダメージを全体15%軽減。光属性スキル威力+35%' },
+  },
+  fiend: {
+    setName:'断空セット',
+    items:[
+      { name:'グリザールの断空刃',    slot:'weapon',    icon:'🌀', rarity:'legendary', bonus:{ atk:85, spd:18 },       desc:'空間ごと切り裂く魔人の刃' },
+      { name:'虚空の魔将衣',          slot:'armor',     icon:'👹', rarity:'legendary', bonus:{ def:52, mp:90 },        desc:'空間を歪める魔将の外套' },
+      { name:'断空の核晶',            slot:'accessory', icon:'💠', rarity:'legendary', bonus:{ atk:32, spd:22, mp:50 }, desc:'空間断裂の核となる晶石' },
+      { name:'グリザールの指輪',      slot:'ring',      icon:'💍', rarity:'legendary', bonus:{ atk:26, spd:16, mp:45 }, desc:'断空の権能が宿る指輪' },
+    ],
+    setEffect:{ pieces:4, bonus:{ atk:65, spd:40, mp:120 }, desc:'断空4セット：ATK+65, SPD+40, MP+120。全スキルに対して敵防御力無視効果+20%' },
+  },
+  plant: {
+    setName:'絡縛セット',
+    items:[
+      { name:'ソルネットの生命杖',    slot:'weapon',    icon:'🌿', rarity:'legendary', bonus:{ atk:68, mp:100 },       desc:'生命の力が宿る植物族の杖' },
+      { name:'再生の樹皮鎧',          slot:'armor',     icon:'🌳', rarity:'legendary', bonus:{ def:70, hp:150 },       desc:'無限に再生する樹皮の鎧' },
+      { name:'絡縛の葉飾り',          slot:'accessory', icon:'🌸', rarity:'legendary', bonus:{ def:30, hp:100, mp:50 }, desc:'生命の縛りを持つ葉の飾り' },
+      { name:'植物王の指輪',          slot:'ring',      icon:'💍', rarity:'legendary', bonus:{ hp:80, def:25, mp:40 },  desc:'植物の権能が宿る指輪' },
+    ],
+    setEffect:{ pieces:4, bonus:{ def:60, hp:300, mp:100 }, desc:'絡縛4セット：DEF+60, HP+300, MP+100。毎ターンHP3%自動回復（戦闘中）' },
+  },
+  aquatic: {
+    setName:'渦潮セット',
+    items:[
+      { name:'ネレイスの潮流剣',      slot:'weapon',    icon:'🌊', rarity:'legendary', bonus:{ atk:75, spd:22 },       desc:'海流を操る水生族の剣' },
+      { name:'深海の鱗鎧',            slot:'armor',     icon:'🦈', rarity:'legendary', bonus:{ def:62, hp:110 },       desc:'深海の圧力に耐える鱗の鎧' },
+      { name:'渦潮の珠',              slot:'accessory', icon:'🔵', rarity:'legendary', bonus:{ atk:28, spd:18, mp:70 }, desc:'潮流の力を宿す珠' },
+      { name:'水生王の指輪',          slot:'ring',      icon:'💍', rarity:'legendary', bonus:{ atk:22, mp:60, def:20 }, desc:'渦潮の権能が宿る指輪' },
+    ],
+    setEffect:{ pieces:4, bonus:{ atk:60, spd:35, mp:100 }, desc:'渦潮4セット：ATK+60, SPD+35, MP+100。水属性スキル威力+40%、敵SPD-15%' },
+  },
+  dragon: {
+    setName:'烈嵐セット',
+    items:[
+      { name:'ゼファドンの龍牙剣',    slot:'weapon',    icon:'🐉', rarity:'legendary', bonus:{ atk:100, spd:15 },      desc:'龍の王の牙から作られた至高の剣' },
+      { name:'烈嵐の龍鱗鎧',          slot:'armor',     icon:'🌪', rarity:'legendary', bonus:{ def:65, hp:130 },       desc:'嵐を纏う龍鱗の鎧' },
+      { name:'龍気の宝珠',            slot:'accessory', icon:'⚡', rarity:'legendary', bonus:{ atk:42, spd:20 },       desc:'龍気が凝縮された宝珠' },
+      { name:'龍王の指輪',            slot:'ring',      icon:'💍', rarity:'legendary', bonus:{ atk:32, spd:16, hp:50 }, desc:'龍の権能が宿る指輪' },
+    ],
+    setEffect:{ pieces:4, bonus:{ atk:90, spd:40, hp:150 }, desc:'烈嵐4セット：ATK+90, SPD+40, HP+150。風属性スキル威力+45%、クリティカル率+15%' },
+  },
+  wraith: {
+    setName:'冥刃セット',
+    items:[
+      { name:'モルテスの冥刃',        slot:'weapon',    icon:'💀', rarity:'legendary', bonus:{ atk:82, mp:70 },        desc:'魂を断ち切る霊体族の刃' },
+      { name:'冥府の亡霊衣',          slot:'armor',     icon:'👻', rarity:'legendary', bonus:{ def:50, mp:110 },       desc:'冥府から持ち帰られた外套' },
+      { name:'死刃の魂石',            slot:'accessory', icon:'🖤', rarity:'legendary', bonus:{ atk:35, mp:80 },        desc:'死の刃の力が宿る魂の石' },
+      { name:'霊体王の指輪',          slot:'ring',      icon:'💍', rarity:'legendary', bonus:{ atk:28, mp:65, spd:12 }, desc:'冥刃の権能が宿る指輪' },
+    ],
+    setEffect:{ pieces:4, bonus:{ atk:70, mp:200 }, desc:'冥刃4セット：ATK+70, MP+200。闇属性スキル威力+45%、スキルMP消費-25%' },
+  },
+  material: {
+    setName:'砕岩セット',
+    items:[
+      { name:'ゴルダムの砕岩槌',      slot:'weapon',    icon:'⚙',  rarity:'legendary', bonus:{ atk:88, def:35 },       desc:'大地を砕く物質族の大槌' },
+      { name:'不壊の鋼鉄鎧',          slot:'armor',     icon:'🪨', rarity:'legendary', bonus:{ def:90, hp:120 },       desc:'いかなる攻撃も防ぐ鋼鉄の鎧' },
+      { name:'砕岩の核鉄',            slot:'accessory', icon:'🔩', rarity:'legendary', bonus:{ def:40, atk:25, hp:60 }, desc:'砕岩の権能が宿る核の鉄塊' },
+      { name:'物質王の指輪',          slot:'ring',      icon:'💍', rarity:'legendary', bonus:{ def:35, hp:80, atk:15 }, desc:'不壊の権能が宿る指輪' },
+    ],
+    setEffect:{ pieces:4, bonus:{ def:100, hp:250, atk:50 }, desc:'砕岩4セット：DEF+100, HP+250, ATK+50。被ダメージ最大30%を無効化するガード発動率+20%' },
+  },
+  divine: {
+    setName:'天光セット',
+    items:[
+      { name:'セレスティアの聖剣',    slot:'weapon',    icon:'✨', rarity:'legendary', bonus:{ atk:90, def:25, mp:60 }, desc:'神族の王が持つ天光の聖剣' },
+      { name:'天光の神格鎧',          slot:'armor',     icon:'⭐', rarity:'legendary', bonus:{ def:80, hp:150, mp:60 }, desc:'神の光そのものを纏った鎧' },
+      { name:'神威の冠飾り',          slot:'accessory', icon:'👑', rarity:'legendary', bonus:{ atk:38, def:30, mp:80 }, desc:'神族の王冠から取られた飾り' },
+      { name:'神族王の指輪',          slot:'ring',      icon:'💍', rarity:'legendary', bonus:{ atk:30, def:25, mp:60, hp:50 }, desc:'天光の権能が宿る指輪' },
+    ],
+    setEffect:{ pieces:4, bonus:{ atk:80, def:80, mp:180, hp:200 }, desc:'天光4セット：ATK+80, DEF+80, MP+180, HP+200。全属性スキル威力+20%、被ダメージ-10%' },
+  },
+};
+
+// 君主（天司）専用装備
+const PILLAR_DROPS = {
+  humanoid: { setName:'幻惑君主セット', items:[
+    { name:'君主の幻惑大剣',   slot:'weapon',    icon:'🎭', rarity:'legendary', bonus:{ atk:130, spd:35 },          desc:'天司・幻惑のミラファクタムの真の武器' },
+    { name:'君主の変化外套',   slot:'armor',     icon:'🌑', rarity:'legendary', bonus:{ def:90, spd:25, mp:80 },    desc:'真の姿を持たない者の外套' },
+    { name:'君主の幻核',       slot:'accessory', icon:'🔮', rarity:'legendary', bonus:{ atk:55, spd:30 },           desc:'幻惑の権能の核' },
+    { name:'幻惑君主の指輪',   slot:'ring',      icon:'💍', rarity:'legendary', bonus:{ atk:45, spd:25, mp:80 },    desc:'天司の権能が宿る指輪' },
+  ], setEffect:{ pieces:4, bonus:{ atk:100, spd:60, mp:150 }, desc:'幻惑君主4セット：ATK+100, SPD+60。全スキルの命中が100%になり、回避不能' } },
+  beast: { setName:'本能君主セット', items:[
+    { name:'君主の原初大牙',   slot:'weapon',    icon:'🦁', rarity:'legendary', bonus:{ atk:145, hp:120 },          desc:'原初の本能君主が持つ至高の牙剣' },
+    { name:'君主の原初毛皮',   slot:'armor',     icon:'🐾', rarity:'legendary', bonus:{ def:95, hp:200 },           desc:'原初の獣の最強の皮' },
+    { name:'本能の核晶',       slot:'accessory', icon:'🦁', rarity:'legendary', bonus:{ atk:60, hp:100 },           desc:'本能の権能の核' },
+    { name:'本能君主の指輪',   slot:'ring',      icon:'💍', rarity:'legendary', bonus:{ atk:48, hp:80, def:30 },    desc:'天司の権能が宿る指輪' },
+  ], setEffect:{ pieces:4, bonus:{ atk:120, hp:400, def:60 }, desc:'本能君主4セット：ATK+120, HP+400。HPが50%以下になると全ステータス1.5倍' } },
+  insect: { setName:'群知君主セット', items:[
+    { name:'君主の群知毒針',   slot:'weapon',    icon:'🦂', rarity:'legendary', bonus:{ atk:122, spd:45 },          desc:'群知の統率君主の毒針' },
+    { name:'君主の甲殻',       slot:'armor',     icon:'🪲', rarity:'legendary', bonus:{ def:88, hp:120, spd:20 },   desc:'昆虫族最強の甲殻' },
+    { name:'統率の核石',       slot:'accessory', icon:'🐝', rarity:'legendary', bonus:{ atk:50, spd:35 },           desc:'群知の権能の核' },
+    { name:'群知君主の指輪',   slot:'ring',      icon:'💍', rarity:'legendary', bonus:{ atk:38, spd:30, mp:70 },    desc:'天司の権能が宿る指輪' },
+  ], setEffect:{ pieces:4, bonus:{ atk:90, spd:80, mp:120 }, desc:'群知君主4セット：SPD+80。先手必勝——スキル使用時に必ず敵より先に行動' } },
+  demon: { setName:'滅焔君主セット', items:[
+    { name:'君主の滅焔魔剣',   slot:'weapon',    icon:'☠',  rarity:'legendary', bonus:{ atk:155, mp:90 },           desc:'滅焔の破壊君主が持つ魔剣' },
+    { name:'君主の業炎鎧',     slot:'armor',     icon:'😈', rarity:'legendary', bonus:{ def:92, hp:150, mp:60 },    desc:'業火に鍛えられた最強の鎧' },
+    { name:'滅焔の核炎',       slot:'accessory', icon:'💎', rarity:'legendary', bonus:{ atk:65, mp:120 },           desc:'滅焔の権能の核' },
+    { name:'滅焔君主の指輪',   slot:'ring',      icon:'💍', rarity:'legendary', bonus:{ atk:50, mp:90, def:20 },    desc:'天司の権能が宿る指輪' },
+  ], setEffect:{ pieces:4, bonus:{ atk:130, mp:250 }, desc:'滅焔君主4セット：ATK+130, MP+250。火属性スキル威力+60%、敵の防御力を50%無視' } },
+  angel: { setName:'聖裁君主セット', items:[
+    { name:'君主の裁きの聖剣', slot:'weapon',    icon:'⚔',  rarity:'legendary', bonus:{ atk:125, def:45 },          desc:'天使族の長が持つ至高の聖剣' },
+    { name:'君主の光輝聖鎧',   slot:'armor',     icon:'👼', rarity:'legendary', bonus:{ def:110, hp:160, mp:60 },   desc:'神の光を具現化した聖鎧' },
+    { name:'聖裁の核光',       slot:'accessory', icon:'✨', rarity:'legendary', bonus:{ def:55, hp:120, atk:30 },   desc:'聖裁の権能の核' },
+    { name:'聖裁君主の指輪',   slot:'ring',      icon:'💍', rarity:'legendary', bonus:{ def:45, hp:90, mp:60 },     desc:'天司の権能が宿る指輪' },
+  ], setEffect:{ pieces:4, bonus:{ def:130, hp:350, atk:60 }, desc:'聖裁君主4セット：DEF+130, HP+350。被ダメージ25%軽減＋光属性スキル威力+55%' } },
+  fiend: { setName:'歪曲君主セット', items:[
+    { name:'君主の断空魔刃',   slot:'weapon',    icon:'🌀', rarity:'legendary', bonus:{ atk:138, spd:28, mp:60 },   desc:'歪曲の魔人君主の武器' },
+    { name:'君主の虚空外套',   slot:'armor',     icon:'👹', rarity:'legendary', bonus:{ def:85, mp:150 },           desc:'空間を歪める外套' },
+    { name:'歪曲の核晶',       slot:'accessory', icon:'💠', rarity:'legendary', bonus:{ atk:55, spd:35, mp:80 },    desc:'歪曲の権能の核' },
+    { name:'歪曲君主の指輪',   slot:'ring',      icon:'💍', rarity:'legendary', bonus:{ atk:42, spd:28, mp:70 },    desc:'天司の権能が宿る指輪' },
+  ], setEffect:{ pieces:4, bonus:{ atk:110, spd:60, mp:200 }, desc:'歪曲君主4セット：全スキルの効果が2回発動（ただしMP消費2倍）' } },
+  plant: { setName:'生命君主セット', items:[
+    { name:'君主の再生の杖',   slot:'weapon',    icon:'🌳', rarity:'legendary', bonus:{ atk:112, hp:150, mp:100 },  desc:'再生の生命君主が持つ杖' },
+    { name:'君主の永生樹皮鎧', slot:'armor',     icon:'🌿', rarity:'legendary', bonus:{ def:100, hp:250 },          desc:'死すら意味を持たない永生の鎧' },
+    { name:'生命の核葉',       slot:'accessory', icon:'🌸', rarity:'legendary', bonus:{ def:45, hp:180, mp:80 },    desc:'生命の権能の核' },
+    { name:'生命君主の指輪',   slot:'ring',      icon:'💍', rarity:'legendary', bonus:{ hp:130, def:40, mp:60 },    desc:'天司の権能が宿る指輪' },
+  ], setEffect:{ pieces:4, bonus:{ def:90, hp:500, mp:150 }, desc:'生命君主4セット：HP+500。戦闘中HP5%自動回復＋死亡時に一度HP30%で復活（1回）' } },
+  aquatic: { setName:'潮流君主セット', items:[
+    { name:'君主の深淵の槍',   slot:'weapon',    icon:'🌊', rarity:'legendary', bonus:{ atk:128, spd:30, mp:70 },   desc:'深淵の潮流君主が持つ槍' },
+    { name:'君主の深海鱗鎧',   slot:'armor',     icon:'🦈', rarity:'legendary', bonus:{ def:92, hp:160, mp:80 },    desc:'深海の最深部の鱗の鎧' },
+    { name:'潮流の核珠',       slot:'accessory', icon:'🔵', rarity:'legendary', bonus:{ atk:48, spd:28, mp:90 },    desc:'潮流の権能の核' },
+    { name:'潮流君主の指輪',   slot:'ring',      icon:'💍', rarity:'legendary', bonus:{ atk:38, mp:80, spd:22 },    desc:'天司の権能が宿る指輪' },
+  ], setEffect:{ pieces:4, bonus:{ atk:95, spd:55, mp:180 }, desc:'潮流君主4セット：水属性スキル威力+60%＋全スキルのMPコスト-30%' } },
+  dragon: { setName:'覇天君主セット', items:[
+    { name:'君主の覇天龍剣',   slot:'weapon',    icon:'🐉', rarity:'legendary', bonus:{ atk:160, spd:25 },          desc:'覇天の龍気君主が振るう最強の剣' },
+    { name:'君主の龍皇鎧',     slot:'armor',     icon:'🌪', rarity:'legendary', bonus:{ def:98, hp:180 },           desc:'龍族の王の鱗でつくられた皇帝鎧' },
+    { name:'龍気の核晶',       slot:'accessory', icon:'⚡', rarity:'legendary', bonus:{ atk:68, spd:30 },           desc:'龍気の権能の核' },
+    { name:'覇天君主の指輪',   slot:'ring',      icon:'💍', rarity:'legendary', bonus:{ atk:52, spd:22, hp:80 },    desc:'天司の権能が宿る指輪' },
+  ], setEffect:{ pieces:4, bonus:{ atk:150, spd:60, hp:200 }, desc:'覇天君主4セット：ATK+150, SPD+60。風属性スキル威力+65%、クリティカル時追加ダメージ+50%' } },
+  wraith: { setName:'魂喰君主セット', items:[
+    { name:'君主の魂喰の鎌',   slot:'weapon',    icon:'💀', rarity:'legendary', bonus:{ atk:135, mp:110 },          desc:'冥府の魂喰君主の鎌' },
+    { name:'君主の冥府外套',   slot:'armor',     icon:'👻', rarity:'legendary', bonus:{ def:80, mp:170 },           desc:'冥府から持ち帰られた最強の外套' },
+    { name:'魂喰の核石',       slot:'accessory', icon:'🖤', rarity:'legendary', bonus:{ atk:58, mp:120 },           desc:'魂喰の権能の核' },
+    { name:'魂喰君主の指輪',   slot:'ring',      icon:'💍', rarity:'legendary', bonus:{ atk:45, mp:100, spd:18 },   desc:'天司の権能が宿る指輪' },
+  ], setEffect:{ pieces:4, bonus:{ atk:115, mp:350 }, desc:'魂喰君主4セット：MP+350。闇属性スキル威力+65%＋スキルでダメージを与えるたびHP回復（ダメージ×10%）' } },
+  material: { setName:'鋼鉄君主セット', items:[
+    { name:'君主の不壊の大槌', slot:'weapon',    icon:'⚙',  rarity:'legendary', bonus:{ atk:142, def:55 },          desc:'不壊の鋼鉄君主の大槌' },
+    { name:'君主の絶対鋼鉄鎧', slot:'armor',     icon:'🪨', rarity:'legendary', bonus:{ def:140, hp:180 },          desc:'いかなる攻撃も砕けない鋼鉄の鎧' },
+    { name:'鋼鉄の核塊',       slot:'accessory', icon:'🔩', rarity:'legendary', bonus:{ def:65, atk:38, hp:80 },    desc:'不壊の権能の核' },
+    { name:'鋼鉄君主の指輪',   slot:'ring',      icon:'💍', rarity:'legendary', bonus:{ def:55, hp:120, atk:25 },   desc:'天司の権能が宿る指輪' },
+  ], setEffect:{ pieces:4, bonus:{ def:160, hp:400, atk:80 }, desc:'鋼鉄君主4セット：DEF+160, HP+400。被ダメージを最大40%無効化するバリア発動（毎ターン）' } },
+  divine: { setName:'神威君主セット', items:[
+    { name:'君主の神威聖剣',   slot:'weapon',    icon:'🌟', rarity:'legendary', bonus:{ atk:148, def:40, mp:80 },   desc:'創造の神威君主が持つ究極の聖剣' },
+    { name:'君主の創造神格鎧', slot:'armor',     icon:'⭐', rarity:'legendary', bonus:{ def:120, hp:220, mp:90 },   desc:'神の創造力が宿った究極の鎧' },
+    { name:'神威の核晶',       slot:'accessory', icon:'👑', rarity:'legendary', bonus:{ atk:62, def:48, mp:110 },   desc:'神威の権能の核' },
+    { name:'神威君主の指輪',   slot:'ring',      icon:'💍', rarity:'legendary', bonus:{ atk:50, def:40, mp:90, hp:70 }, desc:'天司の権能が宿る指輪' },
+  ], setEffect:{ pieces:4, bonus:{ atk:130, def:130, mp:280, hp:300 }, desc:'神威君主4セット：全ステータス最大値+20%。全属性スキル威力+30%＋被ダメージ-20%' } },
+};
+
+// セット効果を計算（equip状態に基づく）
+function calcSetBonuses() {
+  const equipped = Object.values(G.equipped).filter(Boolean);
+  const equippedNames = new Set(equipped.map(i => i.name));
+  let totalBonus = { atk:0, def:0, spd:0, hp:0, mp:0 };
+  const activeSets = [];
+
+  const allDrops = { ...KING_DROPS, ...PILLAR_DROPS };
+  // suffix key deduplication for pillar
+  const allKeys = [
+    ...Object.keys(KING_DROPS).map(k => ({ key:k, src: KING_DROPS })),
+    ...Object.keys(PILLAR_DROPS).map(k => ({ key:`p_${k}`, src: PILLAR_DROPS, realKey:k })),
+  ];
+
+  for (const { key, src, realKey } of allKeys) {
+    const dropKey = realKey || key;
+    const setData = src[dropKey];
+    if (!setData) continue;
+    const count = setData.items.filter(item => equippedNames.has(item.name)).length;
+    if (count >= setData.setEffect.pieces) {
+      Object.entries(setData.setEffect.bonus).forEach(([k,v]) => {
+        if (totalBonus[k] !== undefined) totalBonus[k] += v;
+      });
+      activeSets.push({ name: setData.setName, desc: setData.setEffect.desc, count });
+    }
+  }
+  return { bonus: totalBonus, activeSets };
+}
+
+function buildKingDungeons() {
+  const defeated = new Set(G.kingsDefeated || []);
+  const count    = defeated.size;
+  const scale    = 1.0 + count * (1.5 / 12); // 1.0x〜2.5x
+
+  const s = (v) => Math.floor(v * scale);
+
+  return [
+    { kingKey:'humanoid', id:'king-humanoid', name:'幻域の古城 〜ファルサスの迷宮〜', icon:'🗡', rank:'SS',
+      desc:'亜人の王が待ち受ける幻術の古城。何が本物か見極めよ。',
+      floors:8, minLevel:75, rewardGold:s(8000), rewardExp:s(8000),
+      enemies:[
+        { name:'亜人族の精鋭剣士', icon:'👤', race:'humanoid', element:'dark',  hp:s(600), atk:s(90), def:s(55), exp:s(350), gold:s(300) },
+        { name:'幻影の亜人使い',   icon:'🎭', race:'humanoid', element:'dark',  hp:s(550), atk:s(98), def:s(48), exp:s(365), gold:s(315) },
+        { name:'亜人の影武者',     icon:'🌑', race:'humanoid', element:'dark',  hp:s(580), atk:s(94), def:s(52), exp:s(358), gold:s(308) },
+      ],
+      boss:{ name:'亜人の王 幻刃のファルサス', icon:'🗡', race:'humanoid', element:'dark', isKing:true, kingKey:'humanoid',
+        hp:s(5000), atk:s(150), def:s(90), exp:s(5000), gold:s(4500) },
+    },
+    { kingKey:'beast', id:'king-beast', name:'咆哮の荒野 〜ベイルガンの領域〜', icon:'🦁', rank:'SS',
+      desc:'獣の王が支配する原初の荒野。咆哮が地を揺らす。',
+      floors:8, minLevel:75, rewardGold:s(8200), rewardExp:s(8200),
+      enemies:[
+        { name:'獣族の精鋭狩人', icon:'🐾', race:'beast', element:'earth', hp:s(680), atk:s(92), def:s(58), exp:s(355), gold:s(305) },
+        { name:'原野の獣王',     icon:'🦁', race:'beast', element:'earth', hp:s(720), atk:s(96), def:s(54), exp:s(368), gold:s(318) },
+        { name:'嵐の猛獣',       icon:'🌪', race:'beast', element:'wind',  hp:s(620), atk:s(100),def:s(50), exp:s(362), gold:s(312) },
+      ],
+      boss:{ name:'獣の王 咆哮のベイルガン', icon:'🦁', race:'beast', element:'earth', isKing:true, kingKey:'beast',
+        hp:s(5500), atk:s(158), def:s(95), exp:s(5500), gold:s(5000) },
+    },
+    { kingKey:'insect', id:'king-insect', name:'毒霧の巣窟 〜スカラベの群れ〜', icon:'🦂', rank:'SS',
+      desc:'昆虫の王が率いる毒霧の巣。大群が押し寄せる。',
+      floors:8, minLevel:75, rewardGold:s(7800), rewardExp:s(7800),
+      enemies:[
+        { name:'昆虫族の毒槍兵', icon:'🪲', race:'insect', element:'wind',  hp:s(560), atk:s(88), def:s(52), exp:s(345), gold:s(295) },
+        { name:'猛毒の甲虫士',   icon:'🦗', race:'insect', element:'wind',  hp:s(520), atk:s(96), def:s(46), exp:s(358), gold:s(308) },
+        { name:'蟲の毒将',       icon:'🦂', race:'insect', element:'earth', hp:s(600), atk:s(90), def:s(60), exp:s(352), gold:s(302) },
+      ],
+      boss:{ name:'昆虫の王 猛毒のスカラベ', icon:'🦂', race:'insect', element:'wind', isKing:true, kingKey:'insect',
+        hp:s(4800), atk:s(145), def:s(88), exp:s(4800), gold:s(4300) },
+    },
+    { kingKey:'demon', id:'king-demon', name:'業炎の玉座 〜バルザロスの城砦〜', icon:'🔥', rank:'SS',
+      desc:'悪魔の王が燃やし続ける業火の城砦。熱気が全てを溶かす。',
+      floors:8, minLevel:75, rewardGold:s(8500), rewardExp:s(8500),
+      enemies:[
+        { name:'炎の悪魔侍従',   icon:'😈', race:'demon', element:'fire', hp:s(640), atk:s(96), def:s(56), exp:s(360), gold:s(310) },
+        { name:'業火の魔将',     icon:'🔥', race:'demon', element:'fire', hp:s(600), atk:s(102),def:s(50), exp:s(372), gold:s(322) },
+        { name:'深淵の番兵',     icon:'🌑', race:'demon', element:'dark', hp:s(680), atk:s(90), def:s(62), exp:s(355), gold:s(305) },
+      ],
+      boss:{ name:'悪魔の王 炎獄のバルザロス', icon:'🔥', race:'demon', element:'fire', isKing:true, kingKey:'demon',
+        hp:s(5800), atk:s(165), def:s(96), exp:s(5800), gold:s(5300) },
+    },
+    { kingKey:'angel', id:'king-angel', name:'裁きの聖廷 〜レヴァニアの剣〜', icon:'⚔', rank:'SS',
+      desc:'天使の王が守護する聖裁の廷。聖剣の輝きが罪を暴く。',
+      floors:8, minLevel:75, rewardGold:s(8000), rewardExp:s(8000),
+      enemies:[
+        { name:'聖廷の天使騎士', icon:'👼', race:'angel', element:'light', hp:s(620), atk:s(92), def:s(68), exp:s(352), gold:s(302) },
+        { name:'光の審問官',     icon:'✨', race:'angel', element:'light', hp:s(580), atk:s(98), def:s(62), exp:s(365), gold:s(315) },
+        { name:'裁きの守護聖',   icon:'⚔',  race:'angel', element:'light', hp:s(660), atk:s(88), def:s(72), exp:s(348), gold:s(298) },
+      ],
+      boss:{ name:'天使の王 聖剣のレヴァニア', icon:'⚔', race:'angel', element:'light', isKing:true, kingKey:'angel',
+        hp:s(5200), atk:s(152), def:s(102), exp:s(5200), gold:s(4700) },
+    },
+    { kingKey:'fiend', id:'king-fiend', name:'断空の迷路 〜グリザールの狭間〜', icon:'🌀', rank:'SS',
+      desc:'魔人の王が作り出した空間の歪み。斬撃が空間ごと切り裂く。',
+      floors:8, minLevel:75, rewardGold:s(8300), rewardExp:s(8300),
+      enemies:[
+        { name:'魔人族の空間斬り', icon:'👹', race:'fiend', element:'wind', hp:s(600), atk:s(95), def:s(54), exp:s(358), gold:s(308) },
+        { name:'断空の魔人兵',     icon:'🌀', race:'fiend', element:'dark', hp:s(560), atk:s(100),def:s(48), exp:s(368), gold:s(318) },
+        { name:'虚空の魔将',       icon:'🌑', race:'fiend', element:'wind', hp:s(640), atk:s(92), def:s(58), exp:s(355), gold:s(305) },
+      ],
+      boss:{ name:'魔人の王 断空のグリザール', icon:'🌀', race:'fiend', element:'wind', isKing:true, kingKey:'fiend',
+        hp:s(5400), atk:s(160), def:s(92), exp:s(5400), gold:s(4900) },
+    },
+    { kingKey:'plant', id:'king-plant', name:'絡縛の密林 〜ソルネットの根〜', icon:'🌿', rank:'SS',
+      desc:'植物の王の領域。万物を縛る蔓が全ての動きを封じる。',
+      floors:8, minLevel:75, rewardGold:s(7900), rewardExp:s(7900),
+      enemies:[
+        { name:'植物族の古樹兵', icon:'🌿', race:'plant', element:'earth', hp:s(750), atk:s(82), def:s(72), exp:s(348), gold:s(298) },
+        { name:'絡縛の蔓使い',   icon:'🌱', race:'plant', element:'earth', hp:s(680), atk:s(90), def:s(65), exp:s(358), gold:s(308) },
+        { name:'毒花の精鋭',     icon:'🌸', race:'plant', element:'water', hp:s(620), atk:s(96), def:s(58), exp:s(365), gold:s(315) },
+      ],
+      boss:{ name:'植物の王 絡縛のソルネット', icon:'🌿', race:'plant', element:'earth', isKing:true, kingKey:'plant',
+        hp:s(6000), atk:s(142), def:s(108), exp:s(6000), gold:s(5500) },
+    },
+    { kingKey:'aquatic', id:'king-aquatic', name:'渦潮の宮殿 〜ネレイスの海流〜', icon:'🌊', rank:'SS',
+      desc:'水生の王が支配する海中宮殿。渦潮が全てを呑み込む。',
+      floors:8, minLevel:75, rewardGold:s(8100), rewardExp:s(8100),
+      enemies:[
+        { name:'水生族の渦流使い', icon:'🌊', race:'aquatic', element:'water', hp:s(650), atk:s(88), def:s(60), exp:s(352), gold:s(302) },
+        { name:'深海の護衛騎士',   icon:'🦈', race:'aquatic', element:'water', hp:s(700), atk:s(84), def:s(65), exp:s(345), gold:s(295) },
+        { name:'潮流の魔物',       icon:'🐙', race:'aquatic', element:'dark',  hp:s(620), atk:s(93), def:s(55), exp:s(360), gold:s(310) },
+      ],
+      boss:{ name:'水生の王 渦潮のネレイス', icon:'🌊', race:'aquatic', element:'water', isKing:true, kingKey:'aquatic',
+        hp:s(5300), atk:s(148), def:s(98), exp:s(5300), gold:s(4800) },
+    },
+    { kingKey:'dragon', id:'king-dragon', name:'嵐峰の頂 〜ゼファドンの咆哮〜', icon:'🐉', rank:'SS',
+      desc:'龍の王が君臨する嵐の山頂。烈嵐が全てを薙ぎ払う。',
+      floors:8, minLevel:75, rewardGold:s(8600), rewardExp:s(8600),
+      enemies:[
+        { name:'龍族の嵐騎士', icon:'🐉', race:'dragon', element:'wind',  hp:s(720), atk:s(96), def:s(64), exp:s(362), gold:s(312) },
+        { name:'烈嵐の龍戦士', icon:'⚡', race:'dragon', element:'wind',  hp:s(680), atk:s(100),def:s(60), exp:s(370), gold:s(320) },
+        { name:'龍気の守護兵', icon:'🌪', race:'dragon', element:'earth', hp:s(760), atk:s(90), def:s(68), exp:s(355), gold:s(305) },
+      ],
+      boss:{ name:'龍の王 烈嵐のゼファドン', icon:'🐉', race:'dragon', element:'wind', isKing:true, kingKey:'dragon',
+        hp:s(5900), atk:s(172), def:s(100), exp:s(5900), gold:s(5400) },
+    },
+    { kingKey:'wraith', id:'king-wraith', name:'死刃の冥廊 〜モルテスの回廊〜', icon:'💀', rank:'SS',
+      desc:'霊体の王が支配する死の回廊。冥刃が魂を刈り取る。',
+      floors:8, minLevel:75, rewardGold:s(8000), rewardExp:s(8000),
+      enemies:[
+        { name:'霊体族の死神兵', icon:'👻', race:'wraith', element:'dark', hp:s(580), atk:s(92), def:s(52), exp:s(355), gold:s(305) },
+        { name:'冥刃の亡霊将',   icon:'💀', race:'wraith', element:'dark', hp:s(620), atk:s(98), def:s(56), exp:s(368), gold:s(318) },
+        { name:'境界の番人',     icon:'🌑', race:'wraith', element:'dark', hp:s(660), atk:s(88), def:s(60), exp:s(350), gold:s(300) },
+      ],
+      boss:{ name:'霊体の王 冥刃のモルテス', icon:'💀', race:'wraith', element:'dark', isKing:true, kingKey:'wraith',
+        hp:s(5100), atk:s(155), def:s(88), exp:s(5100), gold:s(4600) },
+    },
+    { kingKey:'material', id:'king-material', name:'砕岩の要塞 〜ゴルダムの鉄壁〜', icon:'⚙', rank:'SS',
+      desc:'物質の王が鎮座する鉄壁の要塞。その一撃は大地を砕く。',
+      floors:8, minLevel:75, rewardGold:s(8200), rewardExp:s(8200),
+      enemies:[
+        { name:'物質族の鋼鉄兵', icon:'⚙', race:'material', element:'earth', hp:s(900), atk:s(80), def:s(80), exp:s(348), gold:s(298) },
+        { name:'砕岩の巨人兵',   icon:'🪨', race:'material', element:'earth', hp:s(980), atk:s(76), def:s(86), exp:s(342), gold:s(292) },
+        { name:'磁力の制圧者',   icon:'🔩', race:'material', element:'wind',  hp:s(720), atk:s(90), def:s(70), exp:s(358), gold:s(308) },
+      ],
+      boss:{ name:'物質の王 砕岩のゴルダム', icon:'⚙', race:'material', element:'earth', isKing:true, kingKey:'material',
+        hp:s(6500), atk:s(138), def:s(118), exp:s(6500), gold:s(6000) },
+    },
+    { kingKey:'divine', id:'king-divine', name:'天光の聖殿 〜セレスティアの輝き〜', icon:'✨', rank:'SS',
+      desc:'神族の王が降臨する天光の聖殿。神の光が全てを照らし、全てを焼く。',
+      floors:9, minLevel:75, rewardGold:s(9000), rewardExp:s(9000),
+      enemies:[
+        { name:'神族の上位守護者', icon:'⭐', race:'divine', element:'light', hp:s(750), atk:s(98), def:s(74), exp:s(368), gold:s(318) },
+        { name:'天光の審判神',     icon:'✨', race:'divine', element:'light', hp:s(700), atk:s(104),def:s(70), exp:s(378), gold:s(328) },
+        { name:'聖殿の神格兵',     icon:'🌟', race:'divine', element:'light', hp:s(780), atk:s(94), def:s(78), exp:s(362), gold:s(312) },
+      ],
+      boss:{ name:'神族の王 天光のセレスティア', icon:'✨', race:'divine', element:'light', isKing:true, kingKey:'divine',
+        hp:s(7000), atk:s(178), def:s(120), exp:s(7000), gold:s(6500) },
+    },
+  ];
+}
+
+function renderKingDungeons() {
+  const grid = document.getElementById('kings-dungeon-grid');
+  const lastPanel = document.getElementById('kings-last-panel');
+  const progressText = document.getElementById('kings-progress-text');
+  if (!grid) return;
+
+  const defeated  = new Set(G.kingsDefeated || []);
+  const count     = defeated.size;
+  const allDone   = count >= 12;
+  const unlocked  = G.level >= 75;
+
+  if (progressText) progressText.textContent = `${count} / 12 撃破`;
+
+  if (!unlocked) {
+    grid.innerHTML = `<div style="text-align:center;padding:2rem;color:var(--text-dim);font-size:0.85rem">
+      🔒 Lv75に到達すると十二王のダンジョンが一斉解放される<br>
+      <span style="font-size:0.75rem;color:#cc88aa">現在: Lv${G.level} / 必要: Lv75</span>
+    </div>`;
+    if (lastPanel) lastPanel.style.display = 'none';
+    return;
+  }
+
+  const dungeons = buildKingDungeons();
+  grid.innerHTML = dungeons.map(d => {
+    const isDef  = defeated.has(d.kingKey);
+    const king   = TWELVE_KINGS[d.kingKey];
+    const elem   = ELEMENTS[d.boss.element];
+    const defCount = defeated.size;
+
+    return `
+      <div class="rd-card" style="border:1px solid ${isDef ? 'rgba(100,180,100,0.3)' : '#cc88aa55'};
+        background:${isDef ? 'rgba(0,0,0,0.3)' : 'var(--bg2)'};
+        box-shadow:${isDef ? 'none' : '0 0 12px rgba(180,100,150,0.2)'};
+        ${isDef ? 'opacity:0.5;cursor:default' : 'cursor:pointer'}"
+        onclick="${isDef ? '' : `enterKingDungeon('${d.kingKey}')`}">
+        <div class="rd-card-header">
+          <span class="rd-card-icon">${d.icon}</span>
+          <div style="flex:1;min-width:0">
+            <div class="rd-card-title">${d.name}</div>
+            <div class="rd-card-sub">${d.desc}</div>
+          </div>
+          <div style="text-align:right;flex-shrink:0">
+            <div style="font-size:0.72rem;font-weight:700;color:#cc88aa">SS級</div>
+            ${isDef ? '<div style="font-size:0.68rem;color:var(--green);margin-top:0.2rem">✓ 撃破済</div>' : ''}
+          </div>
+        </div>
+        <div class="rd-card-body">
+          <span class="rd-tag">⚔ ${d.floors}F</span>
+          <span class="rd-tag gold">💰 ~${d.rewardGold.toLocaleString()}G</span>
+          ${elem ? `<span style="font-size:0.65rem;padding:0.15rem 0.45rem;border-radius:3px;background:${elem.color}22;border:1px solid ${elem.color}55;color:${elem.color}">${elem.icon}</span>` : ''}
+        </div>
+        <div style="padding:0.3rem 1rem 0.6rem;font-size:0.7rem">
+          <span style="color:#cc88aa">👑 ${king.title}</span>
+          <span style="color:#aaa;margin-left:0.5rem">${king.name}</span>
+        </div>
+        <div class="rd-card-footer">
+          <div style="font-size:0.68rem;color:var(--text-dim)">難易度: <span style="color:#cc88aa">Lv+${defCount}補正</span></div>
+          ${isDef
+            ? '<span style="font-size:0.72rem;color:var(--green)">撃破済み</span>'
+            : `<button style="font-size:0.75rem;padding:0.35rem 1rem;background:linear-gradient(135deg,#6b2244,#cc88aa);border:none;color:#fff;border-radius:4px;cursor:pointer;font-weight:700">挑戦 →</button>`}
+        </div>
+      </div>`;
+  }).join('');
+
+  if (lastPanel) {
+    if (allDone) {
+      lastPanel.style.display = 'block';
+      const ldDefeated = (G.kingsDefeated||[]).includes('last');
+      lastPanel.innerHTML = `
+        <div style="margin-top:0.8rem;padding:0.8rem;background:rgba(0,0,0,0.5);border:2px solid #333;border-radius:6px;text-align:center">
+          <div style="font-size:1.5rem;margin-bottom:0.5rem">🌌</div>
+          <div style="font-weight:700;color:#ccc;margin-bottom:0.3rem">十二王を全て撃破した</div>
+          <div style="font-size:0.75rem;color:#888;margin-bottom:0.8rem">「虚座の間」への扉が開いた——</div>
+          ${ldDefeated
+            ? '<div style="color:var(--green);font-size:0.82rem">✓ ドミニウスを撃破済み — CLEAR</div>'
+            : `<button onclick="enterLastDungeon()" style="font-size:0.82rem;padding:0.5rem 1.5rem;background:linear-gradient(135deg,#111,#333);border:1px solid #555;color:#ccc;border-radius:4px;cursor:pointer;font-weight:700">最終決戦へ →</button>`}
+        </div>`;
+    } else {
+      lastPanel.style.display = 'none';
+    }
+  }
+}
+
+function enterKingDungeon(kingKey) {
+  const dungeons = buildKingDungeons();
+  const d = dungeons.find(x => x.kingKey === kingKey);
+  if (!d) return;
+  G.currentDungeon = d;
+  G.currentFloor   = 1;
+  G.totalFloors    = d.floors;
+  G.dungeonEnemiesKilled = 0;
+  resetDungeonEvents();
+  startCombat();
 }
 
 function addInventoryItem(name, rank) {
@@ -2824,13 +4659,15 @@ function addInventoryItem(name, rank) {
 }
 
 function renderInventory() {
+  const RNAME_COLOR = { legendary:'var(--s-rank)', epic:'var(--a-rank)', rare:'var(--b-rank)', common:'#ccc' };
+  const RARITY_LABEL = { legendary:'伝説', epic:'EPIC', rare:'RARE', common:'COMMON' };
   const el = document.getElementById('inventory-list');
   if (!G.inventory.length) { el.innerHTML = '<div style="color:var(--text-dim);font-size:0.75rem">アイテムなし</div>'; return; }
   el.innerHTML = G.inventory.slice(0, 6).map(item => `
     <div class="item-entry">
       <span class="item-icon">${item.icon}</span>
-      <span class="item-name">${item.name}</span>
-      <span class="item-rarity rarity-${item.rarity}">${{legendary:'伝説',epic:'epic',rare:'rare',common:'common'}[item.rarity]}</span>
+      <span class="item-name" style="color:${RNAME_COLOR[item.rarity]||'#fff'}">${item.name}</span>
+      <span class="item-rarity rarity-${item.rarity}">${RARITY_LABEL[item.rarity]||item.rarity}</span>
     </div>
   `).join('');
 }
@@ -2852,7 +4689,7 @@ function renderEquipSlots() {
       return `
         <div class="equip-slot filled rarity-${item.rarity}" onclick="unequipItem('${slot}')" title="クリックで外す">
           <div class="equip-slot-label">${SLOT_ICONS[slot]} ${SLOT_LABELS[slot]}</div>
-          <div class="equip-slot-name"><span class="equip-slot-icon">${item.icon}</span>${item.name}</div>
+          <div class="equip-slot-name"><span class="equip-slot-icon">${item.icon}</span><span style="color:${{'legendary':'var(--s-rank)','epic':'var(--a-rank)','rare':'var(--b-rank)'}[item.rarity]||'#fff'}">${item.name}</span></div>
           <div class="equip-slot-bonus">${bonusStr}</div>
         </div>`;
     } else {
@@ -2867,12 +4704,31 @@ function renderEquipSlots() {
 
 function renderEquipBonus() {
   const summary = document.getElementById('equip-stat-summary');
-  const total = getTotalEquipBonus();
+  const total   = getTotalEquipBonus();
+  const sets    = calcSetBonuses();
   const entries = Object.entries(total).filter(([,v]) => v > 0);
-  if (!entries.length) { summary.style.display = 'none'; return; }
+  const hasSet  = sets.activeSets.length > 0;
+
+  if (!entries.length && !hasSet) { summary.style.display = 'none'; return; }
   summary.style.display = 'flex';
-  summary.innerHTML = '<span style="color:var(--text-dim);font-size:0.65rem;width:100%;margin-bottom:0.2rem">装備ボーナス合計</span>' +
-    entries.map(([k,v]) => `<span>${statLabel(k)} <strong>+${v}</strong></span>`).join('');
+  summary.style.flexDirection = 'column';
+  summary.style.gap = '0.4rem';
+
+  let html = '';
+  if (entries.length) {
+    html += `<div style="display:flex;flex-wrap:wrap;gap:0.5rem;font-size:0.75rem">
+      <span style="color:var(--text-dim);font-size:0.62rem;width:100%;margin-bottom:0.1rem">装備ボーナス合計</span>
+      ${entries.map(([k,v]) => `<span>${statLabel(k)} <strong style="color:var(--green)">+${v}</strong></span>`).join('')}
+    </div>`;
+  }
+  if (hasSet) {
+    html += sets.activeSets.map(s => `
+      <div style="background:rgba(255,215,0,0.06);border:1px solid rgba(255,215,0,0.3);border-radius:3px;padding:0.4rem 0.6rem">
+        <div style="font-size:0.7rem;color:var(--gold);font-weight:700;margin-bottom:0.2rem">✦ ${s.name}（${s.count}セット）</div>
+        <div style="font-size:0.63rem;color:var(--text-dim);line-height:1.5">${s.desc}</div>
+      </div>`).join('');
+  }
+  summary.innerHTML = html;
 }
 
 let currentInvTab = 'all';
@@ -2957,7 +4813,7 @@ function renderInvList() {
         <span class="inv-item-icon">${item.icon}</span>
         <div class="inv-item-info" style="cursor:${canEquip && !isEquipped ? 'pointer' : 'default'}"
           onclick="${canEquip && !isEquipped ? `equipItem('${item.id}')` : ''}">
-          <div class="inv-item-name">${item.name}${qtyBadge}${willAutoSell ? ' <span style="font-size:0.58rem;color:var(--red)">自動売却対象</span>' : ''}</div>
+          <div class="inv-item-name rname-${item.rarity}">${item.name}${qtyBadge}${willAutoSell ? ' <span style="font-size:0.58rem;color:var(--red)">自動売却対象</span>' : ''}</div>
           <div class="inv-item-sub" style="display:flex;align-items:center;gap:0.4rem;flex-wrap:wrap">
             <span class="item-rarity rarity-${item.rarity}">${rarityLabel[item.rarity]||item.rarity}</span>
             ${bonusStr
@@ -3042,13 +4898,93 @@ const SHOP_ITEMS = {
     { name:'復活の薬',         icon:'💊',  desc:'敗北時HP20%で復活（1回）', price: 1200, effect: () => { G.revive = (G.revive||0) + 1; } },
   ],
   強化: [
-    { name:'ATK強化石 Ⅰ',   icon:'🔴', desc:'ATK基礎値を永続+5',    price: 500,  effect: () => { G.bonusAtk = (G.bonusAtk||0)+5;  applyEquipStats(); } },
-    { name:'DEF強化石 Ⅰ',   icon:'🔵', desc:'DEF基礎値を永続+4',    price: 500,  effect: () => { G.bonusDef = (G.bonusDef||0)+4;  applyEquipStats(); } },
-    { name:'HP強化石 Ⅰ',    icon:'💗', desc:'HP基礎値を永続+50',    price: 600,  effect: () => { G.bonusHp  = (G.bonusHp||0)+50;  applyEquipStats(); } },
-    { name:'ATK強化石 Ⅱ',   icon:'🟠', desc:'ATK基礎値を永続+15',   price: 1800, effect: () => { G.bonusAtk = (G.bonusAtk||0)+15; applyEquipStats(); } },
-    { name:'DEF強化石 Ⅱ',   icon:'🟣', desc:'DEF基礎値を永続+12',   price: 1800, effect: () => { G.bonusDef = (G.bonusDef||0)+12; applyEquipStats(); } },
-    { name:'HP強化石 Ⅱ',    icon:'❤',  desc:'HP基礎値を永続+150',   price: 2200, effect: () => { G.bonusHp  = (G.bonusHp||0)+150; applyEquipStats(); } },
-    { name:'SPD強化石',       icon:'⚡', desc:'SPD基礎値を永続+8',    price: 1200, effect: () => { G.bonusSpd = (G.bonusSpd||0)+8;  applyEquipStats(); } },
+    // ── ATK ──
+    { id:'atk1', name:'ATK強化石 Ⅰ', icon:'🔴',
+      get desc() { return `ATK +10（初回限定）　現在: <span style="color:var(--green)">+${G.bonusAtk||0}</span>`; },
+      price: 300,
+      oneTime: true,
+      get bought() { return (G.bonusAtk||0) >= 10; },
+      effect: () => { G.bonusAtk = (G.bonusAtk||0)+10; applyEquipStats(); } },
+    { id:'atk2', name:'ATK強化石 Ⅱ', icon:'🟠',
+      get desc() { return `ATK +30（Ⅰ購入後に解放・1回限り）　現在: <span style="color:var(--green)">+${G.bonusAtk||0}</span>`; },
+      price: 1500,
+      oneTime: true,
+      get locked() { return (G.bonusAtk||0) < 10; },
+      get lockMsg() { return 'ATK Ⅰ が必要'; },
+      get bought() { return (G.bonusAtk||0) >= 40; },
+      effect: () => { G.bonusAtk = (G.bonusAtk||0)+30; applyEquipStats(); } },
+    { id:'atk-train', name:'ATK鍛錬', icon:'⚔',
+      get desc() {
+        const n    = G.atkTrainCount||0;
+        const next = Math.min(50000, 200 + n * 120);
+        return `ATK +3（繰り返し可・${n}回実施済）　次回: <span style="color:var(--gold)">${next.toLocaleString()}G</span>`;
+      },
+      get price() { return Math.min(50000, 200 + (G.atkTrainCount||0) * 120); },
+      effect: () => { G.bonusAtk = (G.bonusAtk||0)+3; G.atkTrainCount=(G.atkTrainCount||0)+1; applyEquipStats(); } },
+
+    // ── DEF ──
+    { id:'def1', name:'DEF強化石 Ⅰ', icon:'🔵',
+      get desc() { return `DEF +8（初回限定）　現在: <span style="color:var(--green)">+${G.bonusDef||0}</span>`; },
+      price: 300,
+      oneTime: true,
+      get bought() { return (G.bonusDef||0) >= 8; },
+      effect: () => { G.bonusDef = (G.bonusDef||0)+8; applyEquipStats(); } },
+    { id:'def2', name:'DEF強化石 Ⅱ', icon:'🟣',
+      get desc() { return `DEF +24（Ⅰ購入後に解放・1回限り）　現在: <span style="color:var(--green)">+${G.bonusDef||0}</span>`; },
+      price: 1500,
+      oneTime: true,
+      get locked() { return (G.bonusDef||0) < 8; },
+      get lockMsg() { return 'DEF Ⅰ が必要'; },
+      get bought() { return (G.bonusDef||0) >= 32; },
+      effect: () => { G.bonusDef = (G.bonusDef||0)+24; applyEquipStats(); } },
+    { id:'def-train', name:'DEF鍛錬', icon:'🛡',
+      get desc() {
+        const n    = G.defTrainCount||0;
+        const next = Math.min(50000, 200 + n * 120);
+        return `DEF +2（繰り返し可・${n}回実施済）　次回: <span style="color:var(--gold)">${next.toLocaleString()}G</span>`;
+      },
+      get price() { return Math.min(50000, 200 + (G.defTrainCount||0) * 120); },
+      effect: () => { G.bonusDef = (G.bonusDef||0)+2; G.defTrainCount=(G.defTrainCount||0)+1; applyEquipStats(); } },
+
+    // ── HP ──
+    { id:'hp1', name:'HP強化石 Ⅰ', icon:'💗',
+      get desc() { return `HP +100（初回限定）　現在: <span style="color:var(--green)">+${G.bonusHp||0}</span>`; },
+      price: 400,
+      oneTime: true,
+      get bought() { return (G.bonusHp||0) >= 100; },
+      effect: () => { G.bonusHp = (G.bonusHp||0)+100; applyEquipStats(); } },
+    { id:'hp2', name:'HP強化石 Ⅱ', icon:'❤',
+      get desc() { return `HP +300（Ⅰ購入後に解放・1回限り）　現在: <span style="color:var(--green)">+${G.bonusHp||0}</span>`; },
+      price: 2000,
+      oneTime: true,
+      get locked() { return (G.bonusHp||0) < 100; },
+      get lockMsg() { return 'HP Ⅰ が必要'; },
+      get bought() { return (G.bonusHp||0) >= 400; },
+      effect: () => { G.bonusHp = (G.bonusHp||0)+300; applyEquipStats(); } },
+    { id:'hp-train', name:'HP鍛錬', icon:'💪',
+      get desc() {
+        const n    = G.hpTrainCount||0;
+        const next = Math.min(50000, 150 + n * 80);
+        return `HP +30（繰り返し可・${n}回実施済）　次回: <span style="color:var(--gold)">${next.toLocaleString()}G</span>`;
+      },
+      get price() { return Math.min(50000, 150 + (G.hpTrainCount||0) * 80); },
+      effect: () => { G.bonusHp = (G.bonusHp||0)+30; G.hpTrainCount=(G.hpTrainCount||0)+1; applyEquipStats(); } },
+
+    // ── SPD ──
+    { id:'spd1', name:'SPD強化石', icon:'⚡',
+      get desc() { return `SPD +15（初回限定）　現在: <span style="color:var(--green)">+${G.bonusSpd||0}</span>`; },
+      price: 800,
+      oneTime: true,
+      get bought() { return (G.bonusSpd||0) >= 15; },
+      effect: () => { G.bonusSpd = (G.bonusSpd||0)+15; applyEquipStats(); } },
+    { id:'spd-train', name:'SPD鍛錬', icon:'💨',
+      get desc() {
+        const n    = G.spdTrainCount||0;
+        const next = Math.min(50000, 300 + n * 200);
+        return `SPD +3（繰り返し可・${n}回実施済）　次回: <span style="color:var(--gold)">${next.toLocaleString()}G</span>`;
+      },
+      get price() { return Math.min(50000, 300 + (G.spdTrainCount||0) * 200); },
+      effect: () => { G.bonusSpd = (G.bonusSpd||0)+3; G.spdTrainCount=(G.spdTrainCount||0)+1; applyEquipStats(); } },
   ],
   特殊: [
     { name:'インベントリ拡張',icon:'🎒', desc:'所持枠+10（現在の上限まで）', price: 2000, effect: () => { G.invMax = (G.invMax||30)+10; } },
@@ -3067,6 +5003,10 @@ function openShop() {
 }
 
 function renderShopModal() {
+  // 既存を削除してから再生成
+  const prev = document.getElementById('shop-overlay');
+  if (prev) prev.remove();
+
   const overlay = document.createElement('div');
   overlay.className = 'modal-overlay';
   overlay.id = 'shop-overlay';
@@ -3074,20 +5014,6 @@ function renderShopModal() {
   const tabsHtml = Object.keys(SHOP_ITEMS).map(t =>
     `<button class="shop-tab ${t===currentShopTab?'active':''}" onclick="switchShopTab('${t}')">${t}</button>`
   ).join('');
-
-  const itemsHtml = (SHOP_ITEMS[currentShopTab]||[]).map((item, i) => {
-    const canBuy = G.gold >= item.price;
-    return `
-      <div class="shop-item">
-        <span class="shop-item-icon">${item.icon}</span>
-        <div class="shop-item-info">
-          <div class="shop-item-name">${item.name}</div>
-          <div class="shop-item-bonus">${item.desc}</div>
-        </div>
-        <span class="shop-item-price">${item.price.toLocaleString()}G</span>
-        <button class="btn-buy" onclick="buyShopItem('${currentShopTab}',${i})" ${canBuy?'':'disabled'}>購入</button>
-      </div>`;
-  }).join('');
 
   overlay.innerHTML = `
     <div class="shop-modal" style="position:relative">
@@ -3098,37 +5024,164 @@ function renderShopModal() {
           <button class="shop-close" onclick="closeShop()">✕ 閉じる</button>
         </div>
       </div>
-      <div class="shop-tabs" id="shop-tabs">${tabsHtml}</div>
-      <div class="shop-body" id="shop-body">${itemsHtml}</div>
+      <div class="shop-tabs">${tabsHtml}</div>
+      <div class="shop-body" id="shop-body"></div>
     </div>`;
   document.body.appendChild(overlay);
+  renderShopBody();
 }
 
-function switchShopTab(tab) {
-  currentShopTab = tab;
-  renderShopModal();
-  // Re-attach overlay click close behavior lost on re-render
+function renderShopBody() {
+  const body = document.getElementById('shop-body');
+  if (!body) return;
+
+  body.innerHTML = (SHOP_ITEMS[currentShopTab]||[]).map((item, i) => {
+    const isLocked = item.locked === true;
+    const isBought = item.oneTime && item.bought === true;
+    const price    = typeof item.price === 'function' ? item.price() : item.price;
+    const canBuy   = !isLocked && !isBought && G.gold >= price;
+    const isRepeat = !item.oneTime; // 繰り返し購入可
+
+    let actionHtml;
+    if (isBought) {
+      actionHtml = `<div style="text-align:center"><button class="btn-buy" disabled style="color:var(--green);border-color:rgba(0,255,136,0.2)">✓ 購入済</button></div>`;
+    } else if (isLocked) {
+      actionHtml = `<div style="text-align:center"><button class="btn-buy" disabled style="font-size:0.58rem;white-space:nowrap">🔒 ${item.lockMsg||'条件未達'}</button></div>`;
+    } else if (isRepeat) {
+      // 数量選択UI
+      const maxAfford = Math.floor(G.gold / price);
+      const maxBuy    = Math.min(99, maxAfford);
+      actionHtml = `
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.35rem;flex-shrink:0">
+          <div style="display:flex;align-items:center;gap:0.3rem">
+            <button onclick="changeShopQty(${i},-5)" style="width:24px;height:24px;background:var(--panel);border:1px solid var(--border);color:var(--text-dim);cursor:pointer;border-radius:3px;font-size:0.75rem">-5</button>
+            <button onclick="changeShopQty(${i},-1)" style="width:24px;height:24px;background:var(--panel);border:1px solid var(--border);color:var(--text-dim);cursor:pointer;border-radius:3px;font-size:0.85rem">-</button>
+            <span id="shop-qty-${i}" style="min-width:2rem;text-align:center;font-size:0.9rem;color:#fff;font-weight:700">1</span>
+            <button onclick="changeShopQty(${i},1)" style="width:24px;height:24px;background:var(--panel);border:1px solid var(--border);color:var(--text-dim);cursor:pointer;border-radius:3px;font-size:0.85rem">+</button>
+            <button onclick="changeShopQty(${i},5)" style="width:24px;height:24px;background:var(--panel);border:1px solid var(--border);color:var(--text-dim);cursor:pointer;border-radius:3px;font-size:0.75rem">+5</button>
+          </div>
+          <div style="display:flex;gap:0.3rem;align-items:center">
+            <span id="shop-total-${i}" style="font-size:0.7rem;color:var(--gold)">${price.toLocaleString()}G</span>
+            <button class="btn-buy" id="shop-buybtn-${i}" onclick="buyShopItem('${currentShopTab}',${i})" ${canBuy?'':'disabled'}>購入</button>
+          </div>
+        </div>`;
+    } else {
+      actionHtml = `
+        <div style="text-align:center">
+          <div style="font-size:0.72rem;color:var(--gold);margin-bottom:0.2rem">${price.toLocaleString()}G</div>
+          <button class="btn-buy" onclick="buyShopItem('${currentShopTab}',${i})" ${canBuy?'':'disabled'}>購入</button>
+        </div>`;
+    }
+
+    return `
+      <div class="shop-item" style="${isBought?'opacity:0.45':''}${isLocked?'opacity:0.35':''}">
+        <span class="shop-item-icon">${item.icon}</span>
+        <div class="shop-item-info" style="flex:1;min-width:0">
+          <div class="shop-item-name">${item.name}${item.oneTime?'<span style="font-size:0.58rem;color:var(--accent2);margin-left:0.3rem">1回限り</span>':''}</div>
+          <div class="shop-item-bonus">${item.desc}</div>
+          ${isRepeat && !isBought ? `<div style="font-size:0.63rem;color:var(--text-dim);margin-top:0.15rem">単価: ${price.toLocaleString()}G ／ 所持: ${G.gold.toLocaleString()}G</div>` : ''}
+        </div>
+        ${actionHtml}
+      </div>`;
+  }).join('');
+
+  // qty状態初期化
+  (SHOP_ITEMS[currentShopTab]||[]).forEach((item, i) => {
+    if (!item.oneTime) _shopQtys[i] = _shopQtys[i] || 1;
+  });
+}
+
+// 数量キャッシュ
+const _shopQtys = {};
+
+function changeShopQty(idx, delta) {
+  const item  = SHOP_ITEMS[currentShopTab][idx];
+  if (!item || item.oneTime) return;
+  const price = typeof item.price === 'function' ? item.price() : item.price;
+  const maxAfford = Math.max(1, Math.floor(G.gold / price));
+  _shopQtys[idx] = Math.min(maxAfford, Math.max(1, (_shopQtys[idx]||1) + delta));
+
+  const qtyEl   = document.getElementById(`shop-qty-${idx}`);
+  const totalEl = document.getElementById(`shop-total-${idx}`);
+  const btnEl   = document.getElementById(`shop-buybtn-${idx}`);
+  if (qtyEl)   qtyEl.textContent   = _shopQtys[idx];
+  if (totalEl) totalEl.textContent  = (price * _shopQtys[idx]).toLocaleString() + 'G';
+  if (btnEl)   btnEl.disabled       = G.gold < price * _shopQtys[idx];
 }
 
 function buyShopItem(category, idx) {
   const item = SHOP_ITEMS[category][idx];
-  if (!item || G.gold < item.price) return;
-  G.gold -= item.price;
-  item.effect();
+  if (!item) return;
+  if (item.locked === true)                  { showNotification('🔒 ロック中', item.lockMsg || '前提条件未達成', false); return; }
+  if (item.oneTime && item.bought === true)   { showNotification('購入済み', 'すでに購入済みです', false); return; }
+
+  const qty = item.oneTime ? 1 : (_shopQtys[idx] || 1);
+
+  // ── 価格上昇を考慮して購入前に合計コストを事前計算 ──
+  let totalCost = 0;
+  const priceSnapshots = [];
+  for (let q = 0; q < qty; q++) {
+    // 鍛錬系は effect() が呼ばれるたびにカウンタが増えるため
+    // ここでは「現時点の価格 + 今後上昇する分」をシミュレートする
+    // シンプルな方法: item.price() をq回分先読み（カウンタを一時的に進める）
+    const basePrice = typeof item.price === 'function' ? item.price() : item.price;
+    // 線形上昇の場合: price(n) = base + n * step
+    // ここでは effect後のカウンタ増加を想定して単価を積算
+    priceSnapshots.push(basePrice);
+    totalCost += basePrice;
+    // 価格がカウンタ依存なら次のループで自動的に上がる
+    // ただしここでは実際にeffectを呼ばず、価格だけ先読みするため
+    // 鍛錬アイテムのカウンタを一時インクリメントしてシミュレート
+    if (item.id && item.id.endsWith('-train')) {
+      const counterKey = item.id.replace('-train','TrainCount');
+      G[counterKey] = (G[counterKey] || 0) + 1;
+    }
+  }
+  // シミュレートで増やしたカウンタを戻す
+  if (item.id && item.id.endsWith('-train')) {
+    const counterKey = item.id.replace('-train','TrainCount');
+    G[counterKey] = Math.max(0, (G[counterKey] || 0) - qty);
+  }
+
+  if (G.gold < totalCost) {
+    showNotification('Gold不足', `合計 ${totalCost.toLocaleString()}G 必要（所持: ${G.gold.toLocaleString()}G）`, false);
+    return;
+  }
+
+  // ── 実際に購入 ──
+  for (let q = 0; q < qty; q++) {
+    const p = typeof item.price === 'function' ? item.price() : item.price;
+    G.gold -= p;
+    item.effect();
+  }
+
+  if (G.gold < 0) G.gold = 0; // 万が一のマイナス防護
+
   updateUI();
-  addActivity(`「${item.name}」を購入した`);
-  showNotification('🏪 購入完了', `「${item.name}」を入手！`, true);
-  // Refresh shop gold display & buttons
+  addActivity(`「${item.name}」×${qty} を購入した`);
+
+  const statLines = [];
+  if (G.bonusAtk) statLines.push(`ATK +${G.bonusAtk}`);
+  if (G.bonusDef) statLines.push(`DEF +${G.bonusDef}`);
+  if (G.bonusHp)  statLines.push(`HP  +${G.bonusHp}`);
+  if (G.bonusSpd) statLines.push(`SPD +${G.bonusSpd}`);
+  showNotification('🏪 購入完了', `「${item.name}」×${qty}！\n合計: ${totalCost.toLocaleString()}G\n${statLines.join(' / ')}`, true);
+
+  _shopQtys[idx] = 1;
+
   const goldDisp = document.getElementById('shop-gold-disp');
   if (goldDisp) goldDisp.textContent = G.gold.toLocaleString();
-  const body = document.getElementById('shop-body');
-  if (body) {
-    body.querySelectorAll('.btn-buy').forEach((btn, i) => {
-      const si = SHOP_ITEMS[category][i];
-      btn.disabled = si ? G.gold < si.price : true;
-    });
-  }
+  renderShopBody();
   saveGame();
+}
+
+function switchShopTab(tab) {
+  currentShopTab = tab;
+  // タブボタン切り替え
+  document.querySelectorAll('.shop-tab').forEach(b => {
+    b.classList.toggle('active', b.textContent === tab);
+  });
+  renderShopBody();
 }
 
 function closeShop() {
@@ -3179,26 +5232,47 @@ function unequipItem(slot) {
 }
 
 function applyEquipStats() {
-  // Recalculate base stats from level, then add equipment bonuses
-  const base = calcBaseStats(G.level);
-  const bonus = getTotalEquipBonus();
-  G.atk = base.atk + (bonus.atk || 0);
-  G.def = base.def + (bonus.def || 0);
-  G.spd = base.spd + (bonus.spd || 0);
-  G.maxHp = base.maxHp + (bonus.hp || 0);
-  G.maxMp = base.maxMp + (bonus.mp || 0);
-  G.hp = Math.min(G.hp, G.maxHp);
-  G.mp = Math.min(G.mp, G.maxMp);
+  const base  = calcBaseStats(G.level);
+  const equip = getTotalEquipBonus();
+  const sets  = calcSetBonuses();
+  G.atk   = base.atk   + (equip.atk || 0) + (G.bonusAtk || 0) + (sets.bonus.atk || 0);
+  G.def   = base.def   + (equip.def || 0) + (G.bonusDef || 0) + (sets.bonus.def || 0);
+  G.spd   = base.spd   + (equip.spd || 0) + (G.bonusSpd || 0) + (sets.bonus.spd || 0);
+  G.maxHp = base.maxHp + (equip.hp  || 0) + (G.bonusHp  || 0) + (sets.bonus.hp  || 0);
+  G.maxMp = base.maxMp + (equip.mp  || 0) + (sets.bonus.mp || 0);
+  G.hp    = Math.min(G.hp, G.maxHp);
+  G.mp    = Math.min(G.mp, G.maxMp);
+  G._activeSets = sets.activeSets;
 }
 
 function calcBaseStats(lv) {
-  return {
-    atk: 10 + (lv - 1) * 3  + (G.bonusAtk||0),
-    def: 5  + (lv - 1) * 2  + (G.bonusDef||0),
-    spd: 8  + (lv - 1) * 1  + (G.bonusSpd||0),
-    maxHp: 100 + (lv - 1) * 20 + (G.bonusHp||0),
-    maxMp: 50  + (lv - 1) * 5,
-  };
+  // 3段階加速スケーリング
+  // Lv1-20: 緩やか成長, Lv21-50: 中加速, Lv51+: 急加速
+  let atk, def, spd, maxHp, maxMp;
+  if (lv <= 20) {
+    atk   = 10  + (lv - 1) * 3;
+    def   = 5   + (lv - 1) * 2;
+    spd   = 8   + (lv - 1) * 1;
+    maxHp = 100 + (lv - 1) * 20;
+    maxMp = 50  + (lv - 1) * 5;
+  } else if (lv <= 50) {
+    const b = { atk:67, def:43, spd:27, maxHp:480, maxMp:145 }; // calcBaseStats(20)
+    const n = lv - 20;
+    atk   = b.atk   + n * 6;
+    def   = b.def   + n * 4;
+    spd   = b.spd   + n * 2;
+    maxHp = b.maxHp + n * 40;
+    maxMp = b.maxMp + n * 8;
+  } else {
+    const b = { atk:247, def:163, spd:87, maxHp:1680, maxMp:385 }; // calcBaseStats(50)
+    const n = lv - 50;
+    atk   = b.atk   + n * 10;
+    def   = b.def   + n * 7;
+    spd   = b.spd   + n * 3;
+    maxHp = b.maxHp + n * 70;
+    maxMp = b.maxMp + n * 12;
+  }
+  return { atk, def, spd, maxHp, maxMp };
 }
 
 function addActivity(msg) {
@@ -3269,6 +5343,7 @@ function renderSkillsTab() {
           <div style="font-size:0.68rem;color:var(--accent2)">
             MP: ${s.mpCost}
             ${s.dmgMult > 0 ? ` | 威力: ${s.dmgMult}x` : ''}
+            ${s.element && s.element !== 'none' ? ` | ${elemBadge(s.element)}` : ''}
           </div>
         </div>
         ${unlocked && !isActive ? '<span style="font-size:0.65rem;color:var(--text-dim);flex-shrink:0;align-self:center">タップで<br>セット</span>' : ''}
@@ -3312,6 +5387,10 @@ function updateUI() {
   badge.textContent = G.rank + '級';
   badge.className = 'player-rank-badge rank-' + G.rank;
 
+  // Player name
+  const nameEl = document.getElementById('player-name-text');
+  if (nameEl) nameEl.textContent = G.name || 'shadow';
+
   document.getElementById('player-title').textContent = G.title ? `『${G.title}』` : '— 称号なし —';
 
   // Status tab
@@ -3328,7 +5407,7 @@ function updateUI() {
   document.getElementById('st-kills').textContent = G.kills;
   document.getElementById('st-dungeons').textContent = G.dungeonsCleared;
 
-  document.getElementById('header-day').textContent = `Day ${G.day} | Lv${G.level} ${G.rank}級`;
+  document.getElementById('header-day').textContent = `Lv${G.level} ${G.rank}級`;
 }
 
 function addLog(html, cls='') {
@@ -3379,8 +5458,12 @@ function showNotification(title, body, isGood) {
 function switchTab(name) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-  document.getElementById('tab-' + name).classList.add('active');
-  event.target.classList.add('active');
+  const content = document.getElementById('tab-' + name);
+  if (content) content.classList.add('active');
+  const btn = document.getElementById('maintab-' + name);
+  if (btn) btn.classList.add('active');
+  else if (event && event.target) event.target.classList.add('active');
+  if (name === 'random' && (!G_randomDungeons || G_randomDungeons.length === 0)) rerollRandomDungeons();
 }
 
 // ===== SAVE / LOAD =====
@@ -3416,15 +5499,24 @@ function manualSave() {
 function continueGame() {
   const data = loadGame();
   if (!data) return;
-  // Restore state
   Object.assign(G, data);
+
+  // マイナスGoldのバグ修正
+  if (G.gold < 0) {
+    G.gold = 0;
+    showNotification('🔧 修正', 'マイナスGoldを0にリセットしました', false);
+    saveGame();
+  }
+
   showScreen('game-screen');
   renderDungeons();
+  rerollRandomDungeons();
   renderShadowSlots();
   renderSkillsTab();
   renderQuests();
   renderInventory();
   renderEquipTab();
+  renderJobProgress();
   renderActivityLog();
   updateUI();
   showNotification('↩ ロード完了', `Lv${G.level} ${G.rank}級のデータを読み込みました`, false);
@@ -3448,16 +5540,71 @@ setInterval(() => {
 const _origDungeonClear = dungeonClear;
 const _origLevelUp = levelUp;
 
-// Check for existing save on load
+function editPlayerName() {
+  const current = G.name || 'shadow';
+  // インラインフォーム表示
+  const display = document.getElementById('player-name-display');
+  if (!display) return;
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.value = current;
+  input.maxLength = 16;
+  input.style.cssText = `
+    background:rgba(74,158,255,0.1);border:1px solid var(--accent);
+    color:#fff;font-size:1rem;font-weight:700;width:120px;
+    padding:0.15rem 0.4rem;border-radius:3px;outline:none;
+    font-family:"Hiragino Sans","Yu Gothic",sans-serif;
+  `;
+  display.style.display = 'none';
+  display.parentNode.insertBefore(input, display.nextSibling);
+  input.focus();
+  input.select();
+
+  const commit = () => {
+    const newName = input.value.trim() || current;
+    G.name = newName;
+    document.getElementById('player-name-text').textContent = newName;
+    input.remove();
+    display.style.display = 'flex';
+    saveGame();
+  };
+  input.addEventListener('blur', commit);
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); commit(); }
+    if (e.key === 'Escape') { input.remove(); display.style.display = 'flex'; }
+  });
+}
+
+function dismissPrologue() {
+  const pv = document.getElementById('prologue-view');
+  const mv = document.getElementById('title-main-view');
+  if (!pv || !mv) return;
+  pv.style.transition = 'opacity 0.5s ease';
+  pv.style.opacity = '0';
+  setTimeout(() => {
+    pv.style.display = 'none';
+    mv.style.display = 'block';
+  }, 500);
+}
+
+// セーブ確認 & ボタン表示
+// セーブデータがある場合はプロローグをスキップしてタイトルボタンを直接表示
 (function checkSaveOnLoad() {
   const data = loadGame();
   if (data) {
+    // セーブあり → プロローグをスキップ
+    const pv = document.getElementById('prologue-view');
+    const mv = document.getElementById('title-main-view');
+    if (pv) pv.style.display = 'none';
+    if (mv) mv.style.display = 'block';
+
     const wrap = document.getElementById('continue-btn-wrap');
     const info = document.getElementById('save-info');
     wrap.style.display = 'block';
     const d = new Date(data.savedAt);
     const dateStr = `${d.getMonth()+1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}`;
-    info.textContent = `Lv${data.level} ${data.rank}級｜${data.dungeonsCleared}ダンジョン攻略｜最終セーブ: ${dateStr}`;
+    const savedName = data.name || 'shadow';
+    info.textContent = `${savedName} / Lv${data.level} ${data.rank}級｜${data.dungeonsCleared}ダンジョン攻略｜${dateStr}`;
   }
 })();
 </script>
