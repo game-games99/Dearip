@@ -3,8 +3,11 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gate Diver - 影の君主</title>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'unsafe-inline'; style-src 'unsafe-inline';">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Gate Diver</title>
 <style>
   :root {
     --bg: #050810;
@@ -30,9 +33,9 @@
 - { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
-background: var(--bg);
-color: var(--text);
-font-family: “Hiragino Sans”, “Hiragino Kaku Gothic ProN”, “Yu Gothic”, “Meiryo”, sans-serif;
+background: var(–bg);
+color: var(–text);
+font-family: “Hiragino Sans”, “Hiragino Kaku Gothic ProN”, “Yu Gothic”, “Meiryo”, “Noto Sans JP”, sans-serif;
 min-height: 100vh;
 overflow-x: hidden;
 }
@@ -807,7 +810,7 @@ color: var(–text);
 padding: 0.55rem 0.7rem;
 border-radius: 4px;
 cursor: pointer;
-font-family: “Hiragino Sans”, “Hiragino Kaku Gothic ProN”, “Yu Gothic”, “Meiryo”, sans-serif;
+font-family: “Hiragino Sans”, “Hiragino Kaku Gothic ProN”, “Yu Gothic”, “Meiryo”, “Noto Sans JP”, sans-serif;
 font-size: 0.8rem;
 transition: all 0.15s;
 text-align: left;
@@ -1376,7 +1379,7 @@ color: var(–text-dim);
 padding: 0.45rem 0.3rem;
 cursor: pointer;
 font-size: 0.72rem;
-font-family: “Hiragino Sans”, “Hiragino Kaku Gothic ProN”, “Yu Gothic”, “Meiryo”, sans-serif;
+font-family: “Hiragino Sans”, “Hiragino Kaku Gothic ProN”, “Yu Gothic”, “Meiryo”, “Noto Sans JP”, sans-serif;
 transition: color 0.15s;
 position: relative;
 white-space: nowrap;
@@ -1471,7 +1474,7 @@ color: var(–text-dim);
 padding: 0.6rem;
 cursor: pointer;
 font-size: 0.8rem;
-font-family: “Hiragino Sans”, “Hiragino Kaku Gothic ProN”, “Yu Gothic”, “Meiryo”, sans-serif;
+font-family: “Hiragino Sans”, “Hiragino Kaku Gothic ProN”, “Yu Gothic”, “Meiryo”, “Noto Sans JP”, sans-serif;
 transition: color 0.15s;
 position: relative;
 }
@@ -1530,6 +1533,7 @@ flex-shrink: 0;
 from { opacity: 0; transform: translateY(12px); }
 to   { opacity: 1; transform: translateY(0); }
 }
+@media (max-width: 900px) {
 .game-body { grid-template-columns: 1fr; }
 .left-panel, .right-panel { display: none; }
 }
@@ -3852,45 +3856,54 @@ function renderDungeons() {
   });
 
   // ── 昇格試験セクション ──
-  const availableExams = examGates.filter(e => {
-    const req = { 'E':'E', 'D':'D', 'C':'C', 'B':'B', 'A':'A' };
-    return G.rank === e.examFrom && G.level >= (e.minLevel || 0);
-  });
+  // 現在のランクに対応する試験を取得（昇格済みは除く）
+  const myExam = examGates.find(e => e.examFrom === G.rank);
 
-  if (availableExams.length > 0) {
+  if (myExam) {
     const examSec = document.createElement('div');
-    examSec.style.cssText = 'display:flex;align-items:center;gap:0.5rem;margin:0.8rem 0 0.3rem;';
+    examSec.style.cssText = 'display:flex;align-items:center;gap:0.5rem;margin:0.9rem 0 0.4rem;';
     examSec.innerHTML = `
-      <div style="height:1px;flex:1;background:rgba(255,215,0,0.4)"></div>
+      <div style="height:1px;flex:1;background:rgba(255,215,0,0.3)"></div>
       <span style="font-size:0.68rem;color:var(--gold);letter-spacing:0.15em;font-weight:700">🎖 昇格試験</span>
-      <div style="height:1px;flex:1;background:rgba(255,215,0,0.4)"></div>`;
+      <div style="height:1px;flex:1;background:rgba(255,215,0,0.3)"></div>`;
     grid.appendChild(examSec);
 
-    availableExams.forEach(d => {
-      const isCleared  = examCleared.has(d.id);
-      const isRankDone = G.rank !== d.examFrom; // すでに昇格済みなら達成
-      const card = document.createElement('div');
-      card.className = `dungeon-card exam-card ${isRankDone ? 'cleared-card' : ''}`;
-      card.innerHTML = `
-        <div class="dungeon-card-icon">🎖</div>
-        <div class="dungeon-card-body">
-          <div class="dungeon-card-header">
-            <span style="font-size:0.6rem;padding:0.1rem 0.4rem;border-radius:2px;background:rgba(255,215,0,0.15);border:1px solid rgba(255,215,0,0.5);color:var(--gold)">昇格試験</span>
-            <span class="dungeon-card-name">${d.examFrom}級 → ${d.examTo}級</span>
-            ${isRankDone ? '<span style="font-size:0.62rem;color:var(--green);margin-left:auto">✓ 昇格済</span>' : ''}
-          </div>
-          <div class="dungeon-card-desc">${d.desc}</div>
-          <div class="dungeon-card-tags">
-            <span class="reward-tag exam">⚔ ${d.floors}F</span>
-            <span class="reward-tag exam">🎯 討伐ノルマ: ${d.examKillGoal}体</span>
-            <span class="reward-tag exam">👊 試験官撃破</span>
-          </div>
+    const isRankDone   = G.rank !== myExam.examFrom;
+    const levelOk      = G.level >= (myExam.minLevel || 0);
+    // ストーリーゲートの前半（examFromのランク）を全クリしているか
+    const rankGates    = storyGates.filter(g => g.rank === myExam.examFrom);
+    const rankCleared  = rankGates.every(g => cleared.has(g.id));
+    const canChallenge = levelOk && rankCleared;
+
+    // 条件表示
+    const condLv  = levelOk   ? `<span style="color:var(--green)">✓ Lv${myExam.minLevel}以上</span>`
+                               : `<span style="color:var(--red)">✗ Lv${myExam.minLevel}以上（現在Lv${G.level}）</span>`;
+    const condGate = rankCleared ? `<span style="color:var(--green)">✓ ${myExam.examFrom}級ゲートを全クリア</span>`
+                                 : `<span style="color:var(--red)">✗ ${myExam.examFrom}級ゲートを全クリア（${rankGates.filter(g=>cleared.has(g.id)).length}/${rankGates.length}）</span>`;
+
+    const card = document.createElement('div');
+    card.className = `dungeon-card exam-card ${isRankDone ? 'cleared-card' : ''} ${!canChallenge && !isRankDone ? 'locked' : ''}`;
+    card.innerHTML = `
+      <div class="dungeon-card-icon">${isRankDone ? '✅' : canChallenge ? '🎖' : '🔒'}</div>
+      <div class="dungeon-card-body">
+        <div class="dungeon-card-header">
+          <span style="font-size:0.6rem;padding:0.1rem 0.4rem;border-radius:2px;
+            background:rgba(255,215,0,0.15);border:1px solid rgba(255,215,0,0.5);color:var(--gold)">昇格試験</span>
+          <span class="dungeon-card-name">${myExam.examFrom}級 → ${myExam.examTo}級</span>
+          ${isRankDone ? '<span style="font-size:0.62rem;color:var(--green);margin-left:auto">✓ 昇格済</span>' : ''}
         </div>
-        ${!isRankDone ? '<div class="dungeon-card-arrow" style="color:var(--gold)">›</div>' : ''}
-      `;
-      if (!isRankDone) card.onclick = () => enterDungeon(d);
-      grid.appendChild(card);
-    });
+        <div class="dungeon-card-desc">${myExam.desc}</div>
+        <div style="font-size:0.65rem;line-height:2;margin-bottom:0.4rem">${condLv}<br>${condGate}</div>
+        <div class="dungeon-card-tags">
+          <span class="reward-tag exam">⚔ ${myExam.floors}F</span>
+          <span class="reward-tag exam">🎯 討伐ノルマ: ${myExam.examKillGoal}体以上</span>
+          <span class="reward-tag exam">👊 試験官撃破</span>
+        </div>
+      </div>
+      ${canChallenge && !isRankDone ? '<div class="dungeon-card-arrow" style="color:var(--gold)">›</div>' : ''}
+    `;
+    if (canChallenge && !isRankDone) card.onclick = () => enterDungeon(myExam);
+    grid.appendChild(card);
   }
 }
 
@@ -5466,52 +5479,144 @@ function renderEquipTab() {
   renderEquipBonus();
 }
 
+// ── 装備選択状態管理 ──
+let _selectedEquipSlot = null;  // 選択中のスロット名 or null
+let _selectedInvItemId = null;  // 選択中のインベントリアイテムID or null
+
+function selectEquipSlot(slot) {
+  // 同じスロットを再タップ → 選択解除
+  if (_selectedEquipSlot === slot) {
+    _selectedEquipSlot = null;
+    _selectedInvItemId = null;
+    renderEquipTab();
+    return;
+  }
+  _selectedEquipSlot = slot;
+  _selectedInvItemId = null;
+  // 対応するインベントリタブに切り替え
+  const slotToTab = { weapon:'weapon', body:'body', acc1:'accessory', acc2:'accessory' };
+  switchInvTab(slotToTab[slot] || 'all');
+  renderEquipSlots();
+}
+
+function selectInvItemForEquip(id) {
+  if (!_selectedEquipSlot) {
+    // スロット未選択なら通常のequip
+    equipItem(id);
+    return;
+  }
+  // スロット選択中 → そのスロットに装備
+  const item = G.fullInventory.find(i => i.id == id);
+  if (!item) return;
+
+  // スロット互換チェック
+  const slotCompat = {
+    weapon:  ['weapon','mainhand'],
+    body:    ['body','armor','helm','legs','offhand'],
+    acc1:    ['accessory','ring','acc1','acc2'],
+    acc2:    ['accessory','ring','acc1','acc2'],
+  };
+  const compat = slotCompat[_selectedEquipSlot] || [];
+  if (!compat.includes(item.slot)) {
+    showNotification('⚠ 装備不可', `このスロットには装備できません`, false);
+    return;
+  }
+
+  // 既存アイテムを外す
+  if (G.equipped[_selectedEquipSlot]) {
+    const old = G.equipped[_selectedEquipSlot];
+    const oldInv = G.fullInventory.find(i => i.id == old.id);
+    if (oldInv) oldInv.equippedIn = null;
+  }
+  G.equipped[_selectedEquipSlot] = item;
+  item.equippedIn = _selectedEquipSlot;
+  applyEquipStats();
+  const qualityStr = item.quality ? ` (品質${item.quality}%)` : '';
+  showNotification('⚔ 装備', `「${item.name}」${qualityStr}を装備した！`, true);
+
+  _selectedEquipSlot = null;
+  _selectedInvItemId = null;
+  renderEquipTab();
+  updateUI();
+}
+
+function unequipFromSlot(slot) {
+  const item = G.equipped[slot];
+  if (!item) return;
+  const inInv = G.fullInventory.find(i => i.id == item.id);
+  if (inInv) inInv.equippedIn = null;
+  G.equipped[slot] = null;
+  _selectedEquipSlot = null;
+  _selectedInvItemId = null;
+  applyEquipStats();
+  renderEquipTab();
+  updateUI();
+  showNotification('', `「${item.name}」を外した`, false);
+}
+
 function renderEquipSlots() {
   const el = document.getElementById('equip-slots-ui');
   const slots = ['weapon','body','acc1','acc2'];
-
-  // 両手持ちスキル判定（右手のみ・左手空き）
-  const wt = G.weaponType || 'sword';
-  const isOffhandEmpty = !G.equipped.offhand;
-  const DUAL_BONUS_TYPES = ['sword','dagger']; // 両手持ちボーナス対象
-  const noOffhandTypes   = ['bow','spear','rod']; // 盾/サブ装備不可系統
-  const canOffhand = !noOffhandTypes.includes(wt);
+  const rColors = { legendary:'var(--s-rank)', epic:'var(--a-rank)', rare:'var(--b-rank)' };
 
   el.innerHTML = slots.map(slot => {
-    const item = G.equipped[slot];
-    const isOffhandSlot = slot === 'offhand';
-    const isDisabled = isOffhandSlot && !canOffhand;
-
-    if (isDisabled) {
-      return `
-        <div class="equip-slot" style="opacity:0.35" title="${SLOT_LABELS[slot]}（この系統は装備不可）">
-          <div class="equip-slot-label">${SLOT_ICONS[slot]} ${SLOT_LABELS[slot]}</div>
-          <div style="font-size:0.65rem;color:var(--text-dim);margin-top:0.3rem">— 装備不可 —</div>
-        </div>`;
-    }
+    const item       = G.equipped[slot];
+    const isSelected = _selectedEquipSlot === slot;
 
     if (item) {
-      const bonusStr = Object.entries(item.bonus).map(([k,v]) => `${statLabel(k)}+${v}`).join(' ');
-      const qualityColor = item.quality >= 90 ? 'var(--gold)' : item.quality >= 70 ? 'var(--green)' : item.quality >= 40 ? 'var(--accent)' : 'var(--text-dim)';
-      const qualityLabel = item.quality ? `<span style="font-size:0.6rem;color:${qualityColor};margin-left:0.3rem">品質${item.quality}%</span>` : '';
+      const qc = item.quality >= 90 ? 'var(--gold)' : item.quality >= 70 ? 'var(--green)' : item.quality >= 40 ? 'var(--accent)' : 'var(--text-dim)';
+      const ql = item.quality ? `<span style="font-size:0.58rem;color:${qc}"> ${item.quality}%</span>` : '';
+      const bonusStr = Object.entries(item.bonus).map(([k,v]) => {
+        const qm = item.quality ? item.quality/100 : 1;
+        return `${statLabel(k)}+${Math.floor(v*qm)}`;
+      }).join(' ');
       return `
-        <div class="equip-slot filled rarity-${item.rarity}" onclick="unequipItem('${slot}')" title="クリックで外す">
-          <div class="equip-slot-label">${SLOT_ICONS[slot]} ${SLOT_LABELS[slot]}</div>
-          <div class="equip-slot-name"><span class="equip-slot-icon">${item.icon}</span><span style="color:${{'legendary':'var(--s-rank)','epic':'var(--a-rank)','rare':'var(--b-rank)'}[item.rarity]||'#fff'}">${item.name}</span>${qualityLabel}</div>
+        <div class="equip-slot filled rarity-${item.rarity}"
+          style="${isSelected ? 'border-color:var(--accent);box-shadow:0 0 10px rgba(74,158,255,0.4);' : ''}"
+          onclick="selectEquipSlot('${slot}')">
+          <div class="equip-slot-label" style="display:flex;align-items:center;justify-content:space-between">
+            <span>${SLOT_ICONS[slot]} ${SLOT_LABELS[slot]}</span>
+            ${isSelected
+              ? `<span style="font-size:0.58rem;color:var(--accent)">選択中 — インベントリから選ぶ</span>`
+              : `<span style="font-size:0.58rem;color:var(--text-dim)">タップで選択</span>`}
+          </div>
+          <div class="equip-slot-name">
+            <span class="equip-slot-icon">${item.icon}</span>
+            <span style="color:${rColors[item.rarity]||'#fff'}">${item.name}</span>${ql}
+          </div>
           <div class="equip-slot-bonus">${bonusStr}</div>
+          <button onclick="event.stopPropagation();unequipFromSlot('${slot}')"
+            style="margin-top:0.35rem;font-size:0.6rem;padding:0.1rem 0.5rem;background:rgba(255,51,102,0.1);
+            border:1px solid rgba(255,51,102,0.3);color:rgba(255,51,102,0.8);border-radius:3px;cursor:pointer;width:100%">
+            取り外す
+          </button>
         </div>`;
     } else {
-      const hint = isOffhandSlot && isOffhandEmpty && DUAL_BONUS_TYPES.includes(wt)
-        ? '<div style="font-size:0.6rem;color:var(--gold);margin-top:0.2rem">⚡ 空きで両手持ちボーナス発動中</div>'
-        : '';
       return `
-        <div class="equip-slot" title="${SLOT_LABELS[slot]}スロット（空）">
-          <div class="equip-slot-label">${SLOT_ICONS[slot]} ${SLOT_LABELS[slot]}</div>
-          <div style="font-size:0.75rem;color:var(--text-dim);margin-top:0.3rem">— 空き —</div>
-          ${hint}
+        <div class="equip-slot"
+          style="${isSelected ? 'border-color:var(--accent);box-shadow:0 0 10px rgba(74,158,255,0.4);background:rgba(74,158,255,0.05);' : ''}"
+          onclick="selectEquipSlot('${slot}')">
+          <div class="equip-slot-label" style="display:flex;align-items:center;justify-content:space-between">
+            <span>${SLOT_ICONS[slot]} ${SLOT_LABELS[slot]}</span>
+            ${isSelected
+              ? `<span style="font-size:0.58rem;color:var(--accent)">選択中 — 装備を選ぶ</span>`
+              : ''}
+          </div>
+          <div style="font-size:0.72rem;color:var(--text-dim);margin-top:0.3rem;text-align:center">
+            ${isSelected ? '⬇ 下のリストから装備を選択' : '— 空き —'}
+          </div>
         </div>`;
     }
   }).join('');
+}
+
+// インベントリ内アイテムクリックを装備フローに統合
+function handleInvItemClick(id) {
+  if (_selectedEquipSlot) {
+    selectInvItemForEquip(id);
+  } else {
+    equipItem(id);
+  }
 }
 
 function renderEquipBonus() {
@@ -5626,11 +5731,26 @@ function renderInvList() {
       : '';
     const willAutoSell = !isEquipped && canEquip && autoThreshIdx >= 0 && rarityOrder.indexOf(item.rarity) <= autoThreshIdx;
 
+    // スロット選択中: このアイテムがそのスロットに装備可能かどうかチェック
+    const slotCompat = {
+      weapon:  ['weapon','mainhand'],
+      body:    ['body','armor','helm','legs','offhand'],
+      acc1:    ['accessory','ring','acc1','acc2'],
+      acc2:    ['accessory','ring','acc1','acc2'],
+    };
+    const compatSlots = slotCompat[_selectedEquipSlot] || [];
+    const isCompatible = _selectedEquipSlot && compatSlots.includes(item.slot);
+    const isHighlighted = isCompatible && !isEquipped;
+    const slotSelectActive = !!_selectedEquipSlot;
+
     return `
-      <div class="inv-item ${isEquipped ? 'equipped' : ''}" style="cursor:default;${willAutoSell ? 'opacity:0.5' : ''}">
+      <div class="inv-item ${isEquipped ? 'equipped' : ''}"
+        style="cursor:default;${willAutoSell ? 'opacity:0.5;' : ''}
+          ${isHighlighted ? 'border-color:var(--accent);background:rgba(74,158,255,0.08);' : ''}
+          ${slotSelectActive && !isCompatible && !isEquipped && canEquip ? 'opacity:0.35;' : ''}">
         <span class="inv-item-icon">${item.icon}</span>
-        <div class="inv-item-info" style="cursor:${canEquip && !isEquipped ? 'pointer' : 'default'}"
-          onclick="${canEquip && !isEquipped ? `equipItem('${item.id}')` : ''}">
+        <div class="inv-item-info" style="cursor:${(canEquip && !isEquipped) || isHighlighted ? 'pointer' : 'default'}"
+          onclick="${isHighlighted ? `selectInvItemForEquip('${item.id}')` : canEquip && !isEquipped ? `handleInvItemClick('${item.id}')` : ''}">
           <div class="inv-item-name rname-${item.rarity}">${item.name}${qtyBadge}${item.quality ? `<span style="font-size:0.58rem;padding:0.05rem 0.25rem;border-radius:3px;background:${qualityColor(item.quality)}22;color:${qualityColor(item.quality)};margin-left:0.3rem;border:1px solid ${qualityColor(item.quality)}55">${qualityLabel(item.quality)} ${item.quality}%</span>` : ''}${willAutoSell ? ' <span style="font-size:0.58rem;color:var(--red)">自動売却対象</span>' : ''}</div>
           <div class="inv-item-sub" style="display:flex;align-items:center;gap:0.4rem;flex-wrap:wrap">
             <span class="item-rarity rarity-${item.rarity}">${rarityLabel[item.rarity]||item.rarity}</span>
@@ -5641,10 +5761,12 @@ function renderInvList() {
         </div>
         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.28rem;flex-shrink:0">
           ${isEquipped
-            ? `<span class="inv-item-equipped-badge" style="cursor:pointer" onclick="unequipItem('${item.equippedIn}')">装備中 ✕</span>`
-            : canEquip
-              ? `<span style="font-size:0.63rem;color:var(--accent);cursor:pointer" onclick="equipItem('${item.id}')">装備する</span>`
-              : ''}
+            ? `<span class="inv-item-equipped-badge" style="cursor:pointer" onclick="unequipFromSlot('${item.equippedIn}')">装備中</span>`
+            : isHighlighted
+              ? `<span style="font-size:0.63rem;color:var(--accent);font-weight:700;cursor:pointer" onclick="selectInvItemForEquip('${item.id}')">→ セット</span>`
+              : canEquip && !slotSelectActive
+                ? `<span style="font-size:0.63rem;color:var(--text-dim);cursor:pointer" onclick="handleInvItemClick('${item.id}')">装備</span>`
+                : ''}
           ${isEquipped ? '' : `<button class="sell-btn" onclick="sellItem('${item.id}')">売 ${sellPrice}G</button>`}
         </div>
       </div>`;
@@ -6342,29 +6464,35 @@ function switchTab(name) {
 // ===== SAVE / LOAD =====
 const SAVE_KEY = 'gateDiverSave_v1';
 
+// ── ストレージ: localStorage → sessionStorage → メモリの3段フォールバック ──
+const _memStore = {};
+function _storageSet(key, val) {
+  try { localStorage.setItem(key, val); return; } catch(e) {}
+  try { sessionStorage.setItem(key, val); return; } catch(e) {}
+  _memStore[key] = val;
+}
+function _storageGet(key) {
+  try { const v = localStorage.getItem(key); if (v !== null) return v; } catch(e) {}
+  try { const v = sessionStorage.getItem(key); if (v !== null) return v; } catch(e) {}
+  return _memStore[key] || null;
+}
+function _storageRemove(key) {
+  try { localStorage.removeItem(key); } catch(e) {}
+  try { sessionStorage.removeItem(key); } catch(e) {}
+  delete _memStore[key];
+}
+
 function saveGame() {
-  const saveData = {
-    ...G,
-    savedAt: new Date().toISOString(),
-  };
-  const json = JSON.stringify(saveData);
-  try {
-    localStorage.setItem(SAVE_KEY, json);
-  } catch(e) {
-    // localStorage が使えない環境（sandbox等）ではsessionStorageにフォールバック
-    try { sessionStorage.setItem(SAVE_KEY, json); } catch(e2) {}
-    console.warn('localStorage unavailable, used sessionStorage:', e);
-  }
+  const saveData = { ...G, savedAt: new Date().toISOString() };
+  try { _storageSet(SAVE_KEY, JSON.stringify(saveData)); } catch(e) { console.warn('Save failed:', e); }
 }
 
 function loadGame() {
   try {
-    const raw = localStorage.getItem(SAVE_KEY) || sessionStorage.getItem(SAVE_KEY);
+    const raw = _storageGet(SAVE_KEY);
     if (!raw) return null;
     return JSON.parse(raw);
-  } catch(e) {
-    return null;
-  }
+  } catch(e) { return null; }
 }
 
 function manualSave() {
@@ -6408,7 +6536,7 @@ function continueGame() {
 
 function resetSave() {
   if (!confirm('セーブデータを削除しますか？この操作は取り消せません。')) return;
-  localStorage.removeItem(SAVE_KEY);
+  _storageRemove(SAVE_KEY);
   document.getElementById('continue-btn-wrap').style.display = 'none';
   showNotification('🗑 削除完了', 'セーブデータを削除しました', false);
 }
@@ -6519,4 +6647,4 @@ function dismissPrologue() {
 </script>
 
 </body>
-</html>
+</html>、
