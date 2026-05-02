@@ -1,10 +1,9 @@
 <!DOCTYPE html>
-
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-<title>深淵の塔</title>
+<title>BABEL</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -87,23 +86,23 @@ nav{background:#0a0916;border-top:1px solid var(--brd2);display:flex;flex-shrink
   padding:16px;text-align:center;width:190px}
 .ed h3{color:var(--gold);font-size:13px;margin-bottom:5px}
 .ed p{color:var(--tdim);font-size:12px;margin-bottom:12px;line-height:1.5}
-.edb{display:flex;gap:6px;justify-content:center}
+.edb{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
 .btn{border:none;border-radius:4px;padding:9px 13px;cursor:pointer;
   font-size:11px;letter-spacing:.04em;transition:all .14s}
 .btn:active{transform:scale(.96)}
 .btn-f{background:linear-gradient(180deg,#2a1010,#180808);border:1px solid #5a2020;color:#c06060}
 .btn-r{background:linear-gradient(180deg,#101828,#080e18);border:1px solid var(--brd2);color:var(--tdim)}
+.btn-g{background:linear-gradient(180deg,#102810,#081808);border:1px solid #205a20;color:#60c060}
 /* LOG */
-.blog{flex-shrink:0;height:66px;overflow-y:auto;padding:3px 8px;
+.blog{flex-shrink:0;height:28px;overflow:hidden;padding:3px 8px;
   background:#060510;border-top:1px solid var(--brd);border-bottom:1px solid var(--brd);
-  font-size:10.5px;line-height:1.7}
-.ll{animation:fi .12s ease}
-@keyframes fi{from{opacity:0}to{opacity:1}}
+  font-size:10.5px;line-height:1.7;display:flex;align-items:center}
+.ll{width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ll.sk{color:#c8a030;font-style:italic}.ll.dm{color:#a05838}
 .ll.hl{color:#389848}.ll.dt{color:#902020;font-weight:600}
 .ll.sy{color:#287888}.ll.lv{color:#b8a82a;font-weight:600}
 .ll.ch{color:#7838a8}.ll.cg{color:var(--gold)}.ll.cd{color:#30a8c8}.ll.ca{color:#c09820}
-.ll.er{color:#ff4040}
+.ll.er{color:#ff4040}.ll.ev{color:#8860d0}.ll.wa{color:#c07820}
 /* PARTY */
 .psec{flex-shrink:0;background:#05040c;padding:3px 4px;display:flex;flex-direction:column;gap:2px}
 .rlbl{font-size:8px;color:var(--tdim);letter-spacing:.1em;padding:1px 3px}
@@ -126,6 +125,7 @@ nav{background:#0a0916;border-top:1px solid var(--brd2);display:flex;flex-shrink
 .pc-hb.cr{background:linear-gradient(90deg,#701818,#a82828)}
 .pc-do{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
   font-size:22px;background:rgba(0,0,0,.5);border-radius:5px}
+.pc-ct{font-size:7px;color:#6880a0;text-align:center}
 .pslot{flex:1;height:110px;background:rgba(255,255,255,.02);
   border:1px dashed #1a2840;border-radius:5px;
   display:flex;align-items:center;justify-content:center}
@@ -155,8 +155,8 @@ nav{background:#0a0916;border-top:1px solid var(--brd2);display:flex;flex-shrink
 .ccls{font-size:9px;color:var(--tdim);background:var(--bg3);border:1px solid var(--brd);padding:1px 5px;border-radius:2px}
 .cfn{font-size:9px;color:var(--tdim);margin-bottom:2px}
 .clv{font-size:11px;color:var(--gold);margin-bottom:3px}
-.cst{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:2px}
-.st{font-size:10px;color:var(--tdim)}.st span{color:var(--txt)}
+.cst{display:flex;gap:5px;flex-wrap:nowrap;margin-bottom:2px;overflow:hidden}
+.st{font-size:9px;color:var(--tdim);white-space:nowrap}.st span{color:var(--txt)}
 .csk{font-size:10px;color:var(--tdim);font-style:italic;margin-bottom:3px}
 .ceq{display:flex;gap:3px;flex-wrap:wrap}
 .eqb{font-size:9px;background:var(--bg3);border:1px solid var(--brd);padding:1px 4px;border-radius:2px;color:var(--tdim)}
@@ -179,12 +179,34 @@ nav{background:#0a0916;border-top:1px solid var(--brd2);display:flex;flex-shrink
 .em2{color:var(--tdim);font-size:12px;text-align:center;padding:30px 10px}
 .st2{font-size:11px;color:var(--gold);letter-spacing:.08em;
   margin:7px 0 5px;padding-bottom:4px;border-bottom:1px solid var(--brd)}
-.qt{color:#484058}.qn{color:#7878a0}.qg{color:#308060}.qr{color:#3060b0}.qs{color:#8828b0}.qp{color:var(--gold)}
+/* rarity colors: common/uncommon/rare/epic/legend/origin */
+.qn{color:#888898}  /* コモン 灰 */
+.qg{color:#40b860}  /* アンコモン 緑 */
+.qr{color:#4090e0}  /* レア 青 */
+.qs{color:#b040e0}  /* エピック 紫 */
+.qp{color:#e0b020}  /* レジェンド 黄 */
+.qo{color:#e04040}  /* オリジン 赤 */
+/* rarity border colors */
+.ii.rq1{border-color:#383840}
+.ii.rq2{border-color:#205030}
+.ii.rq3{border-color:#203060}
+.ii.rq4{border-color:#5020a0}
+.ii.rq5{border-color:#806010}
+.ii.rq5o{border-color:#802020}
+/* INV TABS */
+.inv-tabs{display:flex;gap:0;margin-bottom:6px;border:1px solid var(--brd2);border-radius:4px;overflow:hidden;flex-shrink:0}
+.inv-tab{flex:1;background:var(--bg3);border:none;color:var(--tdim);padding:7px 4px;cursor:pointer;font-size:10px;border-right:1px solid var(--brd2)}
+.inv-tab:last-child{border-right:none}
+.inv-tab.active{background:rgba(28,48,70,.9);color:var(--txt);border-bottom:2px solid var(--tel)}
+.bulk-bar{display:flex;gap:5px;padding:5px 0;flex-shrink:0}
+.bulk-btn{flex:1;background:var(--bg3);border:1px solid var(--brd2);border-radius:3px;
+  color:var(--tdim);padding:6px 4px;cursor:pointer;font-size:10px}
+.bulk-btn:active{background:var(--bg2)}
 /* OVERLAYS */
 .ovl{position:fixed;inset:0;background:rgba(4,3,10,.88);
   display:flex;align-items:center;justify-content:center;z-index:100}
 .dlg{background:var(--bg2);border:1px solid var(--gdim);border-radius:7px;
-  padding:14px;width:290px;max-height:80vh;overflow-y:auto}
+  padding:14px;width:310px;max-height:85vh;overflow-y:auto}
 .dlg h3{color:var(--gold);text-align:center;font-size:13px;margin-bottom:10px}
 .dr{background:var(--bg3);border:1px solid var(--brd);border-radius:4px;
   padding:7px 9px;display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:5px}
@@ -192,9 +214,40 @@ nav{background:#0a0916;border-top:1px solid var(--brd2);display:flex;flex-shrink
 .dr.ded{opacity:.38;cursor:not-allowed}
 .cbtn{width:100%;background:none;border:1px solid var(--brd);border-radius:3px;
   color:var(--tdim);padding:8px;cursor:pointer;font-size:13px;margin-top:6px}
+.cbtn.red{border-color:#5a2020;color:#b06060;margin-top:3px}
 .sbox{background:var(--bg3);border:1px solid var(--brd);border-radius:4px;padding:8px;margin-bottom:8px}
 .snm{font-size:12px;color:var(--gold);margin-bottom:3px;font-weight:bold}
 .sdsc{font-size:11px;color:var(--tdim)}
+/* Comparison UI */
+.cmp-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px}
+.cmp-col{background:var(--bg3);border:1px solid var(--brd);border-radius:4px;padding:6px}
+.cmp-title{font-size:9px;color:var(--tdim);margin-bottom:3px;letter-spacing:.08em}
+.cmp-nm{font-size:11px;font-weight:bold;margin-bottom:2px}
+.cmp-stat{font-size:10px;margin:1px 0}
+.cmp-up{color:#40c060}.cmp-dn{color:#c04040}.cmp-eq{color:var(--tdim)}
+/* Choice overlay */
+.choice-ovl{position:absolute;inset:0;background:rgba(5,3,12,.88);
+  display:flex;align-items:center;justify-content:center;z-index:25}
+.choice-dlg{background:var(--bg2);border:1px solid var(--gdim);border-radius:8px;
+  padding:18px;text-align:center;width:230px}
+.choice-dlg h3{color:var(--gold);font-size:13px;margin-bottom:6px}
+.choice-dlg p{color:var(--tdim);font-size:11px;margin-bottom:14px;line-height:1.5}
+.choice-dlg .edb{flex-direction:column;gap:7px}
+/* Stampede bar */
+.stmp-bar{position:absolute;top:34px;left:50%;transform:translateX(-50%);
+  background:rgba(80,20,20,.85);border:1px solid #7a2020;border-radius:3px;
+  padding:2px 8px;font-size:9px;color:#d06060;z-index:6;white-space:nowrap}
+/* Event flash */
+.ev-flash{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);
+  background:rgba(80,40,130,.9);border:1px solid #6040a8;border-radius:5px;
+  padding:5px 12px;font-size:11px;color:#c8a8f8;z-index:10;
+  animation:fadeup .4s ease;pointer-events:none}
+@keyframes fadeup{from{opacity:0;transform:translateX(-50%) translateY(10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+/* Buff icons */
+.buff-row{position:absolute;bottom:2px;left:0;right:0;display:flex;justify-content:center;gap:3px}
+.buff-ic{font-size:10px;background:rgba(0,0,0,.6);border-radius:2px;padding:0 2px}
+/* Pending loot */
+.loot-bar{font-size:9px;color:var(--gold);padding:1px 4px;background:rgba(90,70,10,.3);border-radius:2px;text-align:center}
 .hidden{display:none!important}
 </style>
 </head>
@@ -216,13 +269,14 @@ nav{background:#0a0916;border-top:1px solid var(--brd2);display:flex;flex-shrink
       <div class="stage">
         <div class="tgl"></div><div class="tgr"></div>
         <div class="stage-top">
-          <div class="mchip" id="mchip">M:<span id="mc">5</span></div>
+          <div class="mchip" id="mchip">加護:<span id="mc">5</span></div>
           <div class="togp">
             <button class="tog on" id="ta">AUTO</button>
             <button class="tog"    id="tm">手動</button>
           </div>
           <button class="tog" id="spdbtn" style="flex-shrink:0;margin-left:4px;padding:4px 7px">1x</button>
         </div>
+        <div id="stmp-ind" class="stmp-bar hidden"></div>
         <div class="sc">
           <div class="idle" id="idletxt">出発を押して塔へ挑む</div>
           <div class="en-box hidden" id="enbox">
@@ -232,6 +286,7 @@ nav{background:#0a0916;border-top:1px solid var(--brd2);display:flex;flex-shrink
             <div class="ehpt" id="ehpt">HP: -</div>
           </div>
         </div>
+        <!-- Encounter choice -->
         <div class="eo hidden" id="encovl">
           <div class="ed">
             <h3 id="enctx">敵が現れた!</h3>
@@ -242,11 +297,34 @@ nav{background:#0a0916;border-top:1px solid var(--brd2);display:flex;flex-shrink
             </div>
           </div>
         </div>
+        <!-- Mid-floor choice -->
+        <div class="choice-ovl hidden" id="midcovl">
+          <div class="choice-dlg">
+            <h3>🏕 折り返し地点</h3>
+            <p id="midctxt">フロア半分を突破!<br>このまま進む？</p>
+            <div class="edb">
+              <button class="btn btn-g" id="mid-cont">▶ 探索続行</button>
+              <button class="btn btn-r" id="mid-back">🏠 拠点に戻る</button>
+            </div>
+          </div>
+        </div>
+        <!-- Floor clear choice -->
+        <div class="choice-ovl hidden" id="fcovl">
+          <div class="choice-dlg">
+            <h3>⭐ フロアクリア!</h3>
+            <p id="fctxt">このフロアを制覇した!</p>
+            <div class="edb">
+              <button class="btn btn-g" id="fc-next">▶ 次の階層へ</button>
+              <button class="btn btn-r" id="fc-back">🏠 拠点に戻る</button>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="blog" id="blog"></div>
+      <div class="blog" id="blog"><div class="ll sy" id="blogmsg">深淵の塔へようこそ。</div></div>
       <div class="psec" id="psec"></div>
       <div class="ctrl">
         <div class="gd">Best:<span id="best">1F</span></div>
+        <div id="loot-cnt" class="loot-bar hidden"></div>
         <button class="sbtn" id="sbtn">▶ 出発</button>
       </div>
     </div>
@@ -257,20 +335,24 @@ nav{background:#0a0916;border-top:1px solid var(--brd2);display:flex;flex-shrink
     </div>
     <div id="vi" class="view">
       <div class="vt">装備品</div>
+      <div class="bulk-bar">
+        <button class="bulk-btn" id="bulk-all">全て破棄</button>
+        <button class="bulk-btn" id="bulk-norm">コモン破棄</button>
+        <button class="bulk-btn" id="bulk-rare">アンコモン以下破棄</button>
+      </div>
       <div id="ilist"><div class="em2">装備品なし</div></div>
     </div>
   </main>
   <nav>
-    <button class="nb active" id="nvb">&#x1F5FC; 塔</button>
+    <button class="nb active" id="nvb">&#x1F5FC; BABEL</button>
     <button class="nb"        id="nvc">&#x2694; 騎士</button>
     <button class="nb"        id="nvi">&#x1F5E1; 装備</button>
   </nav>
 </div>
 
 <!-- OVERLAYS -->
-
 <div class="ovl hidden" id="movl">
-  <div class="dlg"><h3>勲章を使う</h3><div id="mlist"></div><button class="cbtn" id="mcancel">キャンセル</button></div>
+  <div class="dlg"><h3>加護を使う</h3><div id="mlist"></div><button class="cbtn" id="mcancel">キャンセル</button></div>
 </div>
 <div class="ovl hidden" id="sovl">
   <div class="dlg">
@@ -283,8 +365,11 @@ nav{background:#0a0916;border-top:1px solid var(--brd2);display:flex;flex-shrink
 <div class="ovl hidden" id="eovl">
   <div class="dlg">
     <h3 id="etitle">装備割り当て</h3>
-    <div id="edesc" style="font-size:11px;color:var(--tdim);text-align:center;margin-bottom:9px"></div>
+    <div id="edesc" style="font-size:11px;color:var(--tdim);text-align:center;margin-bottom:6px"></div>
+    <!-- Comparison grid -->
+    <div class="cmp-grid" id="ecmp" style="display:none"></div>
     <div id="echars"></div>
+    <button class="cbtn red" id="ediscard">この装備を捨てる</button>
     <button class="cbtn" id="ecancel">キャンセル</button>
   </div>
 </div>
@@ -292,22 +377,40 @@ nav{background:#0a0916;border-top:1px solid var(--brd2);display:flex;flex-shrink
 <script>
 (function(){
 'use strict';
-window.onerror=function(m,s,l){log('er','ERR L'+l+': '+m);return false;};
+window.onerror=function(m,s,l){singleLog('er','ERR L'+l+': '+m);return false;};
 
 // ── HELPERS ──────────────────────────────────────────
-var PM=[0,.12,.26,.44,.65];
-function cs(base,plus,q){return Math.max(1,Math.floor((base+base*PM[plus])*(q/100)));}
-function qi(q){
-  if(q<=20)return{n:'ボロボロ',c:'qt'};if(q<=40)return{n:'並',c:'qn'};
-  if(q<=60)return{n:'良',c:'qg'};if(q<=80)return{n:'優',c:'qr'};
-  if(q<=99)return{n:'極上',c:'qs'};return{n:'完全',c:'qp'};
+// Quality: 1-100 scales stat linearly (q=100 → 100% of base stat)
+// Plus (rarity): bonus multiplier on top of quality
+var RARITY_MULT=[1.0, 1.15, 1.35, 1.60, 1.90, 2.30]; // +0~+4, origin(+0-4 handled separately)
+function cs(base, plus, q){
+  var qualMul = q / 100;
+  var rarMul = RARITY_MULT[Math.min(plus, RARITY_MULT.length-1)];
+  return Math.max(1, Math.floor(base * qualMul * rarMul));
 }
-function ss(d,p,q){var a=[];var ks=Object.keys(d.stats);for(var i=0;i<ks.length;i++)a.push(ks[i].toUpperCase()+'+'+cs(d.stats[ks[i]],p,q));return a.join('  ');}
+// Rarity determined by plus value (not quality)
+// +0=コモン(灰) +1=アンコモン(緑) +2=レア(青) +3=エピック(紫) +4=レジェンド(黄) Origin=赤
+function qi(plus,isAnc){
+  if(isAnc)return{n:'オリジン',c:'qo',r:5};
+  if(plus===0)return{n:'コモン',c:'qn',r:1};
+  if(plus===1)return{n:'アンコモン',c:'qg',r:2};
+  if(plus===2)return{n:'レア',c:'qr',r:3};
+  if(plus===3)return{n:'エピック',c:'qs',r:4};
+  return{n:'レジェンド',c:'qp',r:5};
+}
+function ss(d,p,q){var a=[];var ks=Object.keys(d.stats);for(var i=0;i<ks.length;i++)a.push(ks[i].toUpperCase()+' '+cs(d.stats[ks[i]],p,q));return a.join('  ');}
 function rnd(a,b){return a+Math.floor(Math.random()*(b-a+1));}
 function g(id){return document.getElementById(id);}
 function mk(t,c,tx){var e=document.createElement(t);if(c)e.className=c;if(tx!=null)e.textContent=tx;return e;}
 function on(id,fn){var e=g(id);if(e)e.addEventListener('click',fn);}
-function log(c,t){var b=g('blog');if(!b)return;var d=mk('div','ll '+c,t);b.appendChild(d);while(b.children.length>160)b.removeChild(b.firstChild);b.scrollTop=b.scrollHeight;}
+
+// Single-line log
+function singleLog(cls,txt){
+  var el=g('blogmsg');if(!el){el=mk('div','ll');var b=g('blog');if(b)b.appendChild(el);el.id='blogmsg';}
+  el.className='ll '+cls;el.textContent=txt;
+}
+// alias
+function log(c,t){singleLog(c,t);}
 
 // ── DATA: CHESTS ─────────────────────────────────────
 var CH={
@@ -349,7 +452,7 @@ var IT=[
   {id:'shr',name:'影の指輪',   t:'ring',  em:'o',stats:{atk:60,def:50}}]
 ];
 var UQ=[
-  {id:'vb', name:'虚無の刃',    t:'weapon',em:'/',stats:{atk:270}},
+  {id:'vb2',name:'虚無の刃',    t:'weapon',em:'/',stats:{atk:270}},
   {id:'ac', name:'深淵の冠',    t:'ring',  em:'o',stats:{atk:95,def:95,hp:370}},
   {id:'ar', name:'天使のローブ',t:'armor', em:'(',stats:{def:190,hp:470}},
   {id:'cs', name:'混沌の剣',    t:'weapon',em:'/',stats:{atk:300}},
@@ -360,7 +463,7 @@ function gid(id){
   for(var k=0;k<UQ.length;k++)if(UQ[k].id===id)return UQ[k];
   return null;
 }
-function tier(f){return Math.min(3,Math.floor((f-1)/20));}
+function tierF(f){return Math.min(3,Math.floor((f-1)/20));}
 
 // ── DATA: ENEMIES ─────────────────────────────────────
 var ET=[
@@ -427,29 +530,86 @@ var GB={
 function getET(f){for(var i=0;i<ET.length;i++){if(f>=ET[i].r[0]&&f<=ET[i].r[1])return ET[i];}return ET[ET.length-1];}
 function buildEn(f,tp){
   tp=tp||'normal';
-  var tier=getET(f);
-  var pool=[];for(var i=0;i<tier.pool.length;i++){if(!tier.pool[i].rare)pool.push(tier.pool[i]);}
+  var tierD=getET(f);
+  var pool=[];for(var i=0;i<tierD.pool.length;i++){if(!tierD.pool[i].rare)pool.push(tierD.pool[i]);}
   var base=pool[rnd(0,pool.length-1)];
   var lv=rnd(Math.max(1,f-1),f+2);
   var bHP=Math.floor((90+f*45)*base.hm);
   var bAT=Math.floor((14+f*8.5)*base.am);
   var bDF=Math.floor((7+f*4)*base.dm);
   var bSP=Math.floor(48*base.sm);
-  var hm=1,am=1,dm=1,isE=false,isB=false,isR=false;
+  var hm=1,am=1,dm=1,isE=false,isB=false,isR=false,isEl=false;
   var nm=base.nm,em=base.em;
   if(tp==='rare'){
-    var rp=[];for(var i=0;i<tier.pool.length;i++){if(tier.pool[i].rare)rp.push(tier.pool[i]);}
-    if(rp.length){base=rp[rnd(0,rp.length-1)];nm=base.nm;em=base.em;hm=5;am=1.8;dm:2.5;lv=f+3;isR=true;}
+    var rp=[];for(var i=0;i<tierD.pool.length;i++){if(tierD.pool[i].rare)rp.push(tierD.pool[i]);}
+    if(rp.length){base=rp[rnd(0,rp.length-1)];nm=base.nm;em=base.em;hm=5;am=1.8;dm=2.5;lv=f+3;isR=true;}
   } else if(tp==='elite'){
     var ep=EL[(f-1)%EL.length];nm=ep.nm;em=ep.em;hm=ep.hm;am=ep.am;dm=ep.dm;lv=f+2;isE=true;
   } else if(tp==='boss'){
     var bd=GB[f]||{nm:'深淵の支配者',em:'👑'};nm=bd.nm;em=bd.em;hm=6.5;am=2.2;dm=1.8;lv=f+5;isB=true;
+  } else if(tp==='named_elite'){
+    // Normal monster with エリート suffix - boosted stats
+    nm=base.nm+'エリート';hm=2.0;am=1.6;dm=1.4;lv=f+1;isEl=true;
   }
   var hp=Math.floor(bHP*hm);
   return{nm:nm,em:em,lv:lv,hp:hp,mhp:hp,atk:Math.floor(bAT*am),def:Math.floor(bDF*dm),spd:bSP,
     ch:0,dd:1,ad:1,psn:0,brn:0,
     exp:Math.floor((18+f*14)*base.xp*hm),gold:rnd(10+f*6,16+f*11),
-    isE:isE,isB:isB,isR:isR};
+    isE:isE,isB:isB,isR:isR,isEl:isEl};
+}
+
+// ── FLOOR EVENTS ─────────────────────────────────────
+var EVENTS=[
+  {id:'trap',    w:20, nm:'マジックトラップ', em:'⚠️'},
+  {id:'chest',   w:25, nm:'宝箱発見',         em:'📦'},
+  {id:'heal',    w:18, nm:'回復の泉',          em:'💧'},
+  {id:'atk_buff',w:15, nm:'力の泉',            em:'⚔️'},
+  {id:'def_buff',w:15, nm:'守りの泉',          em:'🛡️'},
+  {id:'stampede',w:7,  nm:'スタンピード!',     em:'💥'}
+];
+function rollEvent(){
+  var tot=0;for(var i=0;i<EVENTS.length;i++)tot+=EVENTS[i].w;
+  var r=Math.random()*tot;
+  for(var i=0;i<EVENTS.length;i++){r-=EVENTS[i].w;if(r<=0)return EVENTS[i];}
+  return EVENTS[0];
+}
+function runEvent(ev){
+  var alive=G.dun.bp.filter(function(b){return b.hp>0;});
+  if(!alive.length)return;
+  if(ev.id==='trap'){
+    var tg=alive[rnd(0,alive.length-1)];
+    var dex=tg.dex||50;
+    var success=Math.random()<(dex/300);
+    if(success){log('ev','⚠️ マジックトラップ → '+tg.nm+'が解除した!');}
+    else{
+      var dmg=Math.floor(tg.mhp*0.15);tg.hp=Math.max(0,tg.hp-dmg);
+      log('ev','⚠️ マジックトラップ発動! '+tg.nm+' に'+dmg+'ダメージ!');
+      if(tg.hp<=0)log('dt',tg.nm+' 倒れた...');
+    }
+  } else if(ev.id==='chest'){
+    var t=['iron','iron','iron','copper','copper','silver'];
+    if(Math.random()<0.08)t.push('gold');
+    var ct=t[rnd(0,t.length-1)];
+    log('ev','📦 宝箱発見!');
+    dropPending(ct,G.fl);
+  } else if(ev.id==='heal'){
+    for(var i=0;i<alive.length;i++){alive[i].hp=alive[i].mhp;}
+    log('ev','💧 回復の泉! 全員HP全回復!');
+  } else if(ev.id==='atk_buff'){
+    G.dun.atkBuff=true;
+    log('ev','⚔️ 力の泉! 次の戦闘で攻撃力+20%!');
+  } else if(ev.id==='def_buff'){
+    G.dun.defBuff=true;
+    log('ev','🛡️ 守りの泉! 次の戦闘で防御力+20%!');
+  } else if(ev.id==='stampede'){
+    var cnt=rnd(3,5);
+    G.dun.stampede=cnt;
+    log('ev','💥 スタンピード! '+cnt+'連戦が始まる!');
+    updStampedeUI();
+    trigEnc(Math.random()<0.7?'named_elite':'normal');
+    return;
+  }
+  renderPC();
 }
 
 // ── FLOOR CONFIG ──────────────────────────────────────
@@ -463,92 +623,104 @@ function fcfg(f){return{dist:200+f*13,enc:Math.max(14,Math.floor((200+f*13)/8)),
 var CD=[
   {id:'gladius',nm:'グラディウス',fn:'断鎖のグラディウス',cls:'パラディン',em:'[Gd]',ul:0,
    b:{hp:620,at:72,df:105,dex:55},gr:{hp:82,at:7,df:11,dex:.14},
-   sk:{nm:'鉄鎖の拘束',rt:.18,dc:'敵ATK/DEF 30%ダウン',
+   sk:{nm:'鉄鎖の拘束',rt:.18,cd:4,dc:'敵ATK/DEF 30%ダウン',
     ex:function(a,e,al){e.ad*=.7;e.dd*=.7;return{tp:'sk',tx:a.nm+'の[鉄鎖の拘束]! 敵の力を封じた!'};}}},
   {id:'valeria',nm:'ヴァレリア',fn:'蒼雷のヴァレリア',cls:'ソードマスター',em:'[Va]',ul:2,
    b:{hp:355,at:108,df:62,dex:112},gr:{hp:42,at:13,df:6,dex:.36},
-   sk:{nm:'蒼雷斬',rt:.20,dc:'2.0倍の電撃一閃',
+   sk:{nm:'蒼雷斬',rt:.20,cd:3,dc:'2.0倍の電撃一閃',
     ex:function(a,e,al){var d=Math.floor(a.at*2.0);e.hp=Math.max(0,e.hp-d);return{tp:'sk',tx:a.nm+'の[蒼雷斬]! '+e.nm+'に'+d+'!'};}}},
   {id:'bald',nm:'バルド',fn:'灰燼のバルド',cls:'バーサーカー',em:'[Ba]',ul:6,
    b:{hp:490,at:122,df:46,dex:78},gr:{hp:56,at:14,df:4,dex:.20},
-   sk:{nm:'不死の咆哮',rt:.18,dc:'HP低=倍率大(最大3.5倍)',
+   sk:{nm:'不死の咆哮',rt:.18,cd:4,dc:'HP低=倍率大(最大3.5倍)',
     ex:function(a,e,al){var m=1+2.5*(1-a.hp/Math.max(1,a.mhp));var d=Math.floor(a.at*m);e.hp=Math.max(0,e.hp-d);return{tp:'sk',tx:a.nm+'の[不死の咆哮]! '+d+'(x'+m.toFixed(1)+')!'};}}},
   {id:'serene',nm:'セレネ',fn:'白刃のセレネ',cls:'デュアルブレイド',em:'[Se]',ul:12,
    b:{hp:315,at:112,df:54,dex:118},gr:{hp:36,at:12,df:5,dex:.33},
-   sk:{nm:'双月の舞',rt:.22,dc:'2連撃(各0.95倍)',
+   sk:{nm:'双月の舞',rt:.22,cd:3,dc:'2連撃(各0.95倍)',
     ex:function(a,e,al){var t=0;for(var i=0;i<2;i++){var d=Math.floor(a.at*.95);t+=d;e.hp=Math.max(0,e.hp-d);}return{tp:'sk',tx:a.nm+'の[双月の舞]! 計'+t+'!'};}}},
   {id:'reith',nm:'レイス',fn:'影縫いのレイス',cls:'シーフ',em:'[Re]',ul:10,
    b:{hp:262,at:96,df:40,dex:132},gr:{hp:30,at:11,df:3,dex:.42},
-   sk:{nm:'影縫い',rt:.20,dc:'1.5倍+敵DEF30%ダウン',
+   sk:{nm:'影縫い',rt:.20,cd:3,dc:'1.5倍+敵DEF30%ダウン',
     ex:function(a,e,al){var d=Math.floor(a.at*1.5);e.hp=Math.max(0,e.hp-d);e.dd*=.7;return{tp:'sk',tx:a.nm+'の[影縫い]! '+d+'+拘束!'};}}},
   {id:'ryuka',nm:'リュカ',fn:'翠弓のリュカ',cls:'アーチャー',em:'[Ry]',ul:8,
    b:{hp:282,at:102,df:38,dex:106},gr:{hp:34,at:12,df:3,dex:.30},
-   sk:{nm:'必中の矢',rt:.18,dc:'防御無視1.8倍',
+   sk:{nm:'必中の矢',rt:.18,cd:3,dc:'防御無視1.8倍',
     ex:function(a,e,al){var d=Math.floor(a.at*1.8);e.hp=Math.max(0,e.hp-d);return{tp:'sk',tx:a.nm+'の[必中の矢]! '+d+'貫通!'};}}},
   {id:'albert',nm:'アルベルト',fn:'残光のアルベルト',cls:'デュエリスト',em:'[Al]',ul:14,
    b:{hp:322,at:115,df:60,dex:102},gr:{hp:38,at:13,df:6,dex:.28},
-   sk:{nm:'残像突き',rt:.18,dc:'2.2倍の鋭い一撃',
+   sk:{nm:'残像突き',rt:.18,cd:3,dc:'2.2倍の鋭い一撃',
     ex:function(a,e,al){var d=Math.floor(a.at*2.2);e.hp=Math.max(0,e.hp-d);return{tp:'sk',tx:a.nm+'の[残像突き]! '+d+'!'};}}},
   {id:'kaede',nm:'カエデ',fn:'紅蓮舞のカエデ',cls:'ファイター',em:'[Ka]',ul:18,
    b:{hp:355,at:110,df:56,dex:92},gr:{hp:42,at:13,df:5,dex:.25},
-   sk:{nm:'紅蓮の舞',rt:.18,dc:'1.6倍+燃焼3T',
+   sk:{nm:'紅蓮の舞',rt:.18,cd:4,dc:'1.6倍+燃焼3T',
     ex:function(a,e,al){var d=Math.floor(a.at*1.6);e.hp=Math.max(0,e.hp-d);e.brn=3;return{tp:'sk',tx:a.nm+'の[紅蓮の舞]! '+d+'+燃焼!'};}}},
   {id:'zeek',nm:'ジーク',fn:'虚空詠みのジーク',cls:'ウィザード',em:'[Ze]',ul:22,
    b:{hp:242,at:138,df:38,dex:80},gr:{hp:28,at:16,df:3,dex:.20},
-   sk:{nm:'虚空崩壊',rt:.14,dc:'2.5倍の大魔法',
+   sk:{nm:'虚空崩壊',rt:.14,cd:5,dc:'2.5倍の大魔法',
     ex:function(a,e,al){var d=Math.floor(a.at*2.5);e.hp=Math.max(0,e.hp-d);return{tp:'sk',tx:a.nm+'の[虚空崩壊]! '+d+'!'};}}},
   {id:'elia',nm:'エリア',fn:'星祈りのエリア',cls:'クレリック',em:'[El]',ul:4,
    b:{hp:295,at:55,df:62,dex:84},gr:{hp:38,at:5,df:6,dex:.22},
-   sk:{nm:'星降りの祈り',rt:.16,dc:'全味方HP20%回復',
+   sk:{nm:'星降りの祈り',rt:.16,cd:4,dc:'全味方HP20%回復',
     ex:function(a,e,al){var av=[];for(var i=0;i<al.length;i++){if(al[i].hp>0)av.push(al[i]);}for(var i=0;i<av.length;i++){var h=Math.floor(av[i].mhp*.2);av[i].hp=Math.min(av[i].mhp,av[i].hp+h);}return{tp:'hl',tx:a.nm+'の[星降りの祈り]! 全員回復!'};}}},
   {id:'raoul',nm:'ラウル',fn:'禁書のラウル',cls:'ソーサラー',em:'[Ra]',ul:25,
    b:{hp:232,at:128,df:36,dex:74},gr:{hp:26,at:16,df:3,dex:.18},
-   sk:{nm:'禁断呪法',rt:.15,dc:'1.8倍+敵ATK50%ダウン',
+   sk:{nm:'禁断呪法',rt:.15,cd:4,dc:'1.8倍+敵ATK50%ダウン',
     ex:function(a,e,al){var d=Math.floor(a.at*1.8);e.hp=Math.max(0,e.hp-d);e.ad*=.5;return{tp:'sk',tx:a.nm+'の[禁断呪法]! '+d+'+呪縛!'};}}},
   {id:'mira',nm:'ミラ',fn:'幻晶のミラ',cls:'サポート',em:'[Mi]',ul:30,
    b:{hp:325,at:60,df:78,dex:90},gr:{hp:42,at:6,df:8,dex:.26},
-   sk:{nm:'幻晶の加護',rt:.18,dc:'全味方HP25%回復',
+   sk:{nm:'幻晶の加護',rt:.18,cd:4,dc:'全味方HP25%回復',
     ex:function(a,e,al){var av=[];for(var i=0;i<al.length;i++){if(al[i].hp>0)av.push(al[i]);}for(var i=0;i<av.length;i++){var h=Math.floor(av[i].mhp*.25);av[i].hp=Math.min(av[i].mhp,av[i].hp+h);}return{tp:'hl',tx:a.nm+'の[幻晶の加護]! 全員守護!'};}}},
   {id:'kiriga',nm:'キリガ',fn:'無音のキリガ',cls:'アサシン',em:'[Ki]',ul:20,
    b:{hp:272,at:120,df:42,dex:128},gr:{hp:30,at:14,df:3,dex:.40},
-   sk:{nm:'無音の刃',rt:.20,dc:'2.0倍+10%即死',
+   sk:{nm:'無音の刃',rt:.20,cd:4,dc:'2.0倍+10%即死',
     ex:function(a,e,al){var d=Math.floor(a.at*2.0);e.hp=Math.max(0,e.hp-d);if(Math.random()<.1&&!e.isB){e.hp=0;return{tp:'sk',tx:a.nm+'の[無音の刃]! 即死!'};} return{tp:'sk',tx:a.nm+'の[無音の刃]! '+d+'!'};}}},
   {id:'lilith',nm:'リリス',fn:'毒華のリリス',cls:'アサシン',em:'[Li]',ul:38,
    b:{hp:265,at:118,df:40,dex:122},gr:{hp:28,at:14,df:3,dex:.37},
-   sk:{nm:'毒華の誘惑',rt:.18,dc:'1.5倍+猛毒5T',
+   sk:{nm:'毒華の誘惑',rt:.18,cd:4,dc:'1.5倍+猛毒5T',
     ex:function(a,e,al){var d=Math.floor(a.at*1.5);e.hp=Math.max(0,e.hp-d);e.psn=5;return{tp:'sk',tx:a.nm+'の[毒華の誘惑]! '+d+'+毒!'};}}},
   {id:'zein',nm:'ゼイン',fn:'夜喰いのゼイン',cls:'ダークナイト',em:'[Zn]',ul:32,
    b:{hp:424,at:108,df:70,dex:82},gr:{hp:52,at:12,df:7,dex:.22},
-   sk:{nm:'夜喰い',rt:.18,dc:'1.8倍+40%吸収',
+   sk:{nm:'夜喰い',rt:.18,cd:4,dc:'1.8倍+40%吸収',
     ex:function(a,e,al){var d=Math.floor(a.at*1.8);e.hp=Math.max(0,e.hp-d);var h=Math.floor(d*.4);a.hp=Math.min(a.mhp,a.hp+h);return{tp:'sk',tx:a.nm+'の[夜喰い]! '+d+' HP+'+h+'!'};}}},
   {id:'izana',nm:'イザナ',fn:'血契のイザナ',cls:'ブラッドナイト',em:'[Iz]',ul:45,
    b:{hp:385,at:125,df:64,dex:108},gr:{hp:46,at:15,df:6,dex:.32},
-   sk:{nm:'血の契約',rt:.18,dc:'2.0倍+50%吸収',
+   sk:{nm:'血の契約',rt:.18,cd:4,dc:'2.0倍+50%吸収',
     ex:function(a,e,al){var d=Math.floor(a.at*2.0);e.hp=Math.max(0,e.hp-d);var h=Math.floor(d*.5);a.hp=Math.min(a.mhp,a.hp+h);return{tp:'sk',tx:a.nm+'の[血の契約]! '+d+' HP+'+h+'!'};}}},
   {id:'gil',nm:'ギル',fn:'機装のギル',cls:'ガンナー',em:'[Gi]',ul:52,
    b:{hp:352,at:145,df:52,dex:72},gr:{hp:42,at:17,df:5,dex:.18},
-   sk:{nm:'重砲撃',rt:.14,dc:'3.0倍の大火力',
+   sk:{nm:'重砲撃',rt:.14,cd:5,dc:'3.0倍の大火力',
     ex:function(a,e,al){var d=Math.floor(a.at*3.0);e.hp=Math.max(0,e.hp-d);return{tp:'sk',tx:a.nm+'の[重砲撃]! '+d+'!'};}}},
   {id:'chrono',nm:'クロノ',fn:'時渡りのクロノ',cls:'タイムメイジ',em:'[Ch]',ul:62,
    b:{hp:302,at:98,df:56,dex:98},gr:{hp:35,at:11,df:5,dex:.28},
-   sk:{nm:'時間加速',rt:.16,dc:'全味方チャージ+55',
+   sk:{nm:'時間加速',rt:.16,cd:5,dc:'全味方チャージ+55',
     ex:function(a,e,al){var av=[];for(var i=0;i<al.length;i++){if(al[i].hp>0)av.push(al[i]);}for(var i=0;i<av.length;i++)av[i].ch=Math.min(100,av[i].ch+55);return{tp:'sk',tx:a.nm+'の[時間加速]! 全員加速!'};}}},
   {id:'fiona',nm:'フィオナ',fn:'竜憑きのフィオナ',cls:'ドラグーン',em:'[Fi]',ul:72,
    b:{hp:455,at:135,df:74,dex:88},gr:{hp:56,at:16,df:7,dex:.24},
-   sk:{nm:'竜槍突撃',rt:.16,dc:'2.8倍の竜撃',
+   sk:{nm:'竜槍突撃',rt:.16,cd:4,dc:'2.8倍の竜撃',
     ex:function(a,e,al){var d=Math.floor(a.at*2.8);e.hp=Math.max(0,e.hp-d);return{tp:'sk',tx:a.nm+'の[竜槍突撃]! '+d+'!'};}}},
   {id:'abel',nm:'アベル',fn:'零界のアベル',cls:'イレイザー',em:'[Ab]',ul:82,
    b:{hp:282,at:165,df:46,dex:92},gr:{hp:32,at:19,df:4,dex:.26},
-   sk:{nm:'零点消滅',rt:.12,dc:'3.5倍の消去魔法',
+   sk:{nm:'零点消滅',rt:.12,cd:6,dc:'3.5倍の消去魔法',
     ex:function(a,e,al){var d=Math.floor(a.at*3.5);e.hp=Math.max(0,e.hp-d);return{tp:'sk',tx:a.nm+'の[零点消滅]! '+d+'!'};}}},
 ];
 
 // ── STATE ─────────────────────────────────────────────
-function expN(lv){return Math.floor(22*Math.pow(lv,1.58));}
+// Level cap: 40. EXP curve steep.
+var LV_CAP=40;
+function expN(lv){
+  if(lv>=LV_CAP)return Infinity;
+  return Math.floor(120*Math.pow(lv,2.2));
+}
 var G={
   gold:200,medals:5,cf:0,hf:1,fl:1,
   party:['gladius'],chars:{},eq:{},inv:[],
-  dun:{active:false,auto:true,fast:false,dist:0,phase:'idle',enemy:null,pend:null,bp:[]}
+  dun:{
+    active:false,auto:true,fast:false,dist:0,phase:'idle',enemy:null,pend:null,bp:[],
+    pendingLoot:[],   // items collected during run, awarded on return
+    atkBuff:false,defBuff:false,
+    stampede:0,       // remaining stampede fights
+    midShown:false,   // whether mid-floor choice was shown
+    speedIdx:0,speedMul:1  // battle speed
+  }
 };
 for(var _i=0;_i<CD.length;_i++){
   var _d=CD[_i];
@@ -602,24 +774,53 @@ function load(){
   }catch(e){}
 }
 
+// ── LOOT SYSTEM ───────────────────────────────────────
+function dropPending(ct,f){
+  if(!ct)return;var cd=CH[ct];
+  var plus=rnd(cd.pr[0],cd.pr[1]);var q=rnd(1,100);
+  var isAnc=!!cd.u;
+  var pool=isAnc?UQ:IT[Math.min(3,tierF(f))];
+  var iD=pool[rnd(0,pool.length-1)];
+  var item={id2:iD.id,q:q,plus:plus,anc:isAnc};
+  G.dun.pendingLoot.push(item);
+  var qi2=qi(q,isAnc);
+  log(cd.lc,cd.em+' '+iD.name+' ['+qi2.n+'] 獲得(拠点で受取)');
+  updLootCount();
+}
+function awardPendingLoot(){
+  for(var i=0;i<G.dun.pendingLoot.length;i++){
+    G.inv.push(G.dun.pendingLoot[i]);
+  }
+  var cnt=G.dun.pendingLoot.length;
+  G.dun.pendingLoot=[];
+  updLootCount();
+  return cnt;
+}
+function loseAllLoot(){
+  G.dun.pendingLoot=[];
+  updLootCount();
+}
+function updLootCount(){
+  var el=g('loot-cnt');if(!el)return;
+  var n=G.dun.pendingLoot.length;
+  if(n>0){el.classList.remove('hidden');el.textContent='荷物:'+n+'個';}
+  else el.classList.add('hidden');
+}
+function updStampedeUI(){
+  var el=g('stmp-ind');if(!el)return;
+  if(G.dun.stampede>0){el.classList.remove('hidden');el.textContent='スタンピード残り'+G.dun.stampede+'戦';}
+  else el.classList.add('hidden');
+}
+
 // ── CHESTS/DROPS ──────────────────────────────────────
 function rollC(et){
   var t={normal:[['iron',42],['copper',14],[null,44]],
     elite:[['silver',52],['gold',24],['iron',24]],
     boss:[['gold',44],['silver',30],['dia',9],['anc',5],['iron',12]],
-    rare:[['dia',35],['anc',20],['gold',45]]};
+    rare:[['dia',35],['anc',20],['gold',45]],
+    named_elite:[['silver',40],['gold',15],['iron',45]]};
   var tbl=t[et]||t.normal;var tot=0;for(var i=0;i<tbl.length;i++)tot+=tbl[i][1];
   var r=Math.random()*tot;for(var i=0;i<tbl.length;i++){r-=tbl[i][1];if(r<=0)return tbl[i][0];}return null;
-}
-function dropC(ct,f){
-  if(!ct)return;var cd=CH[ct];
-  var plus=rnd(cd.pr[0],cd.pr[1]);var q=rnd(1,100);
-  var pool=cd.u?UQ:IT[Math.min(3,tier(f))];
-  var iD=pool[rnd(0,pool.length-1)];
-  G.inv.push({id2:iD.id,q:q,plus:plus});
-  var qi2=qi(q);
-  log(cd.lc,cd.em+' '+cd.name+' => '+iD.name+' ['+qi2.n+' '+q+'%] +'+plus+'  '+ss(iD,plus,q));
-  var v=g('vi');if(v&&v.classList.contains('active'))renderInv();
 }
 
 // ── DUNGEON ───────────────────────────────────────────
@@ -632,35 +833,73 @@ function initBP(fh){
     var old=null;for(var j=0;j<G.dun.bp.length;j++){if(G.dun.bp[j].id===id){old=G.dun.bp[j];break;}}
     var hp=fh?st.hp:(old?Math.min(old.hp,st.hp):st.hp);
     nb.push({id:id,nm:c.nm,em:d.em,lv:c.lv,hp:hp,mhp:st.hp,at:st.at,df:st.df,
-      dex:d.b.dex+d.gr.dex*(c.lv-1),ch:Math.random()*30,sk:c.sk,row:i<3?'f':'b'});
+      dex:d.b.dex+d.gr.dex*(c.lv-1),ch:Math.random()*30,sk:c.sk,skCd:0,row:i<3?'f':'b'});
   }
   G.dun.bp=nb;
 }
 function toggleD(){
-  if(G.dun.active){stopD('撤退した。');return;}
+  if(G.dun.active){
+    log('sy','探索中は拠点に戻れません。折り返し地点かフロアクリア時に選択できます。');
+    return;
+  }
   if(!G.party.length){log('sy','パーティを編成してください');return;}
   G.dun.active=true;G.dun.dist=0;G.dun.phase='exploring';G.dun.fast=false;
+  G.dun.pendingLoot=[];G.dun.atkBuff=false;G.dun.defBuff=false;
+  G.dun.stampede=0;G.dun.midShown=false;
   initBP(true);
   gT=setInterval(gTick,100);eT=setInterval(eTick,200);
   log('sy',G.fl+'F 探索開始!');
-  updFloor();updH();renderPC();
-  var sb=g('sbtn');if(sb){sb.textContent='停止';sb.className='sbtn act';}
+  updFloor();updH();renderPC();updLootCount();
+  var sb=g('sbtn');if(sb){sb.textContent='探索中';sb.className='sbtn act';sb.disabled=true;}
   var it=g('idletxt');if(it)it.textContent='探索中...';
 }
-function stopD(msg){
+function returnToBase(){
   clearInterval(gT);clearInterval(eT);gT=null;eT=null;
   G.dun.active=false;G.dun.phase='idle';G.dun.enemy=null;G.dun.pend=null;
-  var eo=g('encovl');if(eo)eo.classList.add('hidden');
-  if(msg)log('sy',msg);
-  var sb=g('sbtn');if(sb){sb.textContent='▶ 出発';sb.className='sbtn';}
+  G.dun.stampede=0;
+  ['encovl','midcovl','fcovl'].forEach(function(id){
+    var el=g(id);if(el)el.classList.add('hidden');
+  });
+  var cnt=awardPendingLoot();
+  if(cnt>0){log('lv','拠点帰還! 装備品'+cnt+'個を獲得!');}
+  else log('sy','拠点に戻った。');
+  var sb=g('sbtn');if(sb){sb.textContent='▶ 出発';sb.className='sbtn';sb.disabled=false;}
+  updStampedeUI();
   renderB();renderPC();save();
+  var vi=g('vi');if(vi&&vi.classList.contains('active'))renderInv();
 }
 function eTick(){
   if(G.dun.phase!=='exploring')return;
   var cfg=fcfg(G.fl);G.dun.dist++;updFloor();
+
+  // Mid-floor checkpoint
+  var half=Math.floor(cfg.dist/2);
+  if(!G.dun.midShown&&G.dun.dist>=half&&G.dun.dist<cfg.dist){
+    G.dun.midShown=true;
+    G.dun.phase='pend';
+    clearInterval(eT);eT=null;
+    var mo=g('midcovl');if(mo)mo.classList.remove('hidden');
+    return;
+  }
+
   if(G.dun.dist<cfg.dist&&G.dun.dist%cfg.enc===0){
+    // Check for floor event (15% chance instead of encounter)
+    if(Math.random()<0.15){
+      var ev=rollEvent();
+      if(ev.id==='stampede'||ev.id==='trap'||ev.id==='chest'){
+        // These may pause exploration
+        runEvent(ev);if(G.dun.phase!=='exploring')return;
+      } else {
+        runEvent(ev);
+      }
+      return;
+    }
     var tr=getET(G.fl);var hr=false;for(var i=0;i<tr.pool.length;i++){if(tr.pool[i].rare){hr=true;break;}}
-    trigEnc(hr&&Math.random()<.03?'rare':'normal');return;
+    // Named elite chance: 12%
+    var tp='normal';
+    if(Math.random()<0.12)tp='named_elite';
+    else if(hr&&Math.random()<.03)tp='rare';
+    trigEnc(tp);return;
   }
   if(G.dun.dist>=cfg.dist){
     G.dun.dist=cfg.dist;updFloor();
@@ -670,10 +909,14 @@ function eTick(){
 }
 function trigEnc(tp){
   var e=buildEn(G.fl,tp);
+  // Apply buffs
+  if(G.dun.atkBuff){G.dun.atkBuff=false;G.dun._atkBuff=true;}
+  if(G.dun.defBuff){G.dun.defBuff=false;G.dun._defBuff=true;}
   if(G.dun.auto){startB(e);}
   else{
     G.dun.pend=e;G.dun.phase='pend';
-    var et=g('enctx');if(et)et.textContent=e.isB?'大ボス出現!':e.isE?'エリート出現!':e.isR?'レア!':'敵が現れた!';
+    var et=g('enctx');
+    if(et)et.textContent=e.isB?'大ボス出現!':e.isE?'エリート出現!':e.isR?'レア!':e.isEl?'エリートモンスター!':'敵が現れた!';
     var ed=g('encdsc');if(ed)ed.textContent=e.nm+' Lv.'+e.lv;
     var eo=g('encovl');if(eo)eo.classList.remove('hidden');
   }
@@ -681,7 +924,8 @@ function trigEnc(tp){
 function startB(e){
   G.dun.phase='battle';G.dun.enemy=e;
   var an=g('ann');if(an)an.textContent='LV'+e.lv+' '+e.nm+'が現れた!';
-  log('dm',(e.isB?'[BOSS] ':e.isE?'[ELITE] ':e.isR?'[RARE] ':'')+e.em+' '+e.nm+' Lv.'+e.lv);
+  var label=e.isB?'[BOSS] ':e.isE?'[ELITE] ':e.isR?'[RARE] ':e.isEl?'[エリート] ':'';
+  log('dm',label+e.em+' '+e.nm+' Lv.'+e.lv);
   renderB();
 }
 function gTick(){
@@ -690,7 +934,7 @@ function gTick(){
   var aa=[];for(var i=0;i<G.dun.bp.length;i++){if(G.dun.bp[i].hp>0)aa.push(G.dun.bp[i]);}
   if(!aa.length){onWipe();return;}
   if(en.hp<=0){onKill();return;}
-  var spMul=G.dun.fast?2:1;
+  var spMul=G.dun.speedMul||1;
   for(var i=0;i<aa.length;i++)aa[i].ch+=aa[i].dex/9*spMul;
   en.ch+=en.spd/9*spMul;
   var acts=[];for(var i=0;i<aa.length;i++){if(aa[i].ch>=100)acts.push(aa[i]);}
@@ -705,23 +949,39 @@ function gTick(){
       var fr=[];for(var i=0;i<aa.length;i++){if(aa[i].row==='f'&&aa[i].hp>0)fr.push(aa[i]);}
       var tg=fr.length>0?fr[rnd(0,fr.length-1)]:aa[rnd(0,aa.length-1)];
       var ea=Math.floor(en.atk*(en.ad||1));
-      var d=Math.max(1,Math.floor((ea-tg.df*.28)*(0.85+Math.random()*.3)));
+      // Apply defense buff
+      var defMul=G.dun._defBuff?1.2:1;
+      var d=Math.max(1,Math.floor((ea-tg.df*defMul*.28)*(0.85+Math.random()*.3)));
       tg.hp=Math.max(0,tg.hp-d);
       log('dm',en.em+en.nm+'->'+tg.nm+': '+d);
       if(tg.hp<=0)log('dt',tg.nm+' 倒れた...');
     } else {
       if(en.hp<=0)continue;
-      var am=ac.row==='b'?.9:1;var res=null;
-      if(Math.random()<ac.sk.rt){try{res=ac.sk.ex(ac,en,G.dun.bp);}catch(er){res=null;}}
+      var am=ac.row==='b'?.9:1;
+      // Apply attack buff
+      var atkMul=G.dun._atkBuff?1.2:1;
+      var res=null;
+      // Skill with cooldown
+      if(ac.skCd<=0&&Math.random()<ac.sk.rt){
+        try{res=ac.sk.ex(ac,en,G.dun.bp);}catch(er){res=null;}
+        if(res){
+          var skDef=cdef(ac.id);
+          ac.skCd=skDef?skDef.sk.cd:3;
+        }
+      }
+      // Decrement cooldown when character acts
+      if(ac.skCd>0&&!res)ac.skCd--;
       if(!res){
         var effDef=Math.floor(en.def*(en.dd||1));
-        var baseDmg=Math.max(1,Math.floor((ac.at*am-effDef*.28)*(0.85+Math.random()*.3)));
+        var baseDmg=Math.max(1,Math.floor((ac.at*am*atkMul-effDef*.28)*(0.85+Math.random()*.3)));
         var critRate=Math.min(0.5,ac.dex/500);
         var isCrit=Math.random()<critRate;
         var dm=isCrit?Math.floor(baseDmg*1.5):baseDmg;
         en.hp=Math.max(0,en.hp-dm);
         log('dm',ac.em+'->'+en.nm+': '+dm+(isCrit?' [会心]':'')+(ac.row==='b'?' [後]':''));
-      } else log(res.tp==='hl'?'hl':'sk',res.tx);
+      } else {
+        log(res.tp==='hl'?'hl':'sk',res.tx);
+      }
     }
   }
   ptk++;
@@ -732,22 +992,43 @@ function gTick(){
   renderB();renderPC();
 }
 function onKill(){
-  var en=G.dun.enemy;G.dun.enemy=null;G.dun.phase='exploring';
-  var et=en.isB?'boss':en.isR?'rare':en.isE?'elite':'normal';
+  var en=G.dun.enemy;G.dun.enemy=null;
+  // Clear one-time battle buffs
+  G.dun._atkBuff=false;G.dun._defBuff=false;
+  var et=en.isB?'boss':en.isR?'rare':en.isE?'elite':en.isEl?'named_elite':'normal';
   log('lv',en.nm+' 倒した! EXP+'+en.exp+' G+'+en.gold);
   G.gold+=en.gold;
   for(var i=0;i<G.party.length;i++)gainE(G.party[i],en.exp);
-  dropC(rollC(et),G.fl);
-  if(Math.random()<.12){G.medals++;log('sy','勲章獲得!(計'+G.medals+'枚)');}
+  dropPending(rollC(et),G.fl);
+  if(Math.random()<.12){G.medals++;log('sy','加護獲得!(計'+G.medals+'個)');}
+  // Stampede continue
+  if(G.dun.stampede>0){
+    G.dun.stampede--;
+    updStampedeUI();
+    if(G.dun.stampede>0){
+      G.dun.phase='exploring';
+      var cfg2=fcfg(G.fl);
+      if(G.dun.dist<cfg2.dist){
+        var tp2=Math.random()<0.7?'named_elite':'normal';
+        setTimeout(function(){trigEnc(tp2);},500);
+        updH();renderB();renderPC();save();
+        return;
+      }
+    } else {
+      updStampedeUI();
+    }
+  }
   var cfg=fcfg(G.fl);
   if((en.isE||en.isB)&&G.dun.dist>=cfg.dist){onFC();return;}
+  G.dun.phase='exploring';
+  if(!eT)eT=setInterval(eTick,200);
   var an=g('ann');if(an)an.textContent='探索中...';
   updH();renderB();renderPC();save();
 }
 function onFC(){
   var f=G.fl;if(f>G.cf)G.cf=f;
   var cfg=fcfg(f);var bm=cfg.boss?5:2;G.medals+=bm;
-  log('lv',f+'F クリア! 勲章x'+bm);
+  log('lv',f+'F クリア! 加護x'+bm);
   for(var i=0;i<CD.length;i++){
     var d=CD[i];
     if(d.ul>0&&d.ul<=f&&!G.chars[d.id].ul){
@@ -755,25 +1036,48 @@ function onFC(){
   }
   var nf=f+1;if(nf>G.hf)G.hf=nf;
   updH();save();
-  setTimeout(function(){
-    if(!G.dun.active)return;
-    G.fl=nf;G.dun.dist=0;G.dun.phase='exploring';
-    for(var i=0;i<G.dun.bp.length;i++){var b=G.dun.bp[i];b.hp=Math.min(b.mhp,b.hp+Math.floor(b.mhp*.4));}
-    log('sy',nf+'F へ! HP+40%回復');
-    updFloor();renderB();renderPC();
-    var vc=g('vc');if(vc&&vc.classList.contains('active'))renderChars();
-  },1800);
+  // Show floor clear choice
+  clearInterval(eT);eT=null;
+  G.dun.phase='pend';
+  var fc=g('fcovl');
+  var ft=g('fctxt');
+  if(ft)ft.textContent=f+'F を制覇!\n次の階層へ進むか拠点に戻るか?';
+  if(fc)fc.classList.remove('hidden');
+  G.dun._pendNextFloor=nf;
 }
-function onWipe(){log('dt','全滅...撤退');G.fl=Math.max(1,G.fl-1);stopD(null);updFloor();}
+function advanceNextFloor(){
+  var nf=G.dun._pendNextFloor||G.fl+1;
+  G.fl=nf;G.dun.dist=0;G.dun.midShown=false;
+  G.dun.phase='exploring';
+  for(var i=0;i<G.dun.bp.length;i++){var b=G.dun.bp[i];b.hp=Math.min(b.mhp,b.hp+Math.floor(b.mhp*.4));}
+  log('sy',nf+'F へ! HP+40%回復');
+  if(!eT)eT=setInterval(eTick,200);
+  updFloor();renderB();renderPC();
+  var vc=g('vc');if(vc&&vc.classList.contains('active'))renderChars();
+}
+function onWipe(){
+  log('dt','全滅...全ての荷物を失った!');
+  loseAllLoot();  // Drop all pending loot on wipe
+  G.fl=Math.max(1,G.fl-1);
+  clearInterval(gT);clearInterval(eT);gT=null;eT=null;
+  G.dun.active=false;G.dun.phase='idle';G.dun.enemy=null;G.dun.pend=null;
+  G.dun.stampede=0;G.dun._atkBuff=false;G.dun._defBuff=false;
+  ['encovl','midcovl','fcovl'].forEach(function(id){var el=g(id);if(el)el.classList.add('hidden');});
+  var sb=g('sbtn');if(sb){sb.textContent='▶ 出発';sb.className='sbtn';sb.disabled=false;}
+  updStampedeUI();updFloor();renderB();renderPC();save();
+}
 function gainE(id,exp){
-  var c=G.chars[id];if(!c)return;c.exp+=exp;
-  while(c.exp>=c.en){
+  var c=G.chars[id];if(!c)return;
+  if(c.lv>=LV_CAP){c.exp=0;c.en=Infinity;return;}
+  c.exp+=exp;
+  while(c.lv<LV_CAP&&c.exp>=c.en){
     c.exp-=c.en;c.lv++;c.en=expN(c.lv);
     var b=null;for(var i=0;i<G.dun.bp.length;i++){if(G.dun.bp[i].id===id){b=G.dun.bp[i];break;}}
     if(b){var st=cst(id);var pv=b.mhp;b.mhp=st.hp;b.hp=Math.min(b.mhp,b.hp+(b.mhp-pv));b.at=st.at;b.df=st.df;}
-    log('lv',c.nm+' Lv.'+c.lv+'!');
+    log('lv',c.nm+' Lv.'+c.lv+(c.lv>=LV_CAP?' [MAX]':'')+'!');
     var vc=g('vc');if(vc&&vc.classList.contains('active'))renderChars();
   }
+  if(c.lv>=LV_CAP)c.exp=0;
 }
 
 // ── UI ────────────────────────────────────────────────
@@ -795,7 +1099,12 @@ function renderB(){
   if(en&&G.dun.phase==='battle'){
     it.classList.add('hidden');eb.classList.remove('hidden');
     var ee=g('enem');if(ee){ee.textContent=en.em;ee.className='en-em'+(en.isB?' bg':'');}
-    var en2=g('ennm');if(en2){en2.textContent=(en.isB?'[BOSS] ':en.isE?'[ELITE] ':en.isR?'[RARE] ':'')+en.nm+' Lv.'+en.lv;en2.className='ennm'+(en.isB?' boss':en.isE?' elite':en.isR?' rare':'');}
+    var en2=g('ennm');
+    if(en2){
+      var lbl=(en.isB?'[BOSS] ':en.isE?'[ELITE] ':en.isR?'[RARE] ':en.isEl?'[エリート] ':'')+en.nm+' Lv.'+en.lv;
+      en2.textContent=lbl;
+      en2.className='ennm'+(en.isB?' boss':en.isE?' elite':en.isR?' rare':en.isEl?' elite':'');
+    }
     var pct=Math.max(0,(en.hp/en.mhp)*100);
     var hb=g('ehpb');if(hb)hb.style.width=pct+'%';
     var ht=g('ehpt');if(ht)ht.textContent='HP: '+en.hp.toLocaleString()+'/'+en.mhp.toLocaleString();
@@ -840,6 +1149,8 @@ function makePCard(id,row){
   card.appendChild(mk('div','pc-ht',hp.toLocaleString()+'/'+mhp.toLocaleString()));
   var hw=mk('div','pc-hw');var hbar=mk('div','pc-hb '+hc);hbar.style.width=pct+'%';
   hw.appendChild(hbar);card.appendChild(hw);
+  // Show skill cooldown
+  if(bp&&bp.skCd>0){card.appendChild(mk('div','pc-ct','CT:'+bp.skCd));}
   if(dead)card.appendChild(mk('div','pc-do','X'));
   return card;
 }
@@ -857,15 +1168,20 @@ function renderChars(){
     var det=mk('div','cdet');
     var nr=mk('div','cnmr');nr.appendChild(mk('span','cnm',c.nm));nr.appendChild(mk('span','ccls',d.cls));det.appendChild(nr);
     det.appendChild(mk('div','cfn',d.fn));
-    det.appendChild(mk('div','clv','Lv.'+c.lv));
+    det.appendChild(mk('div','clv','Lv.'+c.lv+(c.lv>=LV_CAP?' [MAX]':'')));
     var sv=mk('div','cst');
     var sti=[['HP',st.hp],['ATK',st.at],['DEF',st.df],['技量',Math.floor(d.b.dex+d.gr.dex*(c.lv-1))]];
     for(var si=0;si<sti.length;si++){var sv2=mk('div','st',sti[si][0]+' ');sv2.appendChild(mk('span',null,''+sti[si][1]));sv.appendChild(sv2);}
     det.appendChild(sv);
-    det.appendChild(mk('div','csk','['+d.sk.nm+'] '+Math.floor(d.sk.rt*100)+'% - '+d.sk.dc));
+    det.appendChild(mk('div','csk','['+d.sk.nm+'] '+Math.floor(d.sk.rt*100)+'% CT:'+d.sk.cd+' - '+d.sk.dc));
     var eqd=mk('div','ceq');
     var sl2=['weapon','armor','ring'];
-    for(var si=0;si<sl2.length;si++){var it=eq[sl2[si]];if(!it)continue;var iD=gid(it.id2);eqd.appendChild(mk('span','eqb',(iD?iD.name:'?')+' +'+it.plus));}
+    for(var si=0;si<sl2.length;si++){
+      var it=eq[sl2[si]];if(!it)continue;
+      var iD=gid(it.id2);
+      var plusStr=it.plus>0?(' +'+it.plus):'';
+      eqd.appendChild(mk('span','eqb',(iD?iD.name:'?')+plusStr));
+    }
     det.appendChild(eqd);
     var ew=mk('div','exw');var eb=mk('div','exb');eb.style.width=ep+'%';ew.appendChild(eb);det.appendChild(ew);
     if(!c.ul)det.appendChild(mk('div','ulk',d.ul+'Fクリアで解放'));
@@ -890,50 +1206,87 @@ function toggleP(id){
   if(G.dun.active)initBP(false);
   renderChars();renderPC();save();
 }
+
+// Item rarity border class helper (based on plus, not quality)
+function rarityBorderClass(plus,isAnc){
+  if(isAnc)return 'rq5o'; // origin = red border
+  var r=qi(plus,false).r;
+  return 'rq'+r;
+}
+
+var _invTab='weapon';
 function renderInv(){
   var list=g('ilist');if(!list)return;list.innerHTML='';
-  if(!G.inv.length){list.appendChild(mk('div','em2','装備品なし'));return;}
-  var eq2=[];
-  for(var i=0;i<G.inv.length;i++){var it=G.inv[i];var d=gid(it.id2);if(d)eq2.push({it:it,d:d,i:i});}
-  eq2.sort(function(a,b){var o={weapon:0,armor:1,ring:2};return (o[a.d.t]||0)-(o[b.d.t]||0);});
-  list.appendChild(mk('div','st2','装備品'));
-  for(var i=0;i<eq2.length;i++){
-    var e=eq2[i];var qi2=qi(e.it.q);
-    var tJ=e.d.t==='weapon'?'武器':e.d.t==='armor'?'防具':'指輪';
-    var row=mk('div','ii');
+  // Tab bar
+  var tabs=[['weapon','⚔ 武器'],['armor','🛡 防具'],['ring','💍 アクセ']];
+  var tabBar=mk('div','inv-tabs');
+  tabs.forEach(function(tb){
+    var btn=mk('button','inv-tab'+(tb[0]===_invTab?' active':''),tb[1]);
+    (function(tp){btn.addEventListener('click',function(){_invTab=tp;renderInv();});})(tb[0]);
+    tabBar.appendChild(btn);
+  });
+  list.appendChild(tabBar);
+  var filtered=[];
+  for(var i=0;i<G.inv.length;i++){
+    var it=G.inv[i];var d=gid(it.id2);
+    if(d&&d.t===_invTab)filtered.push({it:it,d:d,i:i});
+  }
+  if(!filtered.length){list.appendChild(mk('div','em2','なし'));return;}
+  var typeLabel={weapon:'武器',armor:'防具',ring:'アクセサリー'};
+  list.appendChild(mk('div','st2',(typeLabel[_invTab]||'装備')+'  '+filtered.length+'個'));
+  filtered.sort(function(a,b){return b.it.q-a.it.q;});
+  for(var i=0;i<filtered.length;i++){
+    var e=filtered[i];var qi2=qi(e.it.plus,!!e.it.anc);
+    var row=mk('div','ii '+rarityBorderClass(e.it.plus,!!e.it.anc));
     row.appendChild(mk('div','iic',e.d.em));
     var det=mk('div','iid');
-    det.appendChild(mk('div','iinm',e.d.name));
-    det.appendChild(mk('div','iisub '+qi2.c,qi2.n+' '+e.it.q+'%  '+tJ));
+    var plusStr=e.it.plus>0?(' +'+e.it.plus):'';
+    det.appendChild(mk('div','iinm',e.d.name+plusStr));
+    det.appendChild(mk('div','iisub '+qi2.c,qi2.n+'  品質'+e.it.q+'%'));
     det.appendChild(mk('div','iistat',ss(e.d,e.it.plus,e.it.q)));
     row.appendChild(det);
-    row.appendChild(mk('div','iipl','+'+e.it.plus));
+    if(e.it.plus>0)row.appendChild(mk('div','iipl','+'+e.it.plus));
     (function(it2,oi){row.addEventListener('click',function(){openEQ(it2,oi);});})(e.it,e.i);
     list.appendChild(row);
   }
+}
+
+// ── BULK DISCARD ──────────────────────────────────────
+function bulkDiscard(minR,maxR){
+  var before=G.inv.length;
+  G.inv=G.inv.filter(function(it){
+    var r=qi(it.plus,!!it.anc).r;
+    return r<minR||r>maxR;
+  });
+  var removed=before-G.inv.length;
+  log('sy',removed+'個を破棄した。');
+  renderInv();save();
 }
 
 // ── OVERLAYS ──────────────────────────────────────────
 function openSK(id){
   var d=cdef(id);var c=G.chars[id];var st=cst(id);
   var t=g('stitle');if(t)t.textContent=d.em+' '+d.fn;
-  var n=g('snm');if(n)n.textContent='['+d.sk.nm+'] '+Math.floor(d.sk.rt*100)+'%';
+  var n=g('snm');if(n)n.textContent='['+d.sk.nm+'] '+Math.floor(d.sk.rt*100)+'%  CT:'+d.sk.cd+'回';
   var dc=g('sdsc');if(dc)dc.textContent=d.sk.dc;
   var ss2=g('sstats');if(ss2)ss2.textContent='Lv.'+c.lv+' HP:'+st.hp+' ATK:'+st.at+' DEF:'+st.df+' 技量:'+st.dex;
   var ov=g('sovl');if(ov)ov.classList.remove('hidden');
 }
 function openMedal(){
-  if(!G.medals){log('sy','勲章がありません');return;}
+  if(!G.medals){log('sy','加護がありません');return;}
   var ml=g('mlist');if(!ml)return;ml.innerHTML='';
   for(var i=0;i<G.party.length;i++){
     var id=G.party[i];var d=cdef(id);var c=G.chars[id];
     var bp=null;for(var j=0;j<G.dun.bp.length;j++){if(G.dun.bp[j].id===id){bp=G.dun.bp[j];break;}}
-    var hp=bp?bp.hp:cst(id).hp;var mhp=bp?bp.mhp:cst(id).hp;var h=Math.floor(mhp*.5);
+    var hp=bp?bp.hp:cst(id).hp;var mhp=bp?bp.mhp:cst(id).hp;
+    var h=Math.floor(mhp*.4);
     var row=mk('div','dr'+(hp<=0?' ded':''));
     row.appendChild(mk('div',null,d?d.em:'?'));
-    var inf=mk('div','drd');inf.appendChild(mk('div','drnm',c.nm));inf.appendChild(mk('div','drsub',hp<=0?'戦闘不能':'HP:'+hp+'/'+mhp));
+    var inf=mk('div','drd');
+    inf.appendChild(mk('div','drnm',c.nm));
+    inf.appendChild(mk('div','drsub',hp<=0?'戦闘不能':'HP:'+hp+'/'+mhp));
     row.appendChild(inf);
-    if(hp>0)row.appendChild(mk('span',null,'+'+h));
+    if(hp>0)row.appendChild(mk('span',null,'HP+'+h+' 異常解除'));
     if(hp>0)(function(cid){row.addEventListener('click',function(){useM(cid);});})(id);
     ml.appendChild(row);
   }
@@ -942,34 +1295,106 @@ function openMedal(){
 function useM(id){
   if(!G.medals)return;
   var bp=null;for(var i=0;i<G.dun.bp.length;i++){if(G.dun.bp[i].id===id){bp=G.dun.bp[i];break;}}
-  if(!bp)return;
-  var h=Math.floor(bp.mhp*.5);bp.hp=Math.min(bp.mhp,bp.hp+h);
-  G.medals--;log('hl',G.chars[id].nm+' HP+'+h);
+  if(!bp||bp.hp<=0)return;
+  var h=Math.floor(bp.mhp*.4);bp.hp=Math.min(bp.mhp,bp.hp+h);
+  // Clear all status ailments on target
+  bp.psn=0;bp.brn=0;
+  G.medals--;
+  log('hl',G.chars[id].nm+' に加護! HP+'+h+' 状態異常解除');
   updH();renderPC();var ov=g('movl');if(ov)ov.classList.add('hidden');save();
 }
 var _eqIt=null,_eqIdx=-1;
 function openEQ(it,idx){
   _eqIt=it;_eqIdx=idx;var iD=gid(it.id2);if(!iD)return;
-  var qi2=qi(it.q);
+  var qi2=qi(it.plus,!!it.anc);
   var t=g('etitle');if(t)t.textContent=iD.name+' を装備';
-  var ed=g('edesc');if(ed)ed.textContent=qi2.n+' '+it.q+'%  +'+it.plus+'  '+ss(iD,it.plus,it.q);
+  var plusStr=it.plus>0?(' +'+it.plus):'';
+  var qstr=it.q+'%';
+  var ed=g('edesc');if(ed)ed.textContent='['+qi2.n+'] 品質'+qstr+plusStr+'  '+ss(iD,it.plus,it.q);
   var cl=g('echars');if(!cl)return;cl.innerHTML='';
+  // Hide comparison initially
+  var cmpEl=g('ecmp');if(cmpEl)cmpEl.style.display='none';
   for(var ci=0;ci<CD.length;ci++){
     var d=CD[ci];if(!G.chars[d.id].ul)continue;
     var eq=G.eq[d.id]||{};var cur=eq[iD.t];
-    var cTxt=cur?(function(){var cd=gid(cur.id2);return cd?cd.name+' +'+cur.plus:'?';}()):'なし';
+    var curTxt=cur?(function(){var cd=gid(cur.id2);var ps=cur.plus>0?(' +'+cur.plus):'';return cd?cd.name+ps:'?';})():'なし';
     var row=mk('div','dr');
     row.appendChild(mk('div',null,d.em));
-    var inf=mk('div','drd');inf.appendChild(mk('div','drnm',d.nm));inf.appendChild(mk('div','drsub','現在: '+cTxt));
+    var inf=mk('div','drd');
+    inf.appendChild(mk('div','drnm',d.nm));
+    // Comparison line
+    var cmpTxt='現在: '+curTxt;
+    if(cur){
+      var curD=gid(cur.id2);
+      if(curD){
+        var newStats=getStatTotals(iD,it.plus,it.q);
+        var oldStats=getStatTotals(curD,cur.plus,cur.q);
+        var diff=[];
+        var allKeys={};
+        Object.keys(newStats).forEach(function(k){allKeys[k]=1;});
+        Object.keys(oldStats).forEach(function(k){allKeys[k]=1;});
+        Object.keys(allKeys).forEach(function(k){
+          var n=newStats[k]||0,o=oldStats[k]||0;
+          if(n!==o)diff.push(k.toUpperCase()+(n>o?'↑':'↓')+(n-o));
+        });
+        if(diff.length)cmpTxt+='  '+diff.join(' ');
+      }
+    }
+    inf.appendChild(mk('div','drsub',cmpTxt));
     row.appendChild(inf);
-    (function(cid,sl,itm){row.addEventListener('click',function(){doEQ(cid,sl,itm);});})(d.id,iD.t,it);
+    (function(cid,sl,itm){
+      row.addEventListener('click',function(){doEQ(cid,sl,itm);});
+      row.addEventListener('mouseenter',function(){showCmp(cid,iD,it);});
+    })(d.id,iD.t,it);
     cl.appendChild(row);
   }
-  var del=mk('div','dr');del.appendChild(mk('div',null,'[x]'));
-  var di=mk('div','drd');di.appendChild(mk('div','drnm','捨てる'));del.appendChild(di);
-  del.addEventListener('click',function(){if(_eqIdx>=0)G.inv.splice(_eqIdx,1);var ov=g('eovl');if(ov)ov.classList.add('hidden');renderInv();save();});
-  cl.appendChild(del);
   var ov=g('eovl');if(ov)ov.classList.remove('hidden');
+}
+function getStatTotals(iD,plus,q){
+  var r={};
+  var ks=Object.keys(iD.stats);
+  for(var i=0;i<ks.length;i++){r[ks[i]]=cs(iD.stats[ks[i]],plus,q);}
+  return r;
+}
+function showCmp(charId,newItemD,newItem){
+  var cmpEl=g('ecmp');if(!cmpEl)return;
+  var eq=G.eq[charId]||{};
+  var cur=eq[newItemD.t];
+  cmpEl.style.display='grid';
+  cmpEl.innerHTML='';
+  // New item column
+  var nc=mk('div','cmp-col');
+  nc.appendChild(mk('div','cmp-title','NEW'));
+  nc.appendChild(mk('div','cmp-nm',newItemD.name+(newItem.plus>0?' +'+newItem.plus:'')));
+  var ns=getStatTotals(newItemD,newItem.plus,newItem.q);
+  var ks=Object.keys(newItemD.stats);
+  for(var i=0;i<ks.length;i++){
+    var k=ks[i];var nv=ns[k]||0;
+    var ov2=0;if(cur){var od=gid(cur.id2);if(od&&od.stats[k])ov2=cs(od.stats[k],cur.plus,cur.q);}
+    var cls='cmp-stat '+(nv>ov2?'cmp-up':nv<ov2?'cmp-dn':'cmp-eq');
+    nc.appendChild(mk('div',cls,k.toUpperCase()+': '+nv));
+  }
+  cmpEl.appendChild(nc);
+  // Current item column
+  var oc=mk('div','cmp-col');
+  oc.appendChild(mk('div','cmp-title','現在'));
+  if(cur){
+    var cd=gid(cur.id2);
+    oc.appendChild(mk('div','cmp-nm',cd?(cd.name+(cur.plus>0?' +'+cur.plus:'')):'なし'));
+    if(cd){
+      var os=getStatTotals(cd,cur.plus,cur.q);
+      var ks2=Object.keys(cd.stats);
+      for(var i=0;i<ks2.length;i++){
+        var k2=ks2[i];var ov3=os[k2]||0;
+        var nv2=ns[k2]||0;
+        var cls2='cmp-stat '+(ov3<nv2?'cmp-dn':ov3>nv2?'cmp-up':'cmp-eq');
+        oc.appendChild(mk('div',cls2,k2.toUpperCase()+': '+ov3));
+      }
+    }
+  } else {
+    oc.appendChild(mk('div','cmp-nm','なし'));
+  }
+  cmpEl.appendChild(oc);
 }
 function doEQ(cid,sl,it){
   var eq=G.eq[cid]||{};
@@ -1006,20 +1431,63 @@ on('sbtn',toggleD);
 on('ta',function(){G.dun.auto=true;var a=g('ta'),m=g('tm');if(a)a.className='tog on';if(m)m.className='tog';});
 on('tm',function(){G.dun.auto=false;var a=g('ta'),m=g('tm');if(m)m.className='tog on';if(a)a.className='tog';});
 on('spdbtn',function(){
-  G.dun.fast=!G.dun.fast;
-  var b=g('spdbtn');if(b){b.textContent=G.dun.fast?'2x':'1x';b.className=G.dun.fast?'tog on':'tog';}
+  var speeds=[1,2,4];
+  var cur=G.dun.speedIdx||0;
+  var next=(cur+1)%speeds.length;
+  G.dun.speedIdx=next;
+  G.dun.speedMul=speeds[next];
+  var b=g('spdbtn');
+  if(b){b.textContent=speeds[next]+'x';b.className=next>0?'tog on':'tog';}
 });
 on('mcancel',function(){var o=g('movl');if(o)o.classList.add('hidden');});
 on('scancel',function(){var o=g('sovl');if(o)o.classList.add('hidden');});
 on('mchip',openMedal);
 on('ecancel',function(){var o=g('eovl');if(o)o.classList.add('hidden');});
+on('ediscard',function(){
+  if(_eqIdx>=0){G.inv.splice(_eqIdx,1);log('sy','装備を捨てた。');}
+  var o=g('eovl');if(o)o.classList.add('hidden');
+  renderInv();save();
+});
 on('bfight',function(){var e=G.dun.pend;G.dun.pend=null;var o=g('encovl');if(o)o.classList.add('hidden');if(e)startB(e);});
-on('bflee',function(){G.dun.pend=null;var o=g('encovl');if(o)o.classList.add('hidden');G.dun.dist=Math.max(0,G.dun.dist-8);G.dun.phase='exploring';log('sy','逃げた!(-8m)');updFloor();});
+on('bflee',function(){
+  G.dun.pend=null;
+  var o=g('encovl');if(o)o.classList.add('hidden');
+  // Progress is NOT lost on flee
+  G.dun.phase='exploring';
+  log('sy','逃げた!');
+  if(!eT)eT=setInterval(eTick,200);
+  updFloor();
+});
+// Mid-floor choice
+on('mid-cont',function(){
+  var o=g('midcovl');if(o)o.classList.add('hidden');
+  G.dun.phase='exploring';
+  if(!eT)eT=setInterval(eTick,200);
+  log('sy','探索続行!');
+});
+on('mid-back',function(){
+  var o=g('midcovl');if(o)o.classList.add('hidden');
+  returnToBase();
+});
+// Floor clear choice
+on('fc-next',function(){
+  var o=g('fcovl');if(o)o.classList.add('hidden');
+  advanceNextFloor();
+});
+on('fc-back',function(){
+  var o=g('fcovl');if(o)o.classList.add('hidden');
+  returnToBase();
+});
+// Bulk discard
+on('bulk-all',function(){
+  if(confirm('全ての装備品を破棄しますか?')){G.inv=[];log('sy','全装備品を破棄した。');renderInv();save();}
+});
+on('bulk-norm',function(){bulkDiscard(1,1);});   // コモンのみ (r=1)
+on('bulk-rare',function(){bulkDiscard(1,2);});   // コモン+アンコモン (r=1,2)
 
 // ── INIT ─────────────────────────────────────────────
-load();updH();updFloor();renderPC();renderB();
-log('sy','深淵の塔へようこそ。');
-log('sy',G.fl+'F / 最高 '+G.hf+'F');
+load();updH();updFloor();renderPC();renderB();updLootCount();
+log('sy','BABEL へようこそ。 塔の頂点を目指せ！');
 setInterval(save,30000);
 setInterval(updH,3000);
 
