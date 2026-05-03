@@ -288,6 +288,18 @@ font-size:9px;color:#e04040;background:rgba(0,0,0,.7);padding:1px 0;pointer-even
 .sort-btn{background:var(–bg3);border:1px solid var(–brd2);border-radius:3px;
 color:var(–tdim);padding:3px 7px;cursor:pointer;font-size:9px;}
 .sort-btn.active{background:rgba(28,48,70,.9);border-color:var(–tel);color:var(–txt);}
+/* CEQ: current equip panel */
+.ceq-cur{background:rgba(20,18,38,.9);border:1px solid var(–brd2);border-radius:5px;
+padding:7px 10px;margin-bottom:8px;flex-shrink:0}
+.ceq-cur-nm{font-size:11px;font-weight:bold;margin-bottom:3px}
+.ceq-cur-stats{display:flex;gap:8px;flex-wrap:wrap}
+.ceq-cur-st{font-size:10px;color:var(–tdim)}
+.ceq-cur-st span{color:var(–txt)}
+/* stat diff tags */
+.sd-up{font-size:10px;color:#4ccc6a;font-weight:bold}
+.sd-dn{font-size:10px;color:#cc5050;font-weight:bold}
+.sd-eq{font-size:10px;color:var(–tdim)}
+.ceq-diff{display:flex;gap:5px;flex-wrap:wrap;margin-top:2px}
 .hidden{display:none!important}
 </style>
 
@@ -429,6 +441,7 @@ color:var(–tdim);padding:3px 7px;cursor:pointer;font-size:9px;}
 <div class="ovl hidden" id="ceqOvl">
   <div class="dlg">
     <h3 id="ceqTitle">装備変更</h3>
+    <div id="ceqCurPanel"></div>
     <div id="ceqList"></div>
     <button class="cbtn" id="ceqCancel">キャンセル</button>
   </div>
@@ -1900,40 +1913,122 @@ function doEQ(cid,sl,it,invIdxOverride){
 
 // ── CHAR EQUIP FROM WARRIOR TAB ───────────────────────
 var _ceqCharId=null, _ceqSlot=null;
+
+// statキー表示名
+var STAT_LABEL={atk:'ATK',def:'DEF',hp:'HP'};
+
+// 装備アイテムの実効ステータスをオブジェクトで返す
+function itemStats(it){
+  if(!it)return{};
+  var d=gid(it.id2);if(!d)return{};
+  var r={};
+  var ks=Object.keys(d.stats);
+  for(var i=0;i<ks.length;i++)r[ks[i]]=cs(d.stats[ks[i]],it.plus,it.q);
+  return r;
+}
+
+// diff表示用文字列を生成（▲up / ▼dn / → same）
+function buildDiffEl(newSt, curSt){
+  var allKeys={};
+  var ks1=Object.keys(newSt);var ks2=Object.keys(curSt);
+  for(var i=0;i<ks1.length;i++)allKeys[ks1[i]]=1;
+  for(var i=0;i<ks2.length;i++)allKeys[ks2[i]]=1;
+  var wrap=mk('div','ceq-diff');
+  var keys=Object.keys(allKeys);
+  for(var i=0;i<keys.length;i++){
+    var k=keys[i];
+    var nv=newSt[k]||0;var ov=curSt[k]||0;
+    var diff=nv-ov;
+    var lbl=STAT_LABEL[k]||k.toUpperCase();
+    var el;
+    if(diff>0){
+      el=mk('span','sd-up','▲'+lbl+' +'+diff);
+    } else if(diff<0){
+      el=mk('span','sd-dn','▼'+lbl+' '+diff);
+    } else {
+      el=mk('span','sd-eq','→'+lbl+' '+nv);
+    }
+    wrap.appendChild(el);
+  }
+  return wrap;
+}
+
 function openCharEqPicker(charId, slot){
   _ceqCharId=charId; _ceqSlot=slot;
+  var slotIcon=slot==='weapon'?'⚔':slot==='armor'?'🛡':'💍';
   var slotName=slot==='weapon'?'武器':slot==='armor'?'防具':'アクセサリー';
-  var t=g('ceqTitle');if(t)t.textContent=G.chars[charId].nm+' の'+slotName+'変更';
+  var t=g('ceqTitle');if(t)t.textContent=slotIcon+' '+G.chars[charId].nm+' の'+slotName;
+
+  // ── 現在装備パネル ──────────────────────────────────
+  var panel=g('ceqCurPanel');
+  if(panel){
+    panel.innerHTML='';
+    var eq=G.eq[charId]||{};
+    var cur=eq[slot];
+    var curPanel=mk('div','ceq-cur');
+    if(cur){
+      var curD=gid(cur.id2);
+      var curQi=qi(cur.plus,!!cur.anc);
+      var plusStr=cur.plus>0?' +'+cur.plus:'';
+      var nmEl=mk('div','ceq-cur-nm '+curQi.c,(curD?curD.name:'?')+plusStr+' ['+curQi.n+'] 品質'+cur.q+'%');
+      curPanel.appendChild(nmEl);
+      var curSt=itemStats(cur);
+      var statsRow=mk('div','ceq-cur-stats');
+      var stKeys=Object.keys(curSt);
+      for(var si=0;si<stKeys.length;si++){
+        var sk2=stKeys[si];
+        var sv2=mk('div','ceq-cur-st');
+        sv2.appendChild(mk('span',null,(STAT_LABEL[sk2]||sk2.toUpperCase())+': '));
+        sv2.appendChild(mk('span',null,''+curSt[sk2]));
+        statsRow.appendChild(sv2);
+      }
+      curPanel.appendChild(statsRow);
+    } else {
+      curPanel.appendChild(mk('div','ceq-cur-nm',slotName+'未装備'));
+      curPanel.appendChild(mk('div','ceq-cur-stats',mk('span','ceq-cur-st','装備するとステータスが上昇します')));
+    }
+    panel.appendChild(curPanel);
+  }
+
   var list=g('ceqList');if(!list)return;
   list.innerHTML='';
-  // Current equip row
-  var eq=G.eq[charId]||{};
-  var cur=eq[slot];
-  var curRow=mk('div','dr');
-  curRow.appendChild(mk('div',null,'🔲'));
-  var ci2=mk('div','drd');
-  ci2.appendChild(mk('div','drnm','外す'));
-  ci2.appendChild(mk('div','drsub',cur?(function(){var d=gid(cur.id2);return d?d.name:'?';})():'装備なし'));
-  curRow.appendChild(ci2);
-  curRow.addEventListener('click',function(){
-    var eq2=G.eq[_ceqCharId]||{};
-    if(eq2[_ceqSlot]){G.inv.push(eq2[_ceqSlot]);}
-    eq2[_ceqSlot]=null;G.eq[_ceqCharId]=eq2;
-    if(G.dun.active){
-      var bp=null;for(var i=0;i<G.dun.bp.length;i++){if(G.dun.bp[i].id===_ceqCharId){bp=G.dun.bp[i];break;}}
-      if(bp){var st2=cst(_ceqCharId);bp.mhp=st2.hp;bp.at=st2.at;bp.df=st2.df;}
-    }
-    var o=g('ceqOvl');if(o)o.classList.add('hidden');
-    renderChars();renderInv();renderPC();save();
-  });
-  list.appendChild(curRow);
-  // Items from inventory matching slot type
+
+  // ── 「外す」行 ───────────────────────────────────────
+  if(cur){
+    var curRow=mk('div','dr');
+    curRow.appendChild(mk('div',null,'🔲'));
+    var ci2=mk('div','drd');
+    ci2.appendChild(mk('div','drnm','外す'));
+    // 外すと失われるステータス表示
+    var lostSt=itemStats(cur);
+    var lostKeys=Object.keys(lostSt);
+    var lostTxt=lostKeys.map(function(k){return (STAT_LABEL[k]||k.toUpperCase())+' -'+lostSt[k];}).join('  ');
+    ci2.appendChild(mk('div','drsub sd-dn',lostTxt||''));
+    curRow.appendChild(ci2);
+    curRow.addEventListener('click',function(){
+      var eq2=G.eq[_ceqCharId]||{};
+      if(eq2[_ceqSlot])G.inv.push(eq2[_ceqSlot]);
+      eq2[_ceqSlot]=null;G.eq[_ceqCharId]=eq2;
+      if(G.dun.active){
+        var bp=null;for(var i=0;i<G.dun.bp.length;i++){if(G.dun.bp[i].id===_ceqCharId){bp=G.dun.bp[i];break;}}
+        if(bp){var st2=cst(_ceqCharId);bp.mhp=st2.hp;bp.at=st2.at;bp.df=st2.df;}
+      }
+      var o=g('ceqOvl');if(o)o.classList.add('hidden');
+      renderChars();renderInv();renderPC();save();
+    });
+    list.appendChild(curRow);
+  }
+
+  // ── インベントリから候補 ─────────────────────────────
   var matches=[];
   for(var i=0;i<G.inv.length;i++){
     var it=G.inv[i];var d=gid(it.id2);
     if(d&&d.t===slot)matches.push({it:it,d:d,i:i});
   }
-  matches.sort(function(a,b){return (b.it.q*RARITY_MULT[b.it.plus])-(a.it.q*RARITY_MULT[a.it.plus]);});
+  matches.sort(function(a,b){
+    return (b.it.q*RARITY_MULT[b.it.plus])-(a.it.q*RARITY_MULT[a.it.plus]);
+  });
+
   if(!matches.length){
     list.appendChild(mk('div','em2','該当装備なし'));
   }
@@ -1943,11 +2038,31 @@ function openCharEqPicker(charId, slot){
     var row=mk('div','dr');
     row.appendChild(mk('div',null,m.d.em));
     var inf=mk('div','drd');
-    var plusStr=m.it.plus>0?' +'+m.it.plus:'';
-    inf.appendChild(mk('div','drnm '+qi2.c,m.d.name+plusStr));
-    inf.appendChild(mk('div','drsub',qi2.n+' 品質'+m.it.q+'%  '+ss(m.d,m.it.plus,m.it.q)));
+    var ps=m.it.plus>0?' +'+m.it.plus:'';
+    inf.appendChild(mk('div','drnm '+qi2.c,m.d.name+ps+'  ['+qi2.n+'] 品質'+m.it.q+'%'));
+
+    // ステータス実値
+    var newSt=itemStats(m.it);
+    var stTxt=Object.keys(newSt).map(function(k){return (STAT_LABEL[k]||k.toUpperCase())+' '+newSt[k];}).join('  ');
+    inf.appendChild(mk('div','drsub',stTxt));
+
+    // diff表示（装備中がある場合のみ）
+    if(cur){
+      var curSt2=itemStats(cur);
+      inf.appendChild(buildDiffEl(newSt,curSt2));
+    } else {
+      // 未装備→全部UP扱い
+      var upWrap=mk('div','ceq-diff');
+      var upKeys=Object.keys(newSt);
+      for(var ui=0;ui<upKeys.length;ui++){
+        var uk=upKeys[ui];
+        upWrap.appendChild(mk('span','sd-up','▲'+(STAT_LABEL[uk]||uk.toUpperCase())+' +'+newSt[uk]));
+      }
+      inf.appendChild(upWrap);
+    }
+
     row.appendChild(inf);
-    if(m.it.locked){var lk=mk('span',null,' 🔒');row.appendChild(lk);}
+    if(m.it.locked){row.appendChild(mk('span',null,' 🔒'));}
     (function(it2,oi){row.addEventListener('click',function(){
       doEQ(_ceqCharId,_ceqSlot,it2,oi);
       var o=g('ceqOvl');if(o)o.classList.add('hidden');
