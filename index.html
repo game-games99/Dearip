@@ -2214,8 +2214,7 @@ on('dropclose',function(){var o=g('dropovl');if(o)o.classList.add('hidden');});
 on('ediscard',function(){
   if(_eqIdx>=0){G.inv.splice(_eqIdx,1);log('sy','装備を捨てた。');}
   var o=g('eovl');if(o)o.classList.add('hidden');
-  renderInv();save();
-});
+  renderInv();save();});
 on('bfight',function(){var e=G.dun.pend;G.dun.pend=null;var o=g('encovl');if(o)o.classList.add('hidden');if(e)startB(e);});
 on('bflee',function(){
   G.dun.pend=null;
