@@ -300,6 +300,19 @@ padding:7px 10px;margin-bottom:8px;flex-shrink:0}
 .sd-dn{font-size:10px;color:#cc5050;font-weight:bold}
 .sd-eq{font-size:10px;color:var(–tdim)}
 .ceq-diff{display:flex;gap:5px;flex-wrap:wrap;margin-top:2px}
+/* Leader skill */
+.ldr-badge{position:absolute;top:3px;right:3px;background:#b8920a;border-radius:3px;
+font-size:8px;color:#fff;padding:1px 4px;font-weight:bold;pointer-events:none}
+.ls-box{background:rgba(30,24,55,.95);border:1px solid var(–gdim);border-radius:6px;
+padding:7px 10px;margin-bottom:7px;flex-shrink:0}
+.ls-nm{font-size:11px;color:var(–gold);font-weight:bold;margin-bottom:1px}
+.ls-dc{font-size:10px;color:var(–tdim)}
+.ls-none{font-size:10px;color:var(–tdim);text-align:center;padding:6px 0}
+/* Leader row in char list */
+.cc.leader{border-color:var(–gold)!important;box-shadow:0 0 8px rgba(200,162,39,.25)}
+.ldr-set-btn{background:rgba(30,24,55,.9);border:1px solid var(–gdim);border-radius:3px;
+font-size:9px;color:var(–gold);padding:2px 7px;cursor:pointer;margin-top:4px;white-space:nowrap}
+.ldr-set-btn.active{background:#3a2a08;border-color:var(–gold);color:#ffe08a}
 .hidden{display:none!important}
 </style>
 
@@ -375,6 +388,7 @@ padding:7px 10px;margin-bottom:8px;flex-shrink:0}
       </div>
       <div class="blog" id="blog"></div>
       <div class="psec" id="psec"></div>
+      <div id="ls-panel" style="flex-shrink:0;padding:4px 8px 0"></div>
       <div class="ctrl">
         <div class="gd">Best:<span id="best">1F</span></div>
         <div id="loot-cnt" class="loot-bar hidden"></div>
@@ -826,7 +840,51 @@ var CD=[
     ex:function(a,e,al){var d=Math.floor(a.at*3.5);e.hp=Math.max(0,e.hp-d);return{tp:'sk',tx:a.nm+'の[零点消滅]! '+d+'!'};}}},
 ];
 
-// ── STATE ─────────────────────────────────────────────
+// ── LEADER SKILLS ─────────────────────────────────────
+// 各キャラ固有のリーダースキル。被りなし・個性を活かした設計
+// apply(bp配列) → bp配列のステータスを直接書き換える
+var LS={
+  gladius:{nm:'鉄壁の盾',      dc:'全員DEF+25%',
+    apply:function(bp){for(var i=0;i<bp.length;i++)bp[i].df=Math.floor(bp[i].df*1.25);}},
+  valeria:{nm:'迅雷の鼓舞',    dc:'全員素早さ+20%',
+    apply:function(bp){for(var i=0;i<bp.length;i++){bp[i].dex=Math.floor(bp[i].dex*1.20);bp[i].dexBase=Math.floor(bp[i].dexBase*1.20);}}},
+  bald:   {nm:'狂戦士の血',    dc:'前衛ATK+30%・DEF-15%',
+    apply:function(bp){for(var i=0;i<bp.length;i++){if(bp[i].row==='f'){bp[i].at=Math.floor(bp[i].at*1.30);bp[i].df=Math.floor(bp[i].df*0.85);}}}},
+  serene: {nm:'月刃の舞踏',    dc:'全員クリティカル率+15%(技量+150)',
+    apply:function(bp){for(var i=0;i<bp.length;i++){bp[i].dex+=150;bp[i].dexBase+=150;}}},
+  reith:  {nm:'影の統率',      dc:'後衛ATK+35%',
+    apply:function(bp){for(var i=0;i<bp.length;i++){if(bp[i].row==='b')bp[i].at=Math.floor(bp[i].at*1.35);}}},
+  ryuka:  {nm:'森の狙撃手',    dc:'全員HP+20%',
+    apply:function(bp){for(var i=0;i<bp.length;i++){var add=Math.floor(bp[i].mhp*0.20);bp[i].mhp+=add;bp[i].hp=Math.min(bp[i].mhp,bp[i].hp+add);}}},
+  albert: {nm:'残像の連携',    dc:'全員ATK+12%・素早さ+8%',
+    apply:function(bp){for(var i=0;i<bp.length;i++){bp[i].at=Math.floor(bp[i].at*1.12);bp[i].dex=Math.floor(bp[i].dex*1.08);bp[i].dexBase=Math.floor(bp[i].dexBase*1.08);}}},
+  kaede:  {nm:'紅蓮の激励',    dc:'前衛HP+15%・ATK+15%',
+    apply:function(bp){for(var i=0;i<bp.length;i++){if(bp[i].row==='f'){var add=Math.floor(bp[i].mhp*0.15);bp[i].mhp+=add;bp[i].hp=Math.min(bp[i].mhp,bp[i].hp+add);bp[i].at=Math.floor(bp[i].at*1.15);}}}},
+  zeek:   {nm:'虚空の増幅',    dc:'後衛ATK+20%・HP-10%',
+    apply:function(bp){for(var i=0;i<bp.length;i++){if(bp[i].row==='b'){bp[i].at=Math.floor(bp[i].at*1.20);var red=Math.floor(bp[i].mhp*0.10);bp[i].mhp=Math.max(1,bp[i].mhp-red);bp[i].hp=Math.min(bp[i].mhp,bp[i].hp);}}}},
+  elia:   {nm:'星の加護',      dc:'全員最大HP+25%',
+    apply:function(bp){for(var i=0;i<bp.length;i++){var add=Math.floor(bp[i].mhp*0.25);bp[i].mhp+=add;bp[i].hp=Math.min(bp[i].mhp,bp[i].hp+add);}}},
+  raoul:  {nm:'禁忌の解放',    dc:'全員ATK+20%・HP-15%',
+    apply:function(bp){for(var i=0;i<bp.length;i++){bp[i].at=Math.floor(bp[i].at*1.20);var red=Math.floor(bp[i].mhp*0.15);bp[i].mhp=Math.max(1,bp[i].mhp-red);bp[i].hp=Math.min(bp[i].mhp,bp[i].hp);}}},
+  mira:   {nm:'幻晶の守護',    dc:'全員DEF+15%・最大HP+15%',
+    apply:function(bp){for(var i=0;i<bp.length;i++){bp[i].df=Math.floor(bp[i].df*1.15);var add=Math.floor(bp[i].mhp*0.15);bp[i].mhp+=add;bp[i].hp=Math.min(bp[i].mhp,bp[i].hp+add);}}},
+  kiriga: {nm:'無音の序列',    dc:'素早さ最上位キャラATK+40%',
+    apply:function(bp){if(!bp.length)return;var top=bp[0];for(var i=1;i<bp.length;i++){if(bp[i].dex>top.dex)top=bp[i];}top.at=Math.floor(top.at*1.40);}},
+  lilith: {nm:'毒の伝染',      dc:'全員DEF+10%・素早さ+12%',
+    apply:function(bp){for(var i=0;i<bp.length;i++){bp[i].df=Math.floor(bp[i].df*1.10);bp[i].dex=Math.floor(bp[i].dex*1.12);bp[i].dexBase=Math.floor(bp[i].dexBase*1.12);}}},
+  zein:   {nm:'夜の王権',      dc:'HP低いほどATK上昇(最大+30%)',
+    apply:function(bp){for(var i=0;i<bp.length;i++){var r=bp[i].hp/Math.max(1,bp[i].mhp);var bonus=1+0.30*(1-r);bp[i].at=Math.floor(bp[i].at*bonus);}}},
+  izana:  {nm:'血盟の絆',      dc:'全員ATK+15%・HP回復率+1(毎戦後)',
+    apply:function(bp){for(var i=0;i<bp.length;i++)bp[i].at=Math.floor(bp[i].at*1.15);}},
+  gil:    {nm:'重装の陣',      dc:'全員DEF+20%・素早さ-10%',
+    apply:function(bp){for(var i=0;i<bp.length;i++){bp[i].df=Math.floor(bp[i].df*1.20);bp[i].dex=Math.floor(bp[i].dex*0.90);bp[i].dexBase=Math.floor(bp[i].dexBase*0.90);}}},
+  chrono: {nm:'時の加速陣',    dc:'全員素早さ+30%',
+    apply:function(bp){for(var i=0;i<bp.length;i++){bp[i].dex=Math.floor(bp[i].dex*1.30);bp[i].dexBase=Math.floor(bp[i].dexBase*1.30);}}},
+  fiona:  {nm:'竜の覇気',      dc:'HP最大のキャラATK+50%',
+    apply:function(bp){if(!bp.length)return;var top=bp[0];for(var i=1;i<bp.length;i++){if(bp[i].mhp>top.mhp)top=bp[i];}top.at=Math.floor(top.at*1.50);}},
+  abel:   {nm:'零界の侵食',    dc:'全員ATK+18%・DEF-10%',
+    apply:function(bp){for(var i=0;i<bp.length;i++){bp[i].at=Math.floor(bp[i].at*1.18);bp[i].df=Math.floor(bp[i].df*0.90);}}}
+};
 // Level cap: 40. EXP curve steep.
 var LV_CAP=40;
 function expN(lv){
@@ -834,7 +892,7 @@ function expN(lv){
   return Math.floor(120*Math.pow(lv,2.2));
 }
 var G={
-  gold:200,medals:5,cf:0,hf:1,fl:1,
+  gold:200,medals:5,cf:0,hf:1,fl:1,leader:null,
   party:[],chars:{},eq:{},inv:[],
   dun:{
     active:false,auto:true,fast:false,dist:0,phase:'idle',enemy:null,pend:null,bp:[],
@@ -880,7 +938,7 @@ function initNewGame(){
 }
 function save(){
   try{
-    var s={gold:G.gold,medals:G.medals,cf:G.cf,hf:G.hf,fl:G.fl,
+    var s={gold:G.gold,medals:G.medals,cf:G.cf,hf:G.hf,fl:G.fl,leader:G.leader,
       party:G.party,inv:G.inv,eq:G.eq,chars:{}};
     for(var id in G.chars){var c=G.chars[id];s.chars[id]={lv:c.lv,exp:c.exp,en:c.en,ul:c.ul};}
     localStorage.setItem('dt6',JSON.stringify(s));
@@ -892,6 +950,7 @@ function load(){
     if(!raw){initNewGame();return;}
     var s=JSON.parse(raw);
     G.gold=s.gold||200;G.medals=s.medals||5;G.cf=s.cf||0;G.hf=s.hf||1;G.fl=s.fl||1;
+    G.leader=s.leader||null;
     var vi={};for(var i=0;i<CD.length;i++)vi[CD[i].id]=true;
     G.party=(s.party||[]).map(function(id){return (id&&vi[id])?id:null;});
     // 末尾のnullを除去
@@ -987,6 +1046,10 @@ function initBP(fh){
       ch:Math.random()*30,sk:c.sk,skCd:0,row:i<3?'f':'b'});
   }
   G.dun.bp=nb;
+  // リーダースキル適用
+  if(G.leader&&LS[G.leader]&&G.party.indexOf(G.leader)>=0){
+    LS[G.leader].apply(G.dun.bp);
+  }
 }
 function toggleD(){
   if(G.dun.active){
@@ -1104,16 +1167,20 @@ function eTick(){
       return;
     }
     var tr=getET(G.fl);var hr=false;for(var i=0;i<tr.pool.length;i++){if(tr.pool[i].rare){hr=true;break;}}
-    // Named elite chance: 12%
+    var partyCount=G.party.filter(Boolean).length;
+    var eliteOk=(G.fl>=4&&partyCount>=4);
+    // Named elite chance: 12%（条件を満たす場合のみ）
     var tp='normal';
-    if(Math.random()<0.12)tp='named_elite';
+    if(eliteOk&&Math.random()<0.12)tp='named_elite';
     else if(hr&&Math.random()<.01)tp='rare'; // 1%
     trigEnc(tp);return;
   }
   if(G.dun.dist>=cfg.dist){
     G.dun.dist=cfg.dist;updFloor();
-    log('sy',cfg.boss?'大ボス出現!':'エリート出現!');
-    trigEnc(cfg.boss?'boss':'elite');
+    var partyCount2=G.party.filter(Boolean).length;
+    var bossOrElite=(cfg.boss||partyCount2>=4&&G.fl>=4);
+    log('sy',cfg.boss?'大ボス出現!':(bossOrElite?'エリート出現!':'強敵出現!'));
+    trigEnc(cfg.boss?'boss':(bossOrElite?'elite':'named_elite'));
   }
 }
 function trigEnc(tp){
@@ -1592,7 +1659,25 @@ function onPartyCardTap(idx){
     renderPC();save();
   }
 }
-var _charSort='join';
+function updLeaderPanel(){
+  var panel=g('ls-panel');if(!panel)return;
+  panel.innerHTML='';
+  if(G.leader&&LS[G.leader]&&G.party.indexOf(G.leader)>=0){
+    var ls=LS[G.leader];var lnm=G.chars[G.leader]?G.chars[G.leader].nm:'?';
+    var box=mk('div','ls-box');
+    box.appendChild(mk('div','ls-nm','★ リーダー: '+lnm+'「'+ls.nm+'」'));
+    box.appendChild(mk('div','ls-dc',ls.dc));
+    panel.appendChild(box);
+  } else {
+    panel.appendChild(mk('div','ls-none','リーダー未設定 — 騎士タブで設定'));
+  }
+}
+function setLeader(id){
+  G.leader=(G.leader===id)?null:id; // 再タップで解除
+  updLeaderPanel();
+  renderChars();
+  save();
+}
 function renderChars(){
   // ソートバーの表示制御
   var sortBar=g('vc')&&g('vc').querySelector('.sort-bar-wrap');
@@ -1619,8 +1704,9 @@ function renderChars(){
     var row=idx>=0&&idx<3?'fr':idx>=3&&idx<6?'bk2':null;
     var st=cst(d.id);var ep=c.en>0?c.exp/c.en*100:0;
     var eq=G.eq[d.id]||{};
-    var cardCls='cc'+(row?' '+row:'');
+    var cardCls='cc'+(row?' '+row:'')+(d.id===G.leader?' leader':'');
     var card=mk('div',cardCls);
+    if(d.id===G.leader)card.appendChild(mk('div','ldr-badge','★ LEADER'));
     card.appendChild(mk('div','cav',d.em));
     var det=mk('div','cdet');
     var nr=mk('div','cnmr');nr.appendChild(mk('span','cnm',c.nm));nr.appendChild(mk('span','ccls',d.cls));det.appendChild(nr);
@@ -1631,6 +1717,17 @@ function renderChars(){
     for(var si=0;si<sti.length;si++){var sv2=mk('div','st',sti[si][0]+' ');sv2.appendChild(mk('span',null,''+sti[si][1]));sv.appendChild(sv2);}
     det.appendChild(sv);
     det.appendChild(mk('div','csk','['+d.sk.nm+'] '+Math.floor(d.sk.rt*100)+'% CT:'+d.sk.cd+' - '+d.sk.dc));
+    // リーダースキル表示 + 設定ボタン
+    var ls=LS[d.id];
+    if(ls){
+      var lsRow=mk('div',null);
+      lsRow.appendChild(mk('div','csk','🌟['+ls.nm+'] '+ls.dc));
+      var isLdr=(G.leader===d.id);
+      var ldrBtn=mk('button','ldr-set-btn'+(isLdr?' active':''),isLdr?'★ リーダー解除':'☆ リーダーに設定');
+      (function(cid){ldrBtn.addEventListener('click',function(ev){ev.stopPropagation();setLeader(cid);});})(d.id);
+      lsRow.appendChild(ldrBtn);
+      det.appendChild(lsRow);
+    }
     var eqd=mk('div','ceq');
     var sl2=['weapon','armor','ring'];
     var slIcons=['⚔','🛡','💍'];
@@ -2082,6 +2179,7 @@ function sv(v){
   }
   if(v==='vc')renderChars();
   if(v==='vi')renderInv();
+  if(v==='vb')updLeaderPanel();
 }
 
 // ── BIND ─────────────────────────────────────────────
@@ -2174,7 +2272,7 @@ on('bulk-sell',function(){
 });
 
 // ── INIT ─────────────────────────────────────────────
-load();updH();updFloor();renderPC();renderB();updLootCount();
+load();updH();updFloor();renderPC();renderB();updLootCount();updLeaderPanel();
 log('sy','BABEL へようこそ。 塔の頂点を目指せ！');
 setInterval(save,30000);
 setInterval(updH,3000);
