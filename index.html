@@ -123,17 +123,23 @@ nav{background:#0a0916;border-top:1px solid var(--brd2);display:flex;flex-shrink
 .rlbl{font-size:8px;color:var(--tdim);letter-spacing:.1em;padding:1px 3px}
 .prow{display:flex;gap:3px}
 .pc{flex:1;position:relative;border-radius:5px;border:1px solid #1c2e50;
-  height:110px;background:linear-gradient(180deg,#0f1c36,#0a1428);
-  display:flex;flex-direction:column;align-items:center;padding:4px 3px}
+  height:130px;background:linear-gradient(180deg,#0f1c36,#0a1428);
+  display:flex;flex-direction:column;align-items:center;padding:5px 3px 3px}
 .pc.dead{opacity:.35;filter:grayscale(.8)}
 .pc.sel{border-color:#c9a227;box-shadow:0 0 8px rgba(201,162,39,.5);}
-.pc.bk{border-color:#14204a;height:100px;background:linear-gradient(180deg,#101830,#080e22)}
-.pc-nm{font-size:8px;color:#aab8d8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-  width:100%;text-align:center;margin-bottom:2px}
-.pc-em{font-size:28px;flex:1;display:flex;align-items:center;justify-content:center;line-height:1}
-.pc-qb{position:absolute;top:2px;right:2px;background:rgba(0,0,0,.55);
-  border:1px solid #243050;border-radius:3px;color:#4a5870;font-size:8px;
-  padding:0 3px;cursor:pointer;line-height:15px}
+.pc.bk{border-color:#14204a;height:120px;background:linear-gradient(180deg,#101830,#080e22)}
+.pc-nm{font-size:10.5px;font-weight:bold;color:#d0dff8;white-space:nowrap;overflow:hidden;
+  text-overflow:ellipsis;width:100%;text-align:center;margin-bottom:1px}
+.pc-cls{font-size:8px;color:#6880a0;text-align:center;margin-bottom:3px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%}
+.pc-buffs{display:flex;gap:2px;flex-wrap:wrap;justify-content:center;
+  min-height:14px;margin-bottom:3px;width:100%}
+.pc-buff{font-size:8px;background:rgba(20,40,70,.9);border-radius:2px;
+  padding:0 3px;line-height:14px;white-space:nowrap}
+.pc-buff.up{color:#50d080}   /* バフ */
+.pc-buff.dn{color:#e05050}   /* デバフ */
+.pc-buff.st{color:#e0c040}   /* 状態異常 */
+.pc-buff.ld{color:#c9a227}   /* リーダー効果 */
 .pc-ht{font-size:7.5px;color:#8898b8;text-align:center;margin-bottom:2px}
 .pc-hw{width:100%;height:5px;background:rgba(8,12,24,.7);border-radius:2px;overflow:hidden}
 .pc-hb{height:100%;background:linear-gradient(90deg,#1e5428,#2e8040);transition:width .3s}
@@ -141,11 +147,11 @@ nav{background:#0a0916;border-top:1px solid var(--brd2);display:flex;flex-shrink
 .pc-hb.cr{background:linear-gradient(90deg,#701818,#a82828)}
 .pc-do{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
   font-size:22px;background:rgba(0,0,0,.5);border-radius:5px}
-.pc-ct{font-size:7px;color:#6880a0;text-align:center;height:11px;line-height:11px;}
-.pslot{flex:1;height:110px;background:rgba(255,255,255,.02);
+.pc-ct{font-size:7px;color:#6880a0;text-align:center;height:11px;line-height:11px;margin-top:1px}
+.pslot{flex:1;height:130px;background:rgba(255,255,255,.02);
   border:1px dashed #1a2840;border-radius:5px;
   display:flex;align-items:center;justify-content:center}
-.pslot.bk{height:100px}
+.pslot.bk{height:120px}
 .pslot-t{font-size:9px;color:var(--tdim);text-align:center;line-height:1.6}
 /* CONTROLS */
 .ctrl{flex-shrink:0;display:flex;align-items:center;gap:5px;
@@ -841,49 +847,89 @@ var CD=[
 ];
 
 // ── LEADER SKILLS ─────────────────────────────────────
-// 各キャラ固有のリーダースキル。被りなし・個性を活かした設計
-// apply(bp配列) → bp配列のステータスを直接書き換える
+// 全20スキル：マイナス効果なし、必ず複数キャラが恩恵を受ける、軸完全非重複
+// bp拡張フィールド: dmgReduce evade critMul defPen skRtBonus
 var LS={
-  gladius:{nm:'鉄壁の盾',      dc:'全員DEF+25%',
-    apply:function(bp){for(var i=0;i<bp.length;i++)bp[i].df=Math.floor(bp[i].df*1.25);}},
-  valeria:{nm:'迅雷の鼓舞',    dc:'全員素早さ+20%',
-    apply:function(bp){for(var i=0;i<bp.length;i++){bp[i].dex=Math.floor(bp[i].dex*1.20);bp[i].dexBase=Math.floor(bp[i].dexBase*1.20);}}},
-  bald:   {nm:'狂戦士の血',    dc:'前衛ATK+30%・DEF-15%',
-    apply:function(bp){for(var i=0;i<bp.length;i++){if(bp[i].row==='f'){bp[i].at=Math.floor(bp[i].at*1.30);bp[i].df=Math.floor(bp[i].df*0.85);}}}},
-  serene: {nm:'月刃の舞踏',    dc:'全員クリティカル率+15%(技量+150)',
-    apply:function(bp){for(var i=0;i<bp.length;i++){bp[i].dex+=150;bp[i].dexBase+=150;}}},
-  reith:  {nm:'影の統率',      dc:'後衛ATK+35%',
-    apply:function(bp){for(var i=0;i<bp.length;i++){if(bp[i].row==='b')bp[i].at=Math.floor(bp[i].at*1.35);}}},
-  ryuka:  {nm:'森の狙撃手',    dc:'全員HP+20%',
-    apply:function(bp){for(var i=0;i<bp.length;i++){var add=Math.floor(bp[i].mhp*0.20);bp[i].mhp+=add;bp[i].hp=Math.min(bp[i].mhp,bp[i].hp+add);}}},
-  albert: {nm:'残像の連携',    dc:'全員ATK+12%・素早さ+8%',
-    apply:function(bp){for(var i=0;i<bp.length;i++){bp[i].at=Math.floor(bp[i].at*1.12);bp[i].dex=Math.floor(bp[i].dex*1.08);bp[i].dexBase=Math.floor(bp[i].dexBase*1.08);}}},
-  kaede:  {nm:'紅蓮の激励',    dc:'前衛HP+15%・ATK+15%',
-    apply:function(bp){for(var i=0;i<bp.length;i++){if(bp[i].row==='f'){var add=Math.floor(bp[i].mhp*0.15);bp[i].mhp+=add;bp[i].hp=Math.min(bp[i].mhp,bp[i].hp+add);bp[i].at=Math.floor(bp[i].at*1.15);}}}},
-  zeek:   {nm:'虚空の増幅',    dc:'後衛ATK+20%・HP-10%',
-    apply:function(bp){for(var i=0;i<bp.length;i++){if(bp[i].row==='b'){bp[i].at=Math.floor(bp[i].at*1.20);var red=Math.floor(bp[i].mhp*0.10);bp[i].mhp=Math.max(1,bp[i].mhp-red);bp[i].hp=Math.min(bp[i].mhp,bp[i].hp);}}}},
-  elia:   {nm:'星の加護',      dc:'全員最大HP+25%',
-    apply:function(bp){for(var i=0;i<bp.length;i++){var add=Math.floor(bp[i].mhp*0.25);bp[i].mhp+=add;bp[i].hp=Math.min(bp[i].mhp,bp[i].hp+add);}}},
-  raoul:  {nm:'禁忌の解放',    dc:'全員ATK+20%・HP-15%',
-    apply:function(bp){for(var i=0;i<bp.length;i++){bp[i].at=Math.floor(bp[i].at*1.20);var red=Math.floor(bp[i].mhp*0.15);bp[i].mhp=Math.max(1,bp[i].mhp-red);bp[i].hp=Math.min(bp[i].mhp,bp[i].hp);}}},
-  mira:   {nm:'幻晶の守護',    dc:'全員DEF+15%・最大HP+15%',
-    apply:function(bp){for(var i=0;i<bp.length;i++){bp[i].df=Math.floor(bp[i].df*1.15);var add=Math.floor(bp[i].mhp*0.15);bp[i].mhp+=add;bp[i].hp=Math.min(bp[i].mhp,bp[i].hp+add);}}},
-  kiriga: {nm:'無音の序列',    dc:'素早さ最上位キャラATK+40%',
-    apply:function(bp){if(!bp.length)return;var top=bp[0];for(var i=1;i<bp.length;i++){if(bp[i].dex>top.dex)top=bp[i];}top.at=Math.floor(top.at*1.40);}},
-  lilith: {nm:'毒の伝染',      dc:'全員DEF+10%・素早さ+12%',
-    apply:function(bp){for(var i=0;i<bp.length;i++){bp[i].df=Math.floor(bp[i].df*1.10);bp[i].dex=Math.floor(bp[i].dex*1.12);bp[i].dexBase=Math.floor(bp[i].dexBase*1.12);}}},
-  zein:   {nm:'夜の王権',      dc:'HP低いほどATK上昇(最大+30%)',
-    apply:function(bp){for(var i=0;i<bp.length;i++){var r=bp[i].hp/Math.max(1,bp[i].mhp);var bonus=1+0.30*(1-r);bp[i].at=Math.floor(bp[i].at*bonus);}}},
-  izana:  {nm:'血盟の絆',      dc:'全員ATK+15%・HP回復率+1(毎戦後)',
-    apply:function(bp){for(var i=0;i<bp.length;i++)bp[i].at=Math.floor(bp[i].at*1.15);}},
-  gil:    {nm:'重装の陣',      dc:'全員DEF+20%・素早さ-10%',
-    apply:function(bp){for(var i=0;i<bp.length;i++){bp[i].df=Math.floor(bp[i].df*1.20);bp[i].dex=Math.floor(bp[i].dex*0.90);bp[i].dexBase=Math.floor(bp[i].dexBase*0.90);}}},
-  chrono: {nm:'時の加速陣',    dc:'全員素早さ+30%',
-    apply:function(bp){for(var i=0;i<bp.length;i++){bp[i].dex=Math.floor(bp[i].dex*1.30);bp[i].dexBase=Math.floor(bp[i].dexBase*1.30);}}},
-  fiona:  {nm:'竜の覇気',      dc:'HP最大のキャラATK+50%',
-    apply:function(bp){if(!bp.length)return;var top=bp[0];for(var i=1;i<bp.length;i++){if(bp[i].mhp>top.mhp)top=bp[i];}top.at=Math.floor(top.at*1.50);}},
-  abel:   {nm:'零界の侵食',    dc:'全員ATK+18%・DEF-10%',
-    apply:function(bp){for(var i=0;i<bp.length;i++){bp[i].at=Math.floor(bp[i].at*1.18);bp[i].df=Math.floor(bp[i].df*0.90);}}}
+  // 01 受けダメ軽減（防御壁）
+  gladius:{nm:'鉄壁の盾',    dc:'全員受けダメージ-20%',
+    apply:function(bp){for(var i=0;i<bp.length;i++)bp[i].dmgReduce=0.20;}},
+
+  // 02 技量特化
+  valeria:{nm:'迅雷の号令',  dc:'全員技量+35%',
+    apply:function(bp){for(var i=0;i<bp.length;i++){bp[i].dex=Math.floor(bp[i].dex*1.35);bp[i].dexBase=Math.floor(bp[i].dexBase*1.35);}}},
+
+  // 03 純粋全体火力（マイナスなし）
+  bald:   {nm:'狂戦士の血',  dc:'全員ATK+30%',
+    apply:function(bp){for(var i=0;i<bp.length;i++)bp[i].at=Math.floor(bp[i].at*1.30);}},
+
+  // 04 会心ダメ倍率（会心特化）
+  serene: {nm:'月刃の会心',  dc:'全員会心ダメ倍率×2.0（通常×1.5）',
+    apply:function(bp){for(var i=0;i<bp.length;i++)bp[i].critMul=2.0;}},
+
+  // 05 回避（完全ユニーク）
+  reith:  {nm:'影の足捌き',  dc:'全員回避率+25%',
+    apply:function(bp){for(var i=0;i<bp.length;i++)bp[i].evade=0.25;}},
+
+  // 06 EXP獲得増加（育成特化）→ gainEで適用
+  ryuka:  {nm:'森の狙撃手',  dc:'全員獲得EXP+40%',
+    apply:function(bp){}},
+
+  // 07 小幅三重バフ（ATK+技量+DEF）
+  albert: {nm:'残像の連携',  dc:'全員ATK+10%・技量+10%・DEF+10%',
+    apply:function(bp){for(var i=0;i<bp.length;i++){bp[i].at=Math.floor(bp[i].at*1.10);bp[i].dex=Math.floor(bp[i].dex*1.10);bp[i].dexBase=Math.floor(bp[i].dexBase*1.10);bp[i].df=Math.floor(bp[i].df*1.10);}}},
+
+  // 08 ゴールド獲得増加（収集特化）→ onKillで適用
+  kaede:  {nm:'紅蓮の覇気',  dc:'ゴールド獲得+50%',
+    apply:function(bp){}},
+
+  // 09 一撃ダメ上限（一撃死防止、全員）→ gTickで適用
+  zeek:   {nm:'虚空の城壁',  dc:'全員が一撃で受けるダメを最大HPの40%以内に制限',
+    apply:function(bp){for(var i=0;i<bp.length;i++)bp[i].dmgCap=0.40;}},
+
+  // 10 戦後全回復（回復特化）
+  elia:   {nm:'星の恵み',    dc:'戦闘後全員HP8%回復',
+    healAfterBattle:0.08,
+    apply:function(bp){}},
+
+  // 11 スキル発動率UP（ユニーク軸）効果はgTickで参照
+  raoul:  {nm:'禁忌の解放',  dc:'全員スキル発動率+15%',
+    apply:function(bp){for(var i=0;i<bp.length;i++)bp[i].skRtBonus=0.15;}},
+
+  // 12 全体HP特化
+  mira:   {nm:'幻晶の守護',  dc:'全員最大HP+30%',
+    apply:function(bp){for(var i=0;i<bp.length;i++){var a=Math.floor(bp[i].mhp*.30);bp[i].mhp+=a;bp[i].hp=Math.min(bp[i].mhp,bp[i].hp+a);}}},
+
+  // 13 全員20%の確率で連続攻撃 → gTickで適用
+  kiriga: {nm:'無音の序列',  dc:'全員攻撃時20%の確率で追加攻撃',
+    apply:function(bp){for(var i=0;i<bp.length;i++)bp[i].doubleAtk=0.20;}},
+
+  // 14 宝箱確定（毎戦後）効果はonKillで適用
+  lilith: {nm:'毒の秘儀',    dc:'戦闘勝利ごとに宝箱を確定取得',
+    apply:function(bp){}},
+
+  // 15 HP残量連動ATK（全員に適用）
+  zein:   {nm:'夜の王権',    dc:'HP低いほど全員ATK増（最大+40%）',
+    apply:function(bp){for(var i=0;i<bp.length;i++){var r=bp[i].hp/Math.max(1,bp[i].mhp);bp[i].at=Math.floor(bp[i].at*(1+0.40*(1-r)));}}},
+
+  // 16 全員DEFの20%をATKに加算（守備→攻撃変換）
+  izana:  {nm:'血盟の誓約',  dc:'全員のDEF×20%をATKに加算',
+    apply:function(bp){for(var i=0;i<bp.length;i++)bp[i].at+=Math.floor(bp[i].df*0.20);}},
+
+  // 17 DEF特化（高率、HPなし）
+  gil:    {nm:'重装の陣',    dc:'全員DEF+40%',
+    apply:function(bp){for(var i=0;i<bp.length;i++)bp[i].df=Math.floor(bp[i].df*1.40);}},
+
+  // 18 毎ターン全員CT-1（クールタイム短縮）効果はgTickで適用
+  chrono: {nm:'時の巻き戻し',dc:'全員スキルCT毎ターン-1',
+    apply:function(bp){}},
+
+  // 19 全員の攻撃にATK×15%の固定追加ダメ（DEF無視）→ gTickで適用
+  fiona:  {nm:'竜の覇気',    dc:'全員の攻撃にATK×15%の固定追加ダメージ（DEF無視）',
+    apply:function(bp){for(var i=0;i<bp.length;i++)bp[i].fixedBonusDmg=0.15;}},
+
+  // 20 防御貫通（完全ユニーク）
+  abel:   {nm:'零界の侵食',  dc:'全員攻撃が敵DEFを30%無視',
+    apply:function(bp){for(var i=0;i<bp.length;i++)bp[i].defPen=0.30;}}
 };
 // Level cap: 40. EXP curve steep.
 var LV_CAP=40;
@@ -971,14 +1017,12 @@ function load(){
 function dropPending(ct,f){
   if(!ct)return;var cd=CH[ct];
   var plus=rnd(cd.pr[0],cd.pr[1]);
-  // 品質1〜100を均一分布で生成
   var q=Math.floor(Math.random()*100)+1;
   var isAnc=!!cd.u;
   var pool=isAnc?UQ:IT[Math.min(3,tierF(f))];
   var iD=pool[rnd(0,pool.length-1)];
   var item={id2:iD.id,q:q,plus:plus,anc:isAnc,chest:ct};
   G.dun.pendingLoot.push(item);
-  // アイテム詳細は帰還後モーダルで表示
   updLootCount();
 }
 function awardPendingLoot(){
@@ -1043,6 +1087,8 @@ function initBP(fh){
     var dex=Math.floor(d.b.dex+d.gr.dex*(c.lv-1));
     nb.push({id:id,nm:c.nm,em:d.em,lv:c.lv,hp:hp,mhp:st.hp,at:st.at,df:st.df,
       dex:dex,dexBase:dex,dexBufRem:0,
+      dmgReduce:0,evade:0,critMul:1.5,defPen:0,dmgAmp:0,skRtBonus:0,
+      dmgCap:0,doubleAtk:0,fixedBonusDmg:0,
       ch:Math.random()*30,sk:c.sk,skCd:0,row:i<3?'f':'b'});
   }
   G.dun.bp=nb;
@@ -1302,16 +1348,24 @@ function gTick(){
       }
       if(!didSkill){
         // 通常攻撃
-        var ea=Math.floor(en.atk*(en.ad||1));
-        var defMul=G.dun._defBuff?1.2:1;
-        var guardMul=en.guardUp?0.4:1.0; // guard後は自DEFではなくPC側軽減
-        // guardUpは次の被弾時に効果 – 敵が守りを固めた後、攻撃の威力はそのまま
-        // (実際には敵DEFを下げる設計より PC受けダメ軽減として実装)
-        var d=Math.max(1,Math.floor((ea-tg.df*defMul*.28)*(0.85+Math.random()*.3)));
-        en.guardUp=false; // guard効果は1回
-        tg.hp=Math.max(0,tg.hp-d);
-        log('dm',en.em+en.nm+'->'+tg.nm+': '+d);
-        if(tg.hp<=0)log('dt',tg.nm+' 倒れた...');
+        // 回避判定（レイスリーダースキル）
+        if(tg.evade>0&&Math.random()<tg.evade){
+          log('sk',tg.nm+' 回避!');
+        } else {
+          var ea=Math.floor(en.atk*(en.ad||1));
+          var defMul=G.dun._defBuff?1.2:1;
+          en.guardUp=false;
+          var d=Math.max(1,Math.floor((ea-tg.df*defMul*.28)*(0.85+Math.random()*.3)));
+          // ダメージ軽減（グラディウス）
+          if(tg.dmgReduce>0)d=Math.max(1,Math.floor(d*(1-tg.dmgReduce)));
+          // 被ダメ増幅（バルド）
+          if(tg.dmgAmp>0)d=Math.floor(d*(1+tg.dmgAmp));
+          // 一撃ダメ上限（ジーク）
+          if(tg.dmgCap>0)d=Math.min(d,Math.max(1,Math.floor(tg.mhp*tg.dmgCap)));
+          tg.hp=Math.max(0,tg.hp-d);
+          log('dm',en.em+en.nm+'->'+tg.nm+': '+d);
+          if(tg.hp<=0)log('dt',tg.nm+' 倒れた...');
+        }
       }
     } else {
       if(en.hp<=0)continue;
@@ -1319,26 +1373,48 @@ function gTick(){
       // Apply attack buff
       var atkMul=G.dun._atkBuff?1.2:1;
       var res=null;
-      // Skill with cooldown
-      if(ac.skCd<=0&&Math.random()<ac.sk.rt){
+      // スキル発動（クールタイムなし＋発動率チェック）
+      var fireRate=ac.sk.rt+(ac.skRtBonus||0);
+      if(ac.skCd<=0&&Math.random()<fireRate){
         try{res=ac.sk.ex(ac,en,G.dun.bp);}catch(er){res=null;}
         if(res){
           var skDef=cdef(ac.id);
           ac.skCd=skDef?skDef.sk.cd:3;
         }
       }
-      // Decrement cooldown when character acts
+      // クールタイムカウントダウン（行動時）
       if(ac.skCd>0&&!res)ac.skCd--;
+      // リーダースキル: クロノ 毎ターン全員CT-1
+      if(G.leader==='chrono'){
+        for(var _ci=0;_ci<G.dun.bp.length;_ci++){
+          if(G.dun.bp[_ci].skCd>0)G.dun.bp[_ci].skCd--;
+        }
+      }
       if(!res){
-        var slpDefMul=en.slp>0?0.8:1.0; // 睡眠中DEF-20%
-        var effDef=Math.floor(en.def*(en.dd||1)*slpDefMul);
+        var slpDefMul=en.slp>0?0.8:1.0;
+        // 防御貫通（アベルリーダースキル）
+        var penMul=1-(ac.defPen||0);
+        var effDef=Math.floor(en.def*(en.dd||1)*slpDefMul*penMul);
         var baseDmg=Math.max(1,Math.floor((ac.at*am*atkMul-effDef*.28)*(0.85+Math.random()*.3)));
         var critRate=Math.min(0.5,ac.dex/500);
         var isCrit=Math.random()<critRate;
-        var dm=isCrit?Math.floor(baseDmg*1.5):baseDmg;
+        // 会心倍率（セレネリーダースキル: critMulで変動、デフォルト1.5）
+        var dm=isCrit?Math.floor(baseDmg*(ac.critMul||1.5)):baseDmg;
         en.hp=Math.max(0,en.hp-dm);
         if(en.slp>0){en.slp=0;log('dm',ac.em+'->'+en.nm+': '+dm+(isCrit?' [会心]':'')+(ac.row==='b'?' [後]':'')+' [睡眠解除]');}
         else log('dm',ac.em+'->'+en.nm+': '+dm+(isCrit?' [会心]':'')+(ac.row==='b'?' [後]':''));
+        // 固定追加ダメ（フィオナ・DEF無視）
+        if(ac.fixedBonusDmg>0&&en.hp>0){
+          var fbd=Math.max(1,Math.floor(ac.at*ac.fixedBonusDmg));
+          en.hp=Math.max(0,en.hp-fbd);
+          log('sk','🐉 固定追加: -'+fbd);
+        }
+        // 連続攻撃（キリガ）
+        if(ac.doubleAtk>0&&Math.random()<ac.doubleAtk&&en.hp>0){
+          var d2=Math.max(1,Math.floor((ac.at*am*atkMul-effDef*.28)*(0.7+Math.random()*.3)));
+          en.hp=Math.max(0,en.hp-d2);
+          log('sk','⚡ 連続攻撃: -'+d2);
+        }
       } else {
         if(en.slp>0&&res.tp!=='hl'){en.slp=0;}
         log(res.tp==='hl'?'hl':'sk',res.tx);
@@ -1399,9 +1475,30 @@ function onKill(){
   else if(en.isEl)et='named_elite';
   else et='normal';
   log('lv',en.nm+' 倒した! EXP+'+en.exp+' G+'+en.gold);
-  G.gold+=en.gold;
+  var earnedGold=en.gold;
+  // リーダースキル: カエデ ゴールド+50%
+  if(G.leader==='kaede')earnedGold=Math.floor(earnedGold*1.50);
+  G.gold+=earnedGold;
   for(var i=0;i<G.party.length;i++)gainE(G.party[i],en.exp);
   dropPending(rollC(et),G.fl);
+  // リーダースキル: リリス 宝箱確定追加ドロップ
+  if(G.leader==='lilith'){
+    var chestTypes=['iron','iron','copper','silver'];
+    var bonusCt=chestTypes[rnd(0,chestTypes.length-1)];
+    dropPending(bonusCt,G.fl);
+    log('ev','🌿 リリスの秘儀: 宝箱確定獲得!');
+  }
+  // リーダースキル: エリア 戦後HP回復
+  if(G.leader&&LS[G.leader]&&LS[G.leader].healAfterBattle){
+    var hr=LS[G.leader].healAfterBattle;
+    for(var i=0;i<G.dun.bp.length;i++){
+      if(G.dun.bp[i].hp>0){
+        var heal=Math.floor(G.dun.bp[i].mhp*hr);
+        G.dun.bp[i].hp=Math.min(G.dun.bp[i].mhp,G.dun.bp[i].hp+heal);
+      }
+    }
+    log('hl','✨ '+G.chars[G.leader].nm+'の加護: 全員HP+'+Math.floor(hr*100)+'%');
+  }
   // 加護は戦闘では増えない（拠点帰還時のみ回復）
   // Stampede continue
   if(G.dun.stampede>0){
@@ -1478,6 +1575,8 @@ function onWipe(){
 function gainE(id,exp){
   var c=G.chars[id];if(!c)return;
   if(c.lv>=LV_CAP){c.exp=0;c.en=Infinity;return;}
+  // リーダースキル: リュカ EXP+40%
+  if(G.leader==='ryuka')exp=Math.floor(exp*1.40);
   c.exp+=exp;
   while(c.lv<LV_CAP&&c.exp>=c.en){
     c.exp-=c.en;c.lv++;c.en=expN(c.lv);
@@ -1567,19 +1666,57 @@ function makePCard(id,row,partyIdx){
   var hc=pct<25?'cr':pct<50?'lo':'';
   var dead=hp<=0;
   var isSel=(_selPartyIdx===partyIdx);
-  var card=mk('div','pc'+(dead?' dead':'')+(row==='b'?' bk':'')+(isSel?' sel':''));
-  card.appendChild(mk('div','pc-nm',c.nm));
-  var qb=mk('button','pc-qb','?');
-  (function(cid){qb.addEventListener('click',function(ev){ev.stopPropagation();openSK(cid);});})(id);
-  card.appendChild(qb);
-  card.appendChild(mk('div','pc-em',d.em));
-  card.appendChild(mk('div','pc-ht',hp.toLocaleString()+'/'+mhp.toLocaleString()));
+  var isLdr=(G.leader===id);
+  var card=mk('div','pc'+(dead?' dead':'')+(row==='b'?' bk':'')+(isSel?' sel':'')+(isLdr?' leader':''));
+
+  // ── 名前 ─────────────────────────────────────────────
+  var nmEl=mk('div','pc-nm',c.nm);
+  if(isLdr)nmEl.style.color='#c9a227';
+  card.appendChild(nmEl);
+
+  // ── クラス ──────────────────────────────────────────
+  card.appendChild(mk('div','pc-cls',d.cls));
+
+  // ── バフ/デバフ/状態異常アイコン ────────────────────
+  var buffs=mk('div','pc-buffs');
+  if(bp){
+    // リーダー
+    if(isLdr&&G.leader&&LS[G.leader]){
+      buffs.appendChild(mk('span','pc-buff ld','★'+LS[G.leader].nm.slice(0,4)));
+    }
+    // 技量バフ（クロノスキル等）
+    if(bp.dexBufRem>0){
+      buffs.appendChild(mk('span','pc-buff up','↑技量 '+bp.dexBufRem+'T'));
+    }
+    // スキルCT中
+    if(bp.skCd>0){
+      buffs.appendChild(mk('span','pc-buff st','CT:'+bp.skCd));
+    }
+    // リーダースキル由来の永続バフ表示
+    if(bp.dmgReduce>0)  buffs.appendChild(mk('span','pc-buff up','🛡-'+Math.round(bp.dmgReduce*100)+'%'));
+    if(bp.evade>0)      buffs.appendChild(mk('span','pc-buff up','💨'+Math.round(bp.evade*100)+'%'));
+    if(bp.critMul>1.5)  buffs.appendChild(mk('span','pc-buff up','🎯×'+bp.critMul));
+    if(bp.defPen>0)     buffs.appendChild(mk('span','pc-buff up','🗡貫'+Math.round(bp.defPen*100)+'%'));
+    if(bp.dmgCap>0)     buffs.appendChild(mk('span','pc-buff up','🔰上限'));
+    if(bp.doubleAtk>0)  buffs.appendChild(mk('span','pc-buff up','⚡連撃'));
+    if(bp.skRtBonus>0)  buffs.appendChild(mk('span','pc-buff up','✨発動↑'));
+    if(bp.fixedBonusDmg>0) buffs.appendChild(mk('span','pc-buff up','🐉固定'));
+    if(bp.dmgAmp>0)     buffs.appendChild(mk('span','pc-buff dn','↑被ダメ'));
+  }
+  card.appendChild(buffs);
+
+  // ── HPバー ───────────────────────────────────────────
+  card.appendChild(mk('div','pc-ht',hp+'/'+mhp));
   var hw=mk('div','pc-hw');var hbar=mk('div','pc-hb '+hc);hbar.style.width=pct+'%';
   hw.appendChild(hbar);card.appendChild(hw);
-  var ctEl=mk('div','pc-ct',(bp&&bp.skCd>0)?'CT:'+bp.skCd:'');card.appendChild(ctEl);
-  if(dead)card.appendChild(mk('div','pc-do','X'));
+
+  // ── CT表示 ───────────────────────────────────────────
+  // （バフ欄に移したのでここは空でもOK、スキル名だけ表示）
+  var sk=bp?bp.sk:c.sk;
+  card.appendChild(mk('div','pc-ct',sk?'['+sk.nm+']':''));
+
+  if(dead)card.appendChild(mk('div','pc-do','☠'));
   if(isSel)card.appendChild(mk('div','pc-rem-hint','✕ 再タップで外す'));
-  // Tap to select/swap/remove
   (function(idx){card.addEventListener('click',function(){onPartyCardTap(idx);});})(partyIdx);
   return card;
 }
@@ -2214,7 +2351,8 @@ on('dropclose',function(){var o=g('dropovl');if(o)o.classList.add('hidden');});
 on('ediscard',function(){
   if(_eqIdx>=0){G.inv.splice(_eqIdx,1);log('sy','装備を捨てた。');}
   var o=g('eovl');if(o)o.classList.add('hidden');
-  renderInv();save();});
+  renderInv();save();
+});
 on('bfight',function(){var e=G.dun.pend;G.dun.pend=null;var o=g('encovl');if(o)o.classList.add('hidden');if(e)startB(e);});
 on('bflee',function(){
   G.dun.pend=null;
