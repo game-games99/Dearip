@@ -102,7 +102,7 @@ nav{background:#0a0916;border-top:1px solid var(--brd2);display:flex;flex-shrink
 /* Floor select */
 .fs-grid{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px;justify-content:center;max-height:55vh;overflow-y:auto}
 .fs-btn{width:46px;height:34px;background:var(--bg3);border:1px solid var(--brd2);
-  border-radius:3px;color:var(--tdim);cursor:pointer;font-size:11px;font-weight:bold;transition:all .14s}
+  border-radius:3px;color:var(--tdim);cursor:pointer;font-size:11px;font-weight:bold;transition:all .14px}
 .fs-btn.cur{background:rgba(28,48,70,.9);border-color:var(--tel);color:var(--txt)}
 .fs-btn.clr{border-color:#2a5020;color:#60b060}
 .fs-btn:disabled{opacity:.25;cursor:default}
@@ -122,16 +122,21 @@ nav{background:#0a0916;border-top:1px solid var(--brd2);display:flex;flex-shrink
 .psec{flex-shrink:0;background:#05040c;padding:2px 4px;display:flex;flex-direction:column;gap:1px}
 .rlbl{font-size:8px;color:var(--tdim);letter-spacing:.1em;padding:1px 3px}
 .prow{display:flex;gap:3px}
+/* ── fix 6: カードの高さ拡張 ── */
 .pc{flex:1;position:relative;border-radius:4px;border:1px solid #1c2e50;
-  height:96px;background:linear-gradient(180deg,#0f1c36,#0a1428);
+  height:110px;background:linear-gradient(180deg,#0f1c36,#0a1428);
   display:flex;flex-direction:column;align-items:center;padding:4px 3px 2px}
 .pc.dead{opacity:.35;filter:grayscale(.8)}
 .pc.sel{border-color:#c9a227;box-shadow:0 0 6px rgba(201,162,39,.5);}
-.pc.bk{border-color:#14204a;height:88px;background:linear-gradient(180deg,#101830,#080e22)}
+.pc.bk{border-color:#14204a;height:100px;background:linear-gradient(180deg,#101830,#080e22)}
 .pc.leader{}
-.pc-nm{font-size:10px;font-weight:bold;color:#d0dff8;white-space:nowrap;overflow:hidden;
-  text-overflow:ellipsis;width:100%;text-align:center;margin-bottom:0px}
-.pc-cls{font-size:7.5px;color:#6880a0;text-align:center;margin-bottom:2px;
+/* ── fix 1: リーダーバッジを左上へ (前衛/後衛バッジと被らない) ── */
+.pc-ldr-badge{position:absolute;top:2px;left:2px;font-size:7px;color:#c9a227;
+  background:rgba(0,0,0,.7);border-radius:2px;padding:0 2px;pointer-events:none;line-height:12px}
+/* ── fix 6: 名前・クラス・HP文字拡大 ── */
+.pc-nm{font-size:12px;font-weight:bold;color:#d0dff8;white-space:nowrap;overflow:hidden;
+  text-overflow:ellipsis;width:100%;text-align:center;margin-bottom:1px}
+.pc-cls{font-size:9px;color:#6880a0;text-align:center;margin-bottom:2px;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%}
 .pc-buffs{display:flex;gap:2px;flex-wrap:wrap;justify-content:center;
   min-height:12px;margin-bottom:2px;width:100%}
@@ -141,20 +146,22 @@ nav{background:#0a0916;border-top:1px solid var(--brd2);display:flex;flex-shrink
 .pc-buff.dn{color:#e05050}
 .pc-buff.st{color:#e0c040}
 .pc-buff.ld{color:#c9a227}
-.pc-ht{font-size:7px;color:#8898b8;text-align:center;margin-bottom:1px}
+/* ── fix 6: HP表示拡大 ── */
+.pc-ht{font-size:10px;color:#8898b8;text-align:center;margin-bottom:1px;font-weight:bold}
 .pc-hw{width:100%;height:4px;background:rgba(8,12,24,.7);border-radius:2px;overflow:hidden}
 .pc-hb{height:100%;background:linear-gradient(90deg,#1e5428,#2e8040);transition:width .3s}
 .pc-hb.lo{background:linear-gradient(90deg,#786018,#b09028)}
 .pc-hb.cr{background:linear-gradient(90deg,#701818,#a82828)}
 .pc-do{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
   font-size:20px;background:rgba(0,0,0,.5);border-radius:4px}
-.pc-ct{font-size:7px;color:#6880a0;text-align:center;height:10px;line-height:10px;margin-top:0}
-.pc-ldr-badge{position:absolute;top:2px;right:2px;font-size:7px;color:#c9a227;
+/* ── fix 6: スキル名拡大 ── */
+.pc-ct{font-size:9px;color:#6880a0;text-align:center;height:12px;line-height:12px;margin-top:1px}
+.pc-ldr-badge{position:absolute;top:2px;left:2px;font-size:7px;color:#c9a227;
   background:rgba(0,0,0,.7);border-radius:2px;padding:0 2px;pointer-events:none;line-height:12px}
-.pslot{flex:1;height:96px;background:rgba(255,255,255,.02);
+.pslot{flex:1;height:110px;background:rgba(255,255,255,.02);
   border:1px dashed #1a2840;border-radius:4px;
   display:flex;align-items:center;justify-content:center}
-.pslot.bk{height:88px}
+.pslot.bk{height:100px}
 .pslot-t{font-size:9px;color:var(--tdim);text-align:center;line-height:1.6}
 /* CONTROLS */
 .ctrl{flex-shrink:0;display:flex;align-items:center;gap:5px;
@@ -175,15 +182,17 @@ nav{background:#0a0916;border-top:1px solid var(--brd2);display:flex;flex-shrink
   padding:11px 10px;display:flex;align-items:flex-start;gap:8px;cursor:pointer;
   margin-bottom:6px;position:relative}
 .cc.fr{border-color:var(--gdim)}.cc.bk2{border-color:#2a3870}.cc.lk{opacity:.38;cursor:default}
-.cav{display:none}  /* 短縮アルファベット非表示 */
+.cav{display:none}
 .cdet{flex:1;min-width:0}
 .cnmr{display:flex;align-items:center;gap:7px;margin-bottom:3px;flex-wrap:wrap}
 .cnm{font-size:17px;font-weight:bold}
 .ccls{font-size:11px;color:var(--tdim);background:var(--bg3);border:1px solid var(--brd);padding:2px 7px;border-radius:3px}
 .cfn{font-size:11px;color:var(--tdim);margin-bottom:3px}
 .clv{font-size:13px;color:var(--gold);margin-bottom:4px}
-.cst{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:3px}
-.st{font-size:11px;color:var(--tdim);white-space:nowrap}.st span{color:var(--txt);font-weight:bold}
+/* ── fix 2: ステータス行の段ずれ修正 ── */
+.cst{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:4px;align-items:baseline}
+.st{font-size:11px;color:var(--tdim);white-space:nowrap;display:flex;align-items:baseline;gap:2px}
+.st span{color:var(--txt);font-weight:bold}
 .csk{font-size:11px;color:var(--tdim);font-style:italic;margin-bottom:4px}
 .ceq{display:flex;gap:4px;flex-wrap:wrap}
 .eqb{font-size:11px;background:var(--bg3);border:1px solid var(--brd);padding:3px 7px;border-radius:3px;color:var(--tdim)}
@@ -206,25 +215,26 @@ nav{background:#0a0916;border-top:1px solid var(--brd2);display:flex;flex-shrink
 .em2{color:var(--tdim);font-size:12px;text-align:center;padding:30px 10px}
 .st2{font-size:11px;color:var(--gold);letter-spacing:.08em;
   margin:7px 0 5px;padding-bottom:4px;border-bottom:1px solid var(--brd)}
-/* rarity colors: common/uncommon/rare/epic/legend/origin */
-.qn{color:#909090}  /* ノーマル 灰 */
-.qg{color:#3cc060}  /* アンコモン 緑 */
-.qr{color:#3888e8}  /* レア 青 */
-.qs{color:#b838e8}  /* エピック 紫 */
-.qp{color:#e8b820}  /* レジェンド 黄 */
-.qo{color:#e83030}  /* オリジン 赤 */
+/* rarity colors */
+.qn{color:#909090}
+.qg{color:#3cc060}
+.qr{color:#3888e8}
+.qs{color:#b838e8}
+.qp{color:#e8b820}
+.qo{color:#e83030}
 /* rarity border colors */
-.ii.rq1{border-color:#484848}  /* ノーマル 灰 */
-.ii.rq2{border-color:#1a5028}  /* アンコモン 緑 */
-.ii.rq3{border-color:#1a3870}  /* レア 青 */
-.ii.rq4{border-color:#581898}  /* エピック 紫 */
-.ii.rq5{border-color:#786010}  /* レジェンド 黄 */
-.ii.rq6{border-color:#781818}  /* オリジン 赤 */
+.ii.rq1{border-color:#484848}
+.ii.rq2{border-color:#1a5028}
+.ii.rq3{border-color:#1a3870}
+.ii.rq4{border-color:#581898}
+.ii.rq5{border-color:#786010}
+.ii.rq6{border-color:#781818}
 /* INV TABS */
 .inv-tabs{display:flex;gap:0;margin-bottom:6px;border:1px solid var(--brd2);border-radius:4px;overflow:hidden;flex-shrink:0}
 .inv-tab{flex:1;background:var(--bg3);border:none;color:var(--tdim);padding:8px 4px;cursor:pointer;font-size:12px;border-right:1px solid var(--brd2)}
 .inv-tab:last-child{border-right:none}
 .inv-tab.active{background:rgba(28,48,70,.9);color:var(--txt);border-bottom:2px solid var(--tel)}
+/* ── fix 7: 売却ボタンのみ残す ── */
 .bulk-bar{display:flex;gap:5px;padding:5px 0;flex-shrink:0}
 .bulk-btn{flex:1;background:var(--bg3);border:1px solid var(--brd2);border-radius:3px;
   color:var(--tdim);padding:7px 4px;cursor:pointer;font-size:12px}
@@ -253,8 +263,8 @@ nav{background:#0a0916;border-top:1px solid var(--brd2);display:flex;flex-shrink
 .cmp-stat{font-size:13px;font-weight:bold;margin:3px 0;padding:2px 4px;border-radius:3px}
 .cmp-up{color:#40e870;background:rgba(40,120,60,.2)}
 .cmp-dn{color:#ff5050;background:rgba(120,30,30,.2)}
-.cmp-eq{color:var(--tdim)}
-/* Choice overlay */
+/* ── fix 8: 同値は灰色で明示 ── */
+.cmp-eq{color:#a0a0c0;background:rgba(40,40,70,.2)}
 /* Event flash overlay */
 .ev-flash{position:absolute;inset:0;display:flex;flex-direction:column;
   align-items:center;justify-content:center;pointer-events:none;z-index:20;
@@ -283,16 +293,14 @@ nav{background:#0a0916;border-top:1px solid var(--brd2);display:flex;flex-shrink
 /* Buff icons */
 .buff-row{position:absolute;bottom:2px;left:0;right:0;display:flex;justify-content:center;gap:3px}
 .buff-ic{font-size:10px;background:rgba(0,0,0,.6);border-radius:2px;padding:0 2px}
-
-/* Ceq slot buttons in char card */
+/* Ceq slot buttons */
 .ceq-slot-btn{
-font-size:9px;background:var(–bg3);border:1px solid var(–brd);
-padding:2px 5px;border-radius:3px;color:var(–tdim);
+font-size:9px;background:var(--bg3);border:1px solid var(--brd);
+padding:2px 5px;border-radius:3px;color:var(--tdim);
 cursor:pointer;display:block;width:100%;text-align:left;
 margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
-.ceq-slot-btn:active{background:var(–bg2);}
-/* ceq list rarity colors applied as class */
+.ceq-slot-btn:active{background:var(--bg2);}
 .ceq-slot-btn.qn{border-color:#484848;color:#909090;}
 .ceq-slot-btn.qg{border-color:#1a5028;color:#3cc060;}
 .ceq-slot-btn.qr{border-color:#1a3870;color:#3888e8;}
@@ -302,42 +310,43 @@ margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 /* Lock btn */
 .inv-lock-btn{background:none;border:none;font-size:14px;cursor:pointer;padding:0 2px;flex-shrink:0;line-height:1;}
 /* Pending loot */
-.loot-bar{font-size:9px;color:var(–gold);padding:1px 4px;background:rgba(90,70,10,.3);border-radius:2px;text-align:center}
+.loot-bar{font-size:9px;color:var(--gold);padding:1px 4px;background:rgba(90,70,10,.3);border-radius:2px;text-align:center}
 .pc-medal-hint{position:absolute;bottom:14px;left:0;right:0;text-align:center;
 font-size:8px;color:#b8922a;background:rgba(0,0,0,.65);padding:1px 0;pointer-events:none}
 .pc-rem-hint{position:absolute;bottom:2px;left:0;right:0;text-align:center;
 font-size:9px;color:#e04040;background:rgba(0,0,0,.7);padding:1px 0;pointer-events:none;}
 /* Sort buttons */
-.sort-btn{background:var(–bg3);border:1px solid var(–brd2);border-radius:3px;
-color:var(–tdim);padding:3px 7px;cursor:pointer;font-size:9px;}
-.sort-btn.active{background:rgba(28,48,70,.9);border-color:var(–tel);color:var(–txt);}
+.sort-btn{background:var(--bg3);border:1px solid var(--brd2);border-radius:3px;
+color:var(--tdim);padding:3px 7px;cursor:pointer;font-size:9px;}
+.sort-btn.active{background:rgba(28,48,70,.9);border-color:var(--tel);color:var(--txt);}
 /* CEQ: current equip panel */
-.ceq-cur{background:rgba(20,18,38,.9);border:1px solid var(–brd2);border-radius:5px;
+.ceq-cur{background:rgba(20,18,38,.9);border:1px solid var(--brd2);border-radius:5px;
 padding:7px 10px;margin-bottom:8px;flex-shrink:0}
 .ceq-cur-nm{font-size:11px;font-weight:bold;margin-bottom:3px}
 .ceq-cur-stats{display:flex;gap:8px;flex-wrap:wrap}
-.ceq-cur-st{font-size:10px;color:var(–tdim)}
-.ceq-cur-st span{color:var(–txt)}
+.ceq-cur-st{font-size:10px;color:var(--tdim)}
+.ceq-cur-st span{color:var(--txt)}
 /* stat diff tags */
 .sd-up{font-size:12px;color:#40e870;font-weight:bold;background:rgba(40,120,60,.15);
 padding:1px 5px;border-radius:3px}
 .sd-dn{font-size:12px;color:#ff5050;font-weight:bold;background:rgba(120,30,30,.15);
 padding:1px 5px;border-radius:3px}
-.sd-eq{font-size:11px;color:var(–tdim)}
+/* ── fix 8: 同値タグ ── */
+.sd-eq{font-size:11px;color:#a0a0c0;background:rgba(40,40,70,.2);padding:1px 5px;border-radius:3px}
 .ceq-diff{display:flex;gap:5px;flex-wrap:wrap;margin-top:4px}
 /* Leader skill */
 .ldr-badge{position:absolute;top:3px;right:3px;background:#b8920a;border-radius:3px;
 font-size:8px;color:#fff;padding:1px 4px;font-weight:bold;pointer-events:none}
-.ls-box{background:rgba(30,24,55,.95);border:1px solid var(–gdim);border-radius:6px;
+.ls-box{background:rgba(30,24,55,.95);border:1px solid var(--gdim);border-radius:6px;
 padding:7px 10px;margin-bottom:7px;flex-shrink:0}
-.ls-nm{font-size:11px;color:var(–gold);font-weight:bold;margin-bottom:1px}
-.ls-dc{font-size:10px;color:var(–tdim)}
-.ls-none{font-size:10px;color:var(–tdim);text-align:center;padding:6px 0}
+.ls-nm{font-size:11px;color:var(--gold);font-weight:bold;margin-bottom:1px}
+.ls-dc{font-size:10px;color:var(--tdim)}
+.ls-none{font-size:10px;color:var(--tdim);text-align:center;padding:6px 0}
 /* Leader row in char list */
-.cc.leader{border-color:var(–gold)!important;box-shadow:0 0 8px rgba(200,162,39,.25)}
-.ldr-set-btn{background:rgba(30,24,55,.9);border:1px solid var(–gdim);border-radius:3px;
-font-size:9px;color:var(–gold);padding:2px 7px;cursor:pointer;margin-top:4px;white-space:nowrap}
-.ldr-set-btn.active{background:#3a2a08;border-color:var(–gold);color:#ffe08a}
+.cc.leader{border-color:var(--gold)!important;box-shadow:0 0 8px rgba(200,162,39,.25)}
+.ldr-set-btn{background:rgba(30,24,55,.9);border:1px solid var(--gdim);border-radius:3px;
+font-size:9px;color:var(--gold);padding:2px 7px;cursor:pointer;margin-top:4px;white-space:nowrap}
+.ldr-set-btn.active{background:#3a2a08;border-color:var(--gold);color:#ffe08a}
 .hidden{display:none!important}
 </style>
 
@@ -438,11 +447,9 @@ font-size:9px;color:var(–gold);padding:2px 7px;cursor:pointer;margin-top:4px;w
     </div>
     <div id="vi" class="view">
       <div class="vt">装備品</div>
+      <!-- ── fix 7: 売却ボタンのみ ── -->
       <div class="bulk-bar">
-        <button class="bulk-btn" id="bulk-all">全て破棄</button>
-        <button class="bulk-btn" id="bulk-norm">コモン破棄</button>
-        <button class="bulk-btn" id="bulk-rare">アンコモン以下破棄</button>
-        <button class="bulk-btn" id="bulk-sell">装備中・ロック以外売却</button>
+        <button class="bulk-btn" id="bulk-sell">装備中・ロック以外を売却</button>
       </div>
       <div id="ilist"><div class="em2">装備品なし</div></div>
     </div>
@@ -471,7 +478,6 @@ font-size:9px;color:var(–gold);padding:2px 7px;cursor:pointer;margin-top:4px;w
   <div class="dlg">
     <h3 id="etitle">装備割り当て</h3>
     <div id="edesc" style="font-size:11px;color:var(--tdim);text-align:center;margin-bottom:6px"></div>
-    <!-- Comparison grid -->
     <div class="cmp-grid" id="ecmp" style="display:none"></div>
     <div id="echars"></div>
     <button class="cbtn red" id="ediscard">この装備を捨てる</button>
@@ -504,6 +510,15 @@ font-size:9px;color:var(–gold);padding:2px 7px;cursor:pointer;margin-top:4px;w
     <button class="cbtn" id="fscancel">キャンセル</button>
   </div>
 </div>
+<!-- ── fix 7: 売却確認モーダル ── -->
+<div class="ovl hidden" id="sellovl">
+  <div class="dlg">
+    <h3>⚠️ 売却確認</h3>
+    <p id="sell-confirm-txt" style="font-size:12px;color:var(--tdim);text-align:center;margin-bottom:12px;line-height:1.7;white-space:pre-line"></p>
+    <button class="cbtn" id="sell-confirm-ok" style="background:linear-gradient(180deg,#102810,#081808);border:1px solid #205a20;color:#60c060;margin-bottom:6px">売却する</button>
+    <button class="cbtn" id="sell-confirm-cancel">キャンセル</button>
+  </div>
+</div>
 <!-- Drop Result overlay -->
 <div class="ovl hidden" id="dropovl">
   <div class="dlg">
@@ -519,18 +534,12 @@ font-size:9px;color:var(–gold);padding:2px 7px;cursor:pointer;margin-top:4px;w
 window.onerror=function(m,s,l){log('er','ERR L'+l+': '+m);return false;};
 
 // ── HELPERS ──────────────────────────────────────────
-// Quality: 1-100 scales stat linearly (q=100 → 100% of base stat)
-// Plus (rarity): bonus multiplier on top of quality
-var RARITY_MULT=[1.0, 1.15, 1.35, 1.60, 1.90, 2.30]; // +0~+4, origin(+0-4 handled separately)
+var RARITY_MULT=[1.0, 1.15, 1.35, 1.60, 1.90, 2.30];
 function cs(base, plus, q){
   var qualMul = q / 100;
   var rarMul = RARITY_MULT[Math.min(plus, RARITY_MULT.length-1)];
   return Math.max(1, Math.floor(base * qualMul * rarMul));
 }
-// Rarity determined by plus value (not quality)
-// +0=コモン(灰) +1=アンコモン(緑) +2=レア(青) +3=エピック(紫) +4=レジェンド(黄) Origin=赤
-// レアリティは+値で決定（品質とは独立）
-// +0=ノーマル灰  +1=アンコモン緑  +2=レア青  +3=エピック紫  +4=レジェンド黄  オリジン=赤
 function qi(plus,isAnc){
   if(isAnc)return{n:'オリジン',c:'qo',r:6};
   if(plus===0)return{n:'ノーマル', c:'qn',r:1};
@@ -611,7 +620,6 @@ function gid(id){
 function tierF(f){return Math.min(3,Math.floor((f-1)/20));}
 
 // ── DATA: ENEMIES ─────────────────────────────────────
-// sk: enemy skill type  rage=大振り aoe=全体撃 regen=再生 guard=防御 charge=溜め→必殺 debuff=弱体
 var ET=[
  {r:[1,15],pool:[
   {nm:'グリーンスライム',em:'🟢',hm:1.4,am:1.2,dm:1.0,sm:.5,xp:1.0,sk:'regen'},
@@ -683,7 +691,6 @@ function buildEn(f,tp){
   var pool=[];for(var i=0;i<tierD.pool.length;i++){if(!tierD.pool[i].rare)pool.push(tierD.pool[i]);}
   var base=pool[rnd(0,pool.length-1)];
   var lv=rnd(Math.max(1,f-1),f+2);
-  // 大幅強化: 装備なしでは序盤から厳しい数値
   var bHP=Math.floor((90+f*52)*base.hm);
   var bAT=Math.floor((18+f*10)*base.am);
   var bDF=Math.floor((8+f*5)*base.dm);
@@ -731,7 +738,6 @@ function rollEvent(){
 }
 function showEvFlash(icon, txt, bg){
   var sc=document.querySelector('.sc');if(!sc)return;
-  // 既存フラッシュ削除
   var old=sc.querySelector('.ev-flash');if(old)old.remove();
   var div=mk('div','ev-flash');
   div.style.background=bg||'rgba(10,8,24,.5)';
@@ -834,10 +840,11 @@ var CD=[
    b:{hp:60,at:18,df:4,dex:80},gr:{hp:4,at:1.8,df:.3,dex:.20},
    sk:{nm:'虚空崩壊',rt:.14,cd:5,dc:'2.5倍の大魔法',
     ex:function(a,e,al){var d=Math.floor(a.at*2.5);e.hp=Math.max(0,e.hp-d);return{tp:'sk',tx:a.nm+'の[虚空崩壊]! '+d+'!'};}}},
+  // ── fix 5: エリアの回復を40%に上方修正 ──
   {id:'elia',nm:'エリア',fn:'星祈りのエリア',cls:'クレリック',em:'[El]',ul:4,
    b:{hp:75,at:7,df:8,dex:84},gr:{hp:5,at:.6,df:.7,dex:.22},
-   sk:{nm:'星降りの祈り',rt:.16,cd:4,dc:'全味方HP20%回復',
-    ex:function(a,e,al){var av=[];for(var i=0;i<al.length;i++){if(al[i].hp>0)av.push(al[i]);}for(var i=0;i<av.length;i++){var h=Math.floor(av[i].mhp*.2);av[i].hp=Math.min(av[i].mhp,av[i].hp+h);}return{tp:'hl',tx:a.nm+'の[星降りの祈り]! 全員回復!'};}}},
+   sk:{nm:'星降りの祈り',rt:.16,cd:4,dc:'全味方HP40%回復',
+    ex:function(a,e,al){var av=[];for(var i=0;i<al.length;i++){if(al[i].hp>0)av.push(al[i]);}for(var i=0;i<av.length;i++){var h=Math.floor(av[i].mhp*.4);av[i].hp=Math.min(av[i].mhp,av[i].hp+h);}return{tp:'hl',tx:a.nm+'の[星降りの祈り]! 全員HP40%回復!'};}}},
   {id:'raoul',nm:'ラウル',fn:'禁書のラウル',cls:'ソーサラー',em:'[Ra]',ul:25,
    b:{hp:60,at:17,df:4,dex:74},gr:{hp:4,at:1.7,df:.3,dex:.18},
    sk:{nm:'禁断呪法',rt:.15,cd:4,dc:'1.8倍+混乱2T',
@@ -889,91 +896,50 @@ var CD=[
 ];
 
 // ── LEADER SKILLS ─────────────────────────────────────
-// 全20スキル：マイナス効果なし、必ず複数キャラが恩恵を受ける、軸完全非重複
-// bp拡張フィールド: dmgReduce evade critMul defPen skRtBonus
 var LS={
-  // 01 受けダメ軽減（防御壁）
   gladius:{nm:'鉄壁の盾',    dc:'全員受けダメージ-20%',
     apply:function(bp){for(var i=0;i<bp.length;i++)bp[i].dmgReduce=0.20;}},
-
-  // 02 技量特化
   valeria:{nm:'迅雷の号令',  dc:'全員技量+35%',
     apply:function(bp){for(var i=0;i<bp.length;i++){bp[i].dex=Math.floor(bp[i].dex*1.35);bp[i].dexBase=Math.floor(bp[i].dexBase*1.35);}}},
-
-  // 03 純粋全体火力（マイナスなし）
   bald:   {nm:'狂戦士の血',  dc:'全員ATK+30%',
     apply:function(bp){for(var i=0;i<bp.length;i++)bp[i].at=Math.floor(bp[i].at*1.30);}},
-
-  // 04 会心ダメ倍率（会心特化）
   serene: {nm:'月刃の会心',  dc:'全員会心ダメ倍率×2.0（通常×1.5）',
     apply:function(bp){for(var i=0;i<bp.length;i++)bp[i].critMul=2.0;}},
-
-  // 05 回避（完全ユニーク）
   reith:  {nm:'影の足捌き',  dc:'全員回避率+25%',
     apply:function(bp){for(var i=0;i<bp.length;i++)bp[i].evade=0.25;}},
-
-  // 06 EXP獲得増加（育成特化）→ gainEで適用
   ryuka:  {nm:'森の狙撃手',  dc:'全員獲得EXP+40%',
     apply:function(bp){}},
-
-  // 07 小幅三重バフ（ATK+技量+DEF）
   albert: {nm:'残像の連携',  dc:'全員ATK+10%・技量+10%・DEF+10%',
     apply:function(bp){for(var i=0;i<bp.length;i++){bp[i].at=Math.floor(bp[i].at*1.10);bp[i].dex=Math.floor(bp[i].dex*1.10);bp[i].dexBase=Math.floor(bp[i].dexBase*1.10);bp[i].df=Math.floor(bp[i].df*1.10);}}},
-
-  // 08 ゴールド獲得増加（収集特化）→ onKillで適用
   kaede:  {nm:'紅蓮の覇気',  dc:'ゴールド獲得+50%',
     apply:function(bp){}},
-
-  // 09 一撃ダメ上限（一撃死防止、全員）→ gTickで適用
   zeek:   {nm:'虚空の城壁',  dc:'全員が一撃で受けるダメを最大HPの40%以内に制限',
     apply:function(bp){for(var i=0;i<bp.length;i++)bp[i].dmgCap=0.40;}},
-
-  // 10 戦後全回復（回復特化）
   elia:   {nm:'星の恵み',    dc:'戦闘後全員HP8%回復',
     healAfterBattle:0.08,
     apply:function(bp){}},
-
-  // 11 スキル発動率UP（ユニーク軸）効果はgTickで参照
   raoul:  {nm:'禁忌の解放',  dc:'全員スキル発動率+15%',
     apply:function(bp){for(var i=0;i<bp.length;i++)bp[i].skRtBonus=0.15;}},
-
-  // 12 全体HP特化
   mira:   {nm:'幻晶の守護',  dc:'全員最大HP+30%',
     apply:function(bp){for(var i=0;i<bp.length;i++){var a=Math.floor(bp[i].mhp*.30);bp[i].mhp+=a;bp[i].hp=Math.min(bp[i].mhp,bp[i].hp+a);}}},
-
-  // 13 全員20%の確率で連続攻撃 → gTickで適用
   kiriga: {nm:'無音の序列',  dc:'全員攻撃時20%の確率で追加攻撃',
     apply:function(bp){for(var i=0;i<bp.length;i++)bp[i].doubleAtk=0.20;}},
-
-  // 14 宝箱確定（毎戦後）効果はonKillで適用
   lilith: {nm:'毒の秘儀',    dc:'戦闘勝利ごとに宝箱を確定取得',
     apply:function(bp){}},
-
-  // 15 HP残量連動ATK（全員に適用）
   zein:   {nm:'夜の王権',    dc:'HP低いほど全員ATK増（最大+40%）',
     apply:function(bp){for(var i=0;i<bp.length;i++){var r=bp[i].hp/Math.max(1,bp[i].mhp);bp[i].at=Math.floor(bp[i].at*(1+0.40*(1-r)));}}},
-
-  // 16 全員DEFの20%をATKに加算（守備→攻撃変換）
   izana:  {nm:'血盟の誓約',  dc:'全員のDEF×20%をATKに加算',
     apply:function(bp){for(var i=0;i<bp.length;i++)bp[i].at+=Math.floor(bp[i].df*0.20);}},
-
-  // 17 DEF特化（高率、HPなし）
   gil:    {nm:'重装の陣',    dc:'全員DEF+40%',
     apply:function(bp){for(var i=0;i<bp.length;i++)bp[i].df=Math.floor(bp[i].df*1.40);}},
-
-  // 18 毎ターン全員CT-1（クールタイム短縮）効果はgTickで適用
   chrono: {nm:'時の巻き戻し',dc:'全員スキルCT毎ターン-1',
     apply:function(bp){}},
-
-  // 19 全員の攻撃にATK×15%の固定追加ダメ（DEF無視）→ gTickで適用
   fiona:  {nm:'竜の覇気',    dc:'全員の攻撃にATK×15%の固定追加ダメージ（DEF無視）',
     apply:function(bp){for(var i=0;i<bp.length;i++)bp[i].fixedBonusDmg=0.15;}},
-
-  // 20 防御貫通（完全ユニーク）
   abel:   {nm:'零界の侵食',  dc:'全員攻撃が敵DEFを30%無視',
     apply:function(bp){for(var i=0;i<bp.length;i++)bp[i].defPen=0.30;}}
 };
-// Level cap: 40. EXP curve steep.
+
 var LV_CAP=40;
 function expN(lv){
   if(lv>=LV_CAP)return Infinity;
@@ -984,11 +950,11 @@ var G={
   party:[],chars:{},eq:{},inv:[],
   dun:{
     active:false,auto:true,fast:false,dist:0,phase:'idle',enemy:null,pend:null,bp:[],
-    pendingLoot:[],   // items collected during run, awarded on return
+    pendingLoot:[],
     atkBuff:false,defBuff:false,
-    stampede:0,       // remaining stampede fights
-    midShown:false,   // whether mid-floor choice was shown
-    speedIdx:0,speedMul:1  // battle speed
+    stampede:0,
+    midShown:false,
+    speedIdx:0,speedMul:1
   }
 };
 for(var _i=0;_i<CD.length;_i++){
@@ -1017,7 +983,6 @@ function cst(id){
 
 // ── SAVE/LOAD ─────────────────────────────────────────
 function initNewGame(){
-  // ランダムに3体の戦士を選んでスタート
   G.party=[];
   var all=CD.slice();
   for(var i=all.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=all[i];all[i]=all[j];all[j]=t;}
@@ -1041,7 +1006,6 @@ function load(){
     G.leader=s.leader||null;
     var vi={};for(var i=0;i<CD.length;i++)vi[CD[i].id]=true;
     G.party=(s.party||[]).map(function(id){return (id&&vi[id])?id:null;});
-    // 末尾のnullを除去
     while(G.party.length>0&&!G.party[G.party.length-1])G.party.pop();
     if(!G.party.filter(Boolean).length)initNewGame();
     G.inv=s.inv||[];
@@ -1093,22 +1057,13 @@ function updStampedeUI(){
 
 // ── CHESTS/DROPS ──────────────────────────────────────
 function rollC(et){
-  // ドロップなし44%は全敵共通。残り56%を種別で按分。
-  // ダイヤの宝箱はdiamond_golem/diamond_golem_eliteのみ
-  // いにしえの秘宝箱はbossのみ
   var DROP_NONE=44;
   var tables={
-    // 残56%: iron30 copper16 silver10
     normal:     [['iron',30],['copper',16],['silver',10],[null,DROP_NONE]],
-    // 残56%: iron20 copper18 silver14 gold4
     named_elite:[['iron',20],['copper',18],['silver',14],['gold',4],[null,DROP_NONE]],
-    // 残56%: silver24 gold22 iron10
     elite:      [['silver',24],['gold',22],['iron',10],[null,DROP_NONE]],
-    // 残56%: iron10 silver16 gold20 anc10
     boss:       [['iron',10],['silver',16],['gold',20],['anc',10],[null,DROP_NONE]],
-    // ダイヤモンドゴーレム: 残56%はdiaのみ
     diamond_golem:[['dia',56],[null,DROP_NONE]],
-    // ダイヤモンドゴーレムエリート: 確定ダイヤ
     diamond_golem_elite:[['dia',100]]
   };
   var tbl=tables[et]||tables.normal;
@@ -1134,7 +1089,6 @@ function initBP(fh){
       ch:Math.random()*30,sk:c.sk,skCd:0,row:i<3?'f':'b'});
   }
   G.dun.bp=nb;
-  // リーダースキル適用
   if(G.leader&&LS[G.leader]&&G.party.indexOf(G.leader)>=0){
     LS[G.leader].apply(G.dun.bp);
   }
@@ -1184,12 +1138,10 @@ function returnToBase(){
   ['encovl','midcovl','fcovl'].forEach(function(id){
     var el=g(id);if(el)el.classList.add('hidden');
   });
-  G.medals=5; // 加護リセット
-  // 拠点帰還でHP全回復
+  G.medals=5;
   for(var _ri=0;_ri<G.dun.bp.length;_ri++){
     var _rb=G.dun.bp[_ri];_rb.hp=_rb.mhp;
   }
-  // キャラデータ側も反映（次回startDungeon前に読まれる）
   for(var _ri2=0;_ri2<G.party.length;_ri2++){
     var _rid=G.party[_ri2];var _rst=cst(_rid);
     if(_rst&&G.chars[_rid])G.chars[_rid]._baseHp=_rst.hp;
@@ -1232,7 +1184,6 @@ function eTick(){
   if(G.dun.phase!=='exploring')return;
   var cfg=fcfg(G.fl);G.dun.dist++;updFloor();
 
-  // Mid-floor checkpoint
   var half=Math.floor(cfg.dist/2);
   if(!G.dun.midShown&&G.dun.dist>=half&&G.dun.dist<cfg.dist){
     G.dun.midShown=true;
@@ -1243,11 +1194,9 @@ function eTick(){
   }
 
   if(G.dun.dist<cfg.dist&&G.dun.dist%cfg.enc===0){
-    // Check for floor event (15% chance instead of encounter)
     if(Math.random()<0.15){
       var ev=rollEvent();
       if(ev.id==='stampede'||ev.id==='trap'||ev.id==='chest'){
-        // These may pause exploration
         runEvent(ev);if(G.dun.phase!=='exploring')return;
       } else {
         runEvent(ev);
@@ -1257,10 +1206,9 @@ function eTick(){
     var tr=getET(G.fl);var hr=false;for(var i=0;i<tr.pool.length;i++){if(tr.pool[i].rare){hr=true;break;}}
     var partyCount=G.party.filter(Boolean).length;
     var eliteOk=(G.fl>=4&&partyCount>=4);
-    // Named elite chance: 12%（条件を満たす場合のみ）
     var tp='normal';
     if(eliteOk&&Math.random()<0.12)tp='named_elite';
-    else if(hr&&Math.random()<.01)tp='rare'; // 1%
+    else if(hr&&Math.random()<.01)tp='rare';
     trigEnc(tp);return;
   }
   if(G.dun.dist>=cfg.dist){
@@ -1273,7 +1221,6 @@ function eTick(){
 }
 function trigEnc(tp){
   var e=buildEn(G.fl,tp);
-  // Apply buffs
   if(G.dun.atkBuff){G.dun.atkBuff=false;G.dun._atkBuff=true;}
   if(G.dun.defBuff){G.dun.defBuff=false;G.dun._defBuff=true;}
   if(G.dun.auto){startB(e);}
@@ -1310,12 +1257,9 @@ function gTick(){
     if(allD)break;
     var ac=acts[ai];ac.ch-=100;
     if(ac===en){
-      // 麻痺中は行動不能
       if(en.par>0){log('sk','⚡ '+en.nm+' は麻痺して動けない!');en.par=Math.max(0,en.par-1);continue;}
-      // 睡眠中は行動不能
       if(en.slp>0){log('sk','💤 '+en.nm+' は眠っている...');en.slp=Math.max(0,en.slp-1);continue;}
       var fr=[];for(var i=0;i<aa.length;i++){if(aa[i].row==='f'&&aa[i].hp>0)fr.push(aa[i]);}
-      // 混乱: 敵味方ランダム攻撃
       if(en.cnf>0){
         var allTgts=[];
         for(var i=0;i<aa.length;i++){if(aa[i].hp>0)allTgts.push(aa[i]);}
@@ -1330,7 +1274,6 @@ function gTick(){
         en.cnf=Math.max(0,en.cnf-1);
         continue;
       }
-      // ── 敵スキル行動 ────────────────────────────────
       var tg=fr.length>0?fr[rnd(0,fr.length-1)]:aa[rnd(0,aa.length-1)];
       var didSkill=false;
       if(en.skCd<=0&&Math.random()<0.28){
@@ -1389,8 +1332,6 @@ function gTick(){
         if(en.charging){en.charging=false;}
       }
       if(!didSkill){
-        // 通常攻撃
-        // 回避判定（レイスリーダースキル）
         if(tg.evade>0&&Math.random()<tg.evade){
           log('sk',tg.nm+' 回避!');
         } else {
@@ -1398,11 +1339,8 @@ function gTick(){
           var defMul=G.dun._defBuff?1.2:1;
           en.guardUp=false;
           var d=Math.max(1,Math.floor((ea-tg.df*defMul*.28)*(0.85+Math.random()*.3)));
-          // ダメージ軽減（グラディウス）
           if(tg.dmgReduce>0)d=Math.max(1,Math.floor(d*(1-tg.dmgReduce)));
-          // 被ダメ増幅（バルド）
           if(tg.dmgAmp>0)d=Math.floor(d*(1+tg.dmgAmp));
-          // 一撃ダメ上限（ジーク）
           if(tg.dmgCap>0)d=Math.min(d,Math.max(1,Math.floor(tg.mhp*tg.dmgCap)));
           tg.hp=Math.max(0,tg.hp-d);
           log('dm',en.em+en.nm+'->'+tg.nm+': '+d);
@@ -1412,10 +1350,8 @@ function gTick(){
     } else {
       if(en.hp<=0)continue;
       var am=ac.row==='b'?.9:1;
-      // Apply attack buff
       var atkMul=G.dun._atkBuff?1.2:1;
       var res=null;
-      // スキル発動（クールタイムなし＋発動率チェック）
       var fireRate=ac.sk.rt+(ac.skRtBonus||0);
       if(ac.skCd<=0&&Math.random()<fireRate){
         try{res=ac.sk.ex(ac,en,G.dun.bp);}catch(er){res=null;}
@@ -1424,9 +1360,7 @@ function gTick(){
           ac.skCd=skDef?skDef.sk.cd:3;
         }
       }
-      // クールタイムカウントダウン（行動時）
       if(ac.skCd>0&&!res)ac.skCd--;
-      // リーダースキル: クロノ 毎ターン全員CT-1
       if(G.leader==='chrono'){
         for(var _ci=0;_ci<G.dun.bp.length;_ci++){
           if(G.dun.bp[_ci].skCd>0)G.dun.bp[_ci].skCd--;
@@ -1434,24 +1368,20 @@ function gTick(){
       }
       if(!res){
         var slpDefMul=en.slp>0?0.8:1.0;
-        // 防御貫通（アベルリーダースキル）
         var penMul=1-(ac.defPen||0);
         var effDef=Math.floor(en.def*(en.dd||1)*slpDefMul*penMul);
         var baseDmg=Math.max(1,Math.floor((ac.at*am*atkMul-effDef*.28)*(0.85+Math.random()*.3)));
         var critRate=Math.min(0.5,ac.dex/500);
         var isCrit=Math.random()<critRate;
-        // 会心倍率（セレネリーダースキル: critMulで変動、デフォルト1.5）
         var dm=isCrit?Math.floor(baseDmg*(ac.critMul||1.5)):baseDmg;
         en.hp=Math.max(0,en.hp-dm);
         if(en.slp>0){en.slp=0;log('dm',ac.nm+'->'+en.nm+': '+dm+(isCrit?' [会心]':'')+(ac.row==='b'?' [後]':'')+' [睡眠解除]');}
         else log('dm',ac.nm+'->'+en.nm+': '+dm+(isCrit?' [会心]':'')+(ac.row==='b'?' [後]':''));
-        // 固定追加ダメ（フィオナ・DEF無視）
         if(ac.fixedBonusDmg>0&&en.hp>0){
           var fbd=Math.max(1,Math.floor(ac.at*ac.fixedBonusDmg));
           en.hp=Math.max(0,en.hp-fbd);
           log('sk','🐉 固定追加('+ac.nm+'): -'+fbd);
         }
-        // 連続攻撃（キリガ）
         if(ac.doubleAtk>0&&Math.random()<ac.doubleAtk&&en.hp>0){
           var d2=Math.max(1,Math.floor((ac.at*am*atkMul-effDef*.28)*(0.7+Math.random()*.3)));
           en.hp=Math.max(0,en.hp-d2);
@@ -1461,7 +1391,6 @@ function gTick(){
         if(en.slp>0&&res.tp!=='hl'){en.slp=0;}
         log(res.tp==='hl'?'hl':'sk',res.tx);
       }
-      // 技量バフのカウントダウン
       if(ac.dexBufRem>0){
         ac.dexBufRem--;
         if(ac.dexBufRem===0){ac.dex=ac.dexBase;log('sy',ac.nm+' 技量バフ終了');}
@@ -1470,25 +1399,21 @@ function gTick(){
   }
   ptk++;
   if(ptk%12===0){
-    // ── 毒: 最大HP10%/tick ──────────────────────
     if(en.psn>0){
       var pd=Math.floor(en.mhp*.10);
-      en.hp=en.hp-pd; // 戦闘不能あり(0以下もそのまま)
+      en.hp=en.hp-pd;
       en.psn--;
       log('sk','☠ 毒! -'+pd+(en.psn>0?' (残'+en.psn+'T)':' [解除]'));
       if(en.hp<=0){onKill();return;}
     }
-    // ── 麻痺: 50%で1T解除チェック ────────────────
     if(en.par>0){
       if(Math.random()<0.5){en.par=0;log('sk','⚡ 麻痺が解除された!');}
       else{en.par--;if(en.par===0)log('sk','⚡ 麻痺が解除された!');}
     }
-    // ── 睡眠: 50%で1T解除チェック ────────────────
     if(en.slp>0){
       if(Math.random()<0.5){en.slp=0;log('sk','💤 睡眠から目覚めた!');}
       else{en.slp--;if(en.slp===0)log('sk','💤 睡眠から目覚めた!');}
     }
-    // ── 混乱: 50%で1T解除チェック ────────────────
     if(en.cnf>0){
       if(Math.random()<0.5){en.cnf=0;log('sk','😵 混乱が解除された!');}
       else{en.cnf--;if(en.cnf===0)log('sk','😵 混乱が解除された!');}
@@ -1497,16 +1422,13 @@ function gTick(){
   renderB();renderPC();
 }
 function clearBattleState(){
-  // 全味方のSKクールタイム・状態異常リセット
   for(var i=0;i<G.dun.bp.length;i++){
     G.dun.bp[i].skCd=0;
-    // 将来味方に状態異常が実装された時用
   }
 }
 function onKill(){
   var en=G.dun.enemy;G.dun.enemy=null;
   clearBattleState();
-  // Clear one-time battle buffs
   G.dun._atkBuff=false;G.dun._defBuff=false;
   var et;
   if(en.isB)et='boss';
@@ -1518,19 +1440,16 @@ function onKill(){
   else et='normal';
   log('lv',en.nm+' 倒した! EXP+'+en.exp+' G+'+en.gold);
   var earnedGold=en.gold;
-  // リーダースキル: カエデ ゴールド+50%
   if(G.leader==='kaede')earnedGold=Math.floor(earnedGold*1.50);
   G.gold+=earnedGold;
   for(var i=0;i<G.party.length;i++)gainE(G.party[i],en.exp);
   dropPending(rollC(et),G.fl);
-  // リーダースキル: リリス 宝箱確定追加ドロップ
   if(G.leader==='lilith'){
     var chestTypes=['iron','iron','copper','silver'];
     var bonusCt=chestTypes[rnd(0,chestTypes.length-1)];
     dropPending(bonusCt,G.fl);
     log('ev','🌿 リリスの秘儀: 宝箱確定獲得!');
   }
-  // リーダースキル: エリア 戦後HP回復
   if(G.leader&&LS[G.leader]&&LS[G.leader].healAfterBattle){
     var hr=LS[G.leader].healAfterBattle;
     for(var i=0;i<G.dun.bp.length;i++){
@@ -1541,8 +1460,6 @@ function onKill(){
     }
     log('hl','✨ '+G.chars[G.leader].nm+'の加護: 全員HP+'+Math.floor(hr*100)+'%');
   }
-  // 加護は戦闘では増えない（拠点帰還時のみ回復）
-  // Stampede continue
   if(G.dun.stampede>0){
     G.dun.stampede--;
     updStampedeUI();
@@ -1569,7 +1486,6 @@ function onKill(){
 function onFC(){
   var f=G.fl;if(f>G.cf)G.cf=f;
   log('lv',f+'F クリア!');
-  // 3フロアごとにランダムな戦士が合流
   if(f%3===0){
     var locked=[];
     for(var i=0;i<CD.length;i++){if(!G.chars[CD[i].id].ul)locked.push(CD[i]);}
@@ -1582,7 +1498,6 @@ function onFC(){
   }
   var nf=f+1;if(nf>G.hf)G.hf=nf;
   updH();save();
-  // Show floor clear choice
   clearInterval(eT);eT=null;
   G.dun.phase='pend';
   var fc=g('fcovl');
@@ -1605,7 +1520,7 @@ function onWipe(){
   clearBattleState();
   log('dt','全滅...全ての荷物を失った!');
   loseAllLoot();
-  G.medals=5; // 加護回復
+  G.medals=5;
   G.fl=Math.max(1,G.fl-1);
   clearInterval(gT);clearInterval(eT);gT=null;eT=null;
   G.dun.active=false;G.dun.phase='idle';G.dun.enemy=null;G.dun.pend=null;
@@ -1617,14 +1532,12 @@ function onWipe(){
 function gainE(id,exp){
   var c=G.chars[id];if(!c)return;
   if(c.lv>=LV_CAP){c.exp=0;c.en=Infinity;return;}
-  // リーダースキル: リュカ EXP+40%
   if(G.leader==='ryuka')exp=Math.floor(exp*1.40);
   c.exp+=exp;
   while(c.lv<LV_CAP&&c.exp>=c.en){
     c.exp-=c.en;c.lv++;c.en=expN(c.lv);
     var b=null;for(var i=0;i<G.dun.bp.length;i++){if(G.dun.bp[i].id===id){b=G.dun.bp[i];break;}}
     if(b){var st=cst(id);var pv=b.mhp;b.mhp=st.hp;b.hp=Math.min(b.mhp,b.hp+(b.mhp-pv));b.at=st.at;b.df=st.df;
-      // dexの更新（バフ中でなければdexBaseも更新）
       var newDex=Math.floor(cdef(id).b.dex+cdef(id).gr.dex*(c.lv-1));
       b.dexBase=newDex;if(b.dexBufRem<=0)b.dex=newDex;
     }
@@ -1711,29 +1624,24 @@ function makePCard(id,row,partyIdx){
   var isLdr=(G.leader===id);
   var card=mk('div','pc'+(dead?' dead':'')+(row==='b'?' bk':'')+(isSel?' sel':'')+(isLdr?' leader':''));
 
-  // ── リーダーバッジ ────────────────────────────────────
+  // ── fix 1: リーダーバッジを左上 (前衛/後衛の右上バッジと被らない) ──
   if(isLdr)card.appendChild(mk('div','pc-ldr-badge','★'));
 
-  // ── 名前 ─────────────────────────────────────────────
+  // ── fix 6: 名前は大きく ──
   var nmEl=mk('div','pc-nm',c.nm);
   if(isLdr)nmEl.style.color='#c9a227';
   card.appendChild(nmEl);
 
-  // ── クラス ──────────────────────────────────────────
   card.appendChild(mk('div','pc-cls',d.cls));
 
-  // ── バフ/デバフ/状態異常アイコン ────────────────────
   var buffs=mk('div','pc-buffs');
   if(bp){
-    // 技量バフ（クロノスキル等）
     if(bp.dexBufRem>0){
       buffs.appendChild(mk('span','pc-buff up','↑技量 '+bp.dexBufRem+'T'));
     }
-    // スキルCT中
     if(bp.skCd>0){
       buffs.appendChild(mk('span','pc-buff st','CT:'+bp.skCd));
     }
-    // リーダースキル由来の永続バフ
     if(bp.dmgReduce>0)  buffs.appendChild(mk('span','pc-buff up','🛡-'+Math.round(bp.dmgReduce*100)+'%'));
     if(bp.evade>0)      buffs.appendChild(mk('span','pc-buff up','💨'+Math.round(bp.evade*100)+'%'));
     if(bp.critMul>1.5)  buffs.appendChild(mk('span','pc-buff up','🎯×'+bp.critMul));
@@ -1745,13 +1653,12 @@ function makePCard(id,row,partyIdx){
   }
   card.appendChild(buffs);
 
-  // ── HPバー ───────────────────────────────────────────
+  // ── fix 6: HP大きく表示 ──
   card.appendChild(mk('div','pc-ht',hp+'/'+mhp));
   var hw=mk('div','pc-hw');var hbar=mk('div','pc-hb '+hc);hbar.style.width=pct+'%';
   hw.appendChild(hbar);card.appendChild(hw);
 
-  // ── CT表示 ───────────────────────────────────────────
-  // （バフ欄に移したのでここは空でもOK、スキル名だけ表示）
+  // ── fix 6: スキル名も大きく ──
   var sk=bp?bp.sk:c.sk;
   card.appendChild(mk('div','pc-ct',sk?'['+sk.nm+']':''));
 
@@ -1764,14 +1671,11 @@ function makePCard(id,row,partyIdx){
 function onEmptySlotTap(toIdx){
   if(G.dun.active){log('sy','探索中は編成を変更できません');return;}
   if(_selPartyIdx>=0){
-    // 選択中のキャラをこのスロットへ移動
     var id=G.party[_selPartyIdx];
     G.party[_selPartyIdx]=null;
-    // toIdx分まで配列を拡張
     while(G.party.length<=toIdx)G.party.push(null);
     G.party[toIdx]=id;
     _selPartyIdx=-1;
-    // 末尾nullを除去
     while(G.party.length>0&&!G.party[G.party.length-1])G.party.pop();
     if(G.dun.active)initBP(false);
     renderPC();save();
@@ -1800,7 +1704,6 @@ function openCharPicker(toIdx){
     inf.appendChild(mk('div','drsub','HP:'+st.hp+' ATK:'+st.at+' DEF:'+st.df));
     row.appendChild(inf);
     (function(cid,ti){row.addEventListener('click',function(){
-      // 指定スロットへ直接配置。nullパッドして位置を確保
       while(G.party.length<=ti)G.party.push(null);
       G.party[ti]=cid;
       _trimPartyTrail();
@@ -1814,12 +1717,10 @@ function openCharPicker(toIdx){
 }
 function onPartyCardTap(idx){
   if(G.dun.active){
-    // 探索中: 加護を使うか確認
     var id=G.party[idx];if(!id)return;
     var bp=null;for(var i=0;i<G.dun.bp.length;i++){if(G.dun.bp[i].id===id){bp=G.dun.bp[i];break;}}
     if(!bp||bp.hp<=0){log('sy',G.chars[id].nm+' は戦闘不能');return;}
     if(!G.medals){log('sy','加護がありません');return;}
-    // 加護を直接使用
     var h=Math.floor(bp.mhp*.4);
     bp.hp=Math.min(bp.mhp,bp.hp+h);
     G.medals--;
@@ -1831,7 +1732,6 @@ function onPartyCardTap(idx){
     _selPartyIdx=idx;
     renderPC();
   } else if(_selPartyIdx===idx){
-    // 選択済みを再タップ → パーティから外す
     G.party[idx]=null;
     _trimPartyTrail();
     _selPartyIdx=-1;
@@ -1839,7 +1739,6 @@ function onPartyCardTap(idx){
     renderPC();save();
     log('sy','パーティから外した');
   } else {
-    // 異なるスロット → スワップ
     var tmp=G.party[_selPartyIdx];
     G.party[_selPartyIdx]=G.party[idx];
     G.party[idx]=tmp;
@@ -1864,16 +1763,12 @@ function updLeaderPanel(){
   }
 }
 function setLeader(id){
-  G.leader=(G.leader===id)?null:id; // 再タップで解除
+  G.leader=(G.leader===id)?null:id;
   updLeaderPanel();
   renderChars();
   save();
 }
 function renderChars(){
-  // ソートバーの表示制御
-  var sortBar=g('vc')&&g('vc').querySelector('.sort-bar-wrap');
-  var vs=g('vc')&&g('vc').querySelector('.vs');
-  // ダンジョン中は操作ロック表示
   var lockNotice=g('char-lock-notice');
   if(lockNotice){lockNotice.style.display=G.dun.active?'block':'none';}
   var list=g('clist');if(!list)return;list.innerHTML='';
@@ -1900,15 +1795,18 @@ function renderChars(){
     if(d.id===G.leader)card.appendChild(mk('div','ldr-badge','★ LEADER'));
     card.appendChild(mk('div','cav',d.em));
     var det=mk('div','cdet');
-    var nr=mk('div','cnmr');nr.appendChild(mk('span','cnm',c.nm));nr.appendChild(mk('span','ccls',d.cls));det.appendChild(nr);
-    det.appendChild(mk('div','cfn',d.fn));
-    det.appendChild(mk('div','clv','Lv.'+c.lv+(c.lv>=LV_CAP?' [MAX]':'')));
+    // ── fix 3: フルネームのみ表示 ──
+    var nr=mk('div','cnmr');nr.appendChild(mk('span','cnm',d.fn));nr.appendChild(mk('span','ccls',d.cls));det.appendChild(nr);
+    // ── fix 3: 次Lv EXP表示追加 ──
+    var expNext=c.lv>=LV_CAP?'MAX':((c.en-c.exp).toLocaleString());
+    det.appendChild(mk('div','clv','Lv.'+c.lv+(c.lv>=LV_CAP?' [MAX]':'')+' (次Lv: EXP '+expNext+')'));
+    // ── fix 2: ステータス段ずれ修正済み (.cst/.st に align-items:baseline) ──
     var sv=mk('div','cst');
     var sti=[['HP',st.hp],['ATK',st.at],['DEF',st.df],['技量',Math.floor(d.b.dex+d.gr.dex*(c.lv-1))]];
     for(var si=0;si<sti.length;si++){var sv2=mk('div','st',sti[si][0]+' ');sv2.appendChild(mk('span',null,''+sti[si][1]));sv.appendChild(sv2);}
     det.appendChild(sv);
     det.appendChild(mk('div','csk','['+d.sk.nm+'] '+Math.floor(d.sk.rt*100)+'% CT:'+d.sk.cd+' - '+d.sk.dc));
-    // リーダースキル表示 + 設定ボタン
+    // リーダースキル
     var ls=LS[d.id];
     if(ls){
       var lsRow=mk('div',null);
@@ -1919,6 +1817,7 @@ function renderChars(){
       lsRow.appendChild(ldrBtn);
       det.appendChild(lsRow);
     }
+    // ── fix 4: 装備ステータスも表示 ──
     var eqd=mk('div','ceq');
     var sl2=['weapon','armor','ring'];
     var slIcons=['⚔','🛡','💍'];
@@ -1927,7 +1826,12 @@ function renderChars(){
       var it=eq[sl2[si]];
       var iD=it?gid(it.id2):null;
       var plusStr=(it&&it.plus>0)?(' +'+it.plus):'';
-      var eqBtn=mk('button','eqb ceq-slot-btn',slIcons[si]+(iD?(iD.name+plusStr):slNames[si]+'なし'));
+      var eqLabel=slIcons[si]+(iD?(iD.name+plusStr):slNames[si]+'なし');
+      if(iD){
+        var stTxt=ss(iD,it.plus,it.q);
+        eqLabel+='  ['+stTxt+']';
+      }
+      var eqBtn=mk('button','eqb ceq-slot-btn',eqLabel);
       if(iD){var qi3=qi(it.plus,!!it.anc);eqBtn.classList.add(qi3.c);}
       (function(cid2,slot2){eqBtn.addEventListener('click',function(ev){ev.stopPropagation();openCharEqPicker(cid2,slot2);});})(d.id,sl2[si]);
       eqd.appendChild(eqBtn);
@@ -1963,9 +1867,8 @@ function toggleP(id){
   renderChars();renderPC();save();
 }
 
-// Item rarity border class helper (based on plus, not quality)
 function rarityBorderClass(plus,isAnc){
-  if(isAnc)return 'rq6'; // origin = red border
+  if(isAnc)return 'rq6';
   var r=qi(plus,false).r;
   return 'rq'+r;
 }
@@ -1975,7 +1878,6 @@ var _selPartyIdx=-1;
 var _charSort='join';
 function renderInv(){
   var list=g('ilist');if(!list)return;list.innerHTML='';
-  // Tab bar
   var tabs=[['weapon','⚔ 武器'],['armor','🛡 防具'],['ring','💍 アクセ']];
   var tabBar=mk('div','inv-tabs');
   tabs.forEach(function(tb){
@@ -2004,7 +1906,6 @@ function renderInv(){
     det.appendChild(mk('div','iistat',ss(e.d,e.it.plus,e.it.q)));
     row.appendChild(det);
     if(e.it.plus>0)row.appendChild(mk('div','iipl','+'+e.it.plus));
-    // Lock toggle button
     var lockBtn=mk('button','inv-lock-btn',e.it.locked?'🔒':'🔓');
     lockBtn.title=e.it.locked?'ロック解除':'ロックする';
     (function(it2){lockBtn.addEventListener('click',function(ev){
@@ -2014,12 +1915,10 @@ function renderInv(){
     });})(e.it);
     row.appendChild(lockBtn);
     (function(it2,oi){row.addEventListener('click',function(){openEQ(it2,oi);});})(e.it,e.i);
-    // Visual: dim if locked
     if(e.it.locked)row.style.opacity='0.7';
     list.appendChild(row);
   }
 }
-
 
 // ── EQUIPPED ITEM HELPERS ─────────────────────────────
 function invKey(it){return it.id2+'_'+it.q+'_'+it.plus+'_'+(it.anc?1:0);}
@@ -2034,18 +1933,6 @@ function getEquippedItemKeys(){
     }
   }
   return map;
-}
-// ── BULK DISCARD ──────────────────────────────────────
-function bulkDiscard(minR,maxR){
-  var before=G.inv.length;
-  G.inv=G.inv.filter(function(it){
-    if(it.locked)return true; // never discard locked
-    var r=qi(it.plus,!!it.anc).r;
-    return r<minR||r>maxR;
-  });
-  var removed=before-G.inv.length;
-  log('sy',removed+'個を破棄した。');
-  renderInv();save();
 }
 
 // ── OVERLAYS ──────────────────────────────────────────
@@ -2062,7 +1949,7 @@ function openMedal(){
   if(!G.medals){log('sy','加護がありません');return;}
   var ml=g('mlist');if(!ml)return;ml.innerHTML='';
   for(var i=0;i<G.party.length;i++){
-    var id=G.party[i];if(!id)continue; // null スロットをスキップ
+    var id=G.party[i];if(!id)continue;
     var d=cdef(id);var c=G.chars[id];if(!d||!c)continue;
     var bp=null;for(var j=0;j<G.dun.bp.length;j++){if(G.dun.bp[j].id===id){bp=G.dun.bp[j];break;}}
     var hp=bp?bp.hp:cst(id).hp;var mhp=bp?bp.mhp:cst(id).hp;
@@ -2084,8 +1971,6 @@ function useM(id){
   var bp=null;for(var i=0;i<G.dun.bp.length;i++){if(G.dun.bp[i].id===id){bp=G.dun.bp[i];break;}}
   if(!bp||bp.hp<=0)return;
   var h=Math.floor(bp.mhp*.4);bp.hp=Math.min(bp.mhp,bp.hp+h);
-  // Clear all status ailments on target
-  // 状態異常（敵ではなく味方の状態異常は現在未実装だが将来用に)
   G.medals--;
   log('hl',G.chars[id].nm+' に加護! HP+'+h);
   updH();renderPC();var ov=g('movl');if(ov)ov.classList.add('hidden');save();
@@ -2099,7 +1984,6 @@ function openEQ(it,idx){
   var qstr=it.q+'%';
   var ed=g('edesc');if(ed)ed.textContent='['+qi2.n+'] 品質'+qstr+plusStr+'  '+ss(iD,it.plus,it.q);
   var cl=g('echars');if(!cl)return;cl.innerHTML='';
-  // Hide comparison initially
   var cmpEl=g('ecmp');if(cmpEl)cmpEl.style.display='none';
   for(var ci=0;ci<CD.length;ci++){
     var d=CD[ci];if(!G.chars[d.id].ul)continue;
@@ -2109,7 +1993,6 @@ function openEQ(it,idx){
     row.appendChild(mk('div',null,d.em));
     var inf=mk('div','drd');
     inf.appendChild(mk('div','drnm',d.nm));
-    // Comparison line
     var cmpTxt='現在: '+curTxt;
     if(cur){
       var curD=gid(cur.id2);
@@ -2126,6 +2009,9 @@ function openEQ(it,idx){
             var arrow=n>o?'▲':'▼';
             var col=n>o?'#40e870':'#ff5050';
             diff.push('<span style="color:'+col+';font-weight:bold">'+arrow+k.toUpperCase()+(n>o?'+':(n-o))+'</span>');
+          } else {
+            // ── fix 8: 同値の場合は明示 ──
+            diff.push('<span style="color:#a0a0c0">＝'+k.toUpperCase()+n+'(同値)</span>');
           }
         });
         if(diff.length)cmpTxt+='  '+diff.join(' ');
@@ -2154,7 +2040,6 @@ function showCmp(charId,newItemD,newItem){
   var cur=eq[newItemD.t];
   cmpEl.style.display='grid';
   cmpEl.innerHTML='';
-  // New item column
   var nc=mk('div','cmp-col');
   nc.appendChild(mk('div','cmp-title','NEW'));
   nc.appendChild(mk('div','cmp-nm',newItemD.name+(newItem.plus>0?' +'+newItem.plus:'')));
@@ -2164,10 +2049,11 @@ function showCmp(charId,newItemD,newItem){
     var k=ks[i];var nv=ns[k]||0;
     var ov2=0;if(cur){var od=gid(cur.id2);if(od&&od.stats[k])ov2=cs(od.stats[k],cur.plus,cur.q);}
     var cls='cmp-stat '+(nv>ov2?'cmp-up':nv<ov2?'cmp-dn':'cmp-eq');
-    nc.appendChild(mk('div',cls,k.toUpperCase()+': '+nv));
+    // ── fix 8: 同値なら (同値) 表示 ──
+    var eqSuffix=(nv===ov2&&ov2>0)?' (同値)':'';
+    nc.appendChild(mk('div',cls,k.toUpperCase()+': '+nv+eqSuffix));
   }
   cmpEl.appendChild(nc);
-  // Current item column
   var oc=mk('div','cmp-col');
   oc.appendChild(mk('div','cmp-title','現在'));
   if(cur){
@@ -2180,7 +2066,8 @@ function showCmp(charId,newItemD,newItem){
         var k2=ks2[i];var ov3=os[k2]||0;
         var nv2=ns[k2]||0;
         var cls2='cmp-stat '+(ov3<nv2?'cmp-dn':ov3>nv2?'cmp-up':'cmp-eq');
-        oc.appendChild(mk('div',cls2,k2.toUpperCase()+': '+ov3));
+        var eqSuffix2=(ov3===nv2&&nv2>0)?' (同値)':'';
+        oc.appendChild(mk('div',cls2,k2.toUpperCase()+': '+ov3+eqSuffix2));
       }
     }
   } else {
@@ -2204,14 +2091,10 @@ function doEQ(cid,sl,it,invIdxOverride){
   renderInv();renderChars();renderPC();save();
 }
 
-
 // ── CHAR EQUIP FROM WARRIOR TAB ───────────────────────
 var _ceqCharId=null, _ceqSlot=null;
-
-// statキー表示名
 var STAT_LABEL={atk:'ATK',def:'DEF',hp:'HP'};
 
-// 装備アイテムの実効ステータスをオブジェクトで返す
 function itemStats(it){
   if(!it)return{};
   var d=gid(it.id2);if(!d)return{};
@@ -2221,7 +2104,6 @@ function itemStats(it){
   return r;
 }
 
-// diff表示用文字列を生成（▲up / ▼dn / → same）
 function buildDiffEl(newSt, curSt){
   var allKeys={};
   var ks1=Object.keys(newSt);var ks2=Object.keys(curSt);
@@ -2240,7 +2122,8 @@ function buildDiffEl(newSt, curSt){
     } else if(diff<0){
       el=mk('span','sd-dn','▼'+lbl+' '+diff);
     } else {
-      el=mk('span','sd-eq','→'+lbl+' '+nv);
+      // ── fix 8: 同値はグレーで「＝同値」表示 ──
+      el=mk('span','sd-eq','＝'+lbl+' '+nv+' (同値)');
     }
     wrap.appendChild(el);
   }
@@ -2253,7 +2136,6 @@ function openCharEqPicker(charId, slot){
   var slotName=slot==='weapon'?'武器':slot==='armor'?'防具':'アクセサリー';
   var t=g('ceqTitle');if(t)t.textContent=slotIcon+' '+G.chars[charId].nm+' の'+slotName;
 
-  // ── 現在装備パネル ──────────────────────────────────
   var panel=g('ceqCurPanel');
   if(panel){
     panel.innerHTML='';
@@ -2286,15 +2168,14 @@ function openCharEqPicker(charId, slot){
 
   var list=g('ceqList');if(!list)return;
   list.innerHTML='';
+  var cur2=(G.eq[charId]||{})[slot];
 
-  // ── 「外す」行 ───────────────────────────────────────
-  if(cur){
+  if(cur2){
     var curRow=mk('div','dr');
     curRow.appendChild(mk('div',null,'🔲'));
     var ci2=mk('div','drd');
     ci2.appendChild(mk('div','drnm','外す'));
-    // 外すと失われるステータス表示
-    var lostSt=itemStats(cur);
+    var lostSt=itemStats(cur2);
     var lostKeys=Object.keys(lostSt);
     var lostTxt=lostKeys.map(function(k){return (STAT_LABEL[k]||k.toUpperCase())+' -'+lostSt[k];}).join('  ');
     ci2.appendChild(mk('div','drsub sd-dn',lostTxt||''));
@@ -2313,7 +2194,6 @@ function openCharEqPicker(charId, slot){
     list.appendChild(curRow);
   }
 
-  // ── インベントリから候補 ─────────────────────────────
   var matches=[];
   for(var i=0;i<G.inv.length;i++){
     var it=G.inv[i];var d=gid(it.id2);
@@ -2326,6 +2206,7 @@ function openCharEqPicker(charId, slot){
   if(!matches.length){
     list.appendChild(mk('div','em2','該当装備なし'));
   }
+  var curStForDiff=(G.eq[charId]||{})[slot];
   for(var mi=0;mi<matches.length;mi++){
     var m=matches[mi];
     var qi2=qi(m.it.plus,!!m.it.anc);
@@ -2335,17 +2216,14 @@ function openCharEqPicker(charId, slot){
     var ps=m.it.plus>0?' +'+m.it.plus:'';
     inf.appendChild(mk('div','drnm '+qi2.c,m.d.name+ps+'  ['+qi2.n+'] 品質'+m.it.q+'%'));
 
-    // ステータス実値
     var newSt=itemStats(m.it);
     var stTxt=Object.keys(newSt).map(function(k){return (STAT_LABEL[k]||k.toUpperCase())+' '+newSt[k];}).join('  ');
     inf.appendChild(mk('div','drsub',stTxt));
 
-    // diff表示（装備中がある場合のみ）
-    if(cur){
-      var curSt2=itemStats(cur);
+    if(curStForDiff){
+      var curSt2=itemStats(curStForDiff);
       inf.appendChild(buildDiffEl(newSt,curSt2));
     } else {
-      // 未装備→全部UP扱い
       var upWrap=mk('div','ceq-diff');
       var upKeys=Object.keys(newSt);
       for(var ui=0;ui<upKeys.length;ui++){
@@ -2366,6 +2244,7 @@ function openCharEqPicker(charId, slot){
   }
   var o=g('ceqOvl');if(o)o.classList.remove('hidden');
 }
+
 // ── VIEW SWITCH ───────────────────────────────────────
 function sv(v){
   var vs=['vb','vc','vi'];var ns=['nvb','nvc','nvi'];
@@ -2417,13 +2296,11 @@ on('bfight',function(){var e=G.dun.pend;G.dun.pend=null;var o=g('encovl');if(o)o
 on('bflee',function(){
   G.dun.pend=null;
   var o=g('encovl');if(o)o.classList.add('hidden');
-  // Progress is NOT lost on flee
   G.dun.phase='exploring';
   log('sy','逃げた!');
   if(!eT)eT=setInterval(eTick,200);
   updFloor();
 });
-// Mid-floor choice
 on('mid-cont',function(){
   var o=g('midcovl');if(o)o.classList.add('hidden');
   G.dun.phase='exploring';
@@ -2434,7 +2311,6 @@ on('mid-back',function(){
   var o=g('midcovl');if(o)o.classList.add('hidden');
   returnToBase();
 });
-// Floor clear choice
 on('fc-next',function(){
   var o=g('fcovl');if(o)o.classList.add('hidden');
   advanceNextFloor();
@@ -2443,21 +2319,16 @@ on('fc-back',function(){
   var o=g('fcovl');if(o)o.classList.add('hidden');
   returnToBase();
 });
-// Bulk discard
-on('bulk-all',function(){
-  var eq_ids=getEquippedItemKeys();
-  var removed=0;
-  G.inv=G.inv.filter(function(it,idx){
-    if(it.locked)return true;
-    if(eq_ids[invKey(it)])return true;
-    removed++;return false;
-  });
-  log('sy',removed+'個を破棄(ロック・装備中を除く)');renderInv();save();
-});
-on('bulk-norm',function(){bulkDiscard(1,1);});
-on('bulk-rare',function(){bulkDiscard(1,2);});
-// Sell all: skip locked and equipped
+// ── fix 7: 売却確認モーダル経由 ──
 on('bulk-sell',function(){
+  var eq_ids=getEquippedItemKeys();
+  var cnt=0;
+  G.inv.forEach(function(it){if(!it.locked&&!eq_ids[invKey(it)])cnt++;});
+  var txt=g('sell-confirm-txt');
+  if(txt)txt.textContent='装備中・ロック以外の装備品を\n'+cnt+'個売却します。\nこの操作は取り消せません。';
+  var o=g('sellovl');if(o)o.classList.remove('hidden');
+});
+on('sell-confirm-ok',function(){
   var eq_ids=getEquippedItemKeys();
   var removed=0;
   G.inv=G.inv.filter(function(it){
@@ -2465,8 +2336,11 @@ on('bulk-sell',function(){
     if(eq_ids[invKey(it)])return true;
     removed++;return false;
   });
-  log('sy','装備中・ロック以外 '+removed+'個を売却した');renderInv();save();
+  log('sy','装備中・ロック以外 '+removed+'個を売却した');
+  var o=g('sellovl');if(o)o.classList.add('hidden');
+  renderInv();save();
 });
+on('sell-confirm-cancel',function(){var o=g('sellovl');if(o)o.classList.add('hidden');});
 
 // ── INIT ─────────────────────────────────────────────
 load();updH();updFloor();renderPC();renderB();updLootCount();updLeaderPanel();
