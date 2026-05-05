@@ -183,7 +183,7 @@ nav{background:#0a0916;border-top:1px solid var(--brd2);display:flex;flex-shrink
   margin-bottom:6px;position:relative}
 .cc.fr{border-color:var(--gdim)}.cc.bk2{border-color:#2a3870}.cc.lk{opacity:.38;cursor:default}
 .cav{display:none}
-.cdet{flex:1;min-width:0}
+.cdet{flex:1;min-width:0;padding-right:36px}
 .cnmr{display:flex;align-items:center;gap:7px;margin-bottom:3px;flex-wrap:wrap}
 .cnm{font-size:17px;font-weight:bold}
 .ccls{font-size:11px;color:var(--tdim);background:var(--bg3);border:1px solid var(--brd);padding:2px 7px;border-radius:3px}
@@ -196,7 +196,14 @@ nav{background:#0a0916;border-top:1px solid var(--brd2);display:flex;flex-shrink
 .csk{font-size:11px;color:var(--tdim);font-style:italic;margin-bottom:4px}
 .ceq{display:flex;gap:4px;flex-wrap:wrap}
 .eqb{font-size:11px;background:var(--bg3);border:1px solid var(--brd);padding:3px 7px;border-radius:3px;color:var(--tdim)}
-.pb{position:absolute;top:6px;right:6px;font-size:8px;padding:1px 6px;border-radius:2px}
+/* 前衛/後衛バッジ: 枠の右端に固定 */
+.pb{position:absolute;top:6px;right:6px;font-size:8px;padding:2px 7px;border-radius:3px;white-space:nowrap}
+.pb.fr{background:var(--gdim);color:#060400}
+.pb.bk2{background:#182858;color:#6888c0;border:1px solid #2a3870}
+/* インライン用(未使用) */
+.pb-inline{display:none}
+.pb-fr{background:var(--gdim);color:#060400}
+.pb-bk2{background:#182858;color:#6888c0;border:1px solid #2a3870}
 .pb.fr{background:var(--gdim);color:#060400}
 .pb.bk2{background:#182858;color:#6888c0;border:1px solid #2a3870}
 .exw{background:var(--bg3);height:2px;border-radius:1px;margin-top:4px;overflow:hidden}
@@ -335,8 +342,9 @@ padding:1px 5px;border-radius:3px}
 .sd-eq{font-size:11px;color:#a0a0c0;background:rgba(40,40,70,.2);padding:1px 5px;border-radius:3px}
 .ceq-diff{display:flex;gap:5px;flex-wrap:wrap;margin-top:4px}
 /* Leader skill */
-.ldr-badge{position:absolute;top:3px;right:3px;background:#b8920a;border-radius:3px;
-font-size:8px;color:#fff;padding:1px 4px;font-weight:bold;pointer-events:none}
+/* ★LEADERバッジ: 名前行末尾インライン */
+.ldr-badge{display:inline-block;background:#b8920a;border-radius:3px;
+font-size:8px;color:#fff;padding:1px 5px;font-weight:bold;vertical-align:middle;white-space:nowrap;margin-left:4px}
 .ls-box{background:rgba(30,24,55,.95);border:1px solid var(--gdim);border-radius:6px;
 padding:7px 10px;margin-bottom:7px;flex-shrink:0}
 .ls-nm{font-size:11px;color:var(--gold);font-weight:bold;margin-bottom:1px}
@@ -1792,11 +1800,14 @@ function renderChars(){
     var eq=G.eq[d.id]||{};
     var cardCls='cc'+(row?' '+row:'')+(d.id===G.leader?' leader':'');
     var card=mk('div',cardCls);
-    if(d.id===G.leader)card.appendChild(mk('div','ldr-badge','★ LEADER'));
     card.appendChild(mk('div','cav',d.em));
     var det=mk('div','cdet');
     // ── fix 3: フルネームのみ表示 ──
-    var nr=mk('div','cnmr');nr.appendChild(mk('span','cnm',d.fn));nr.appendChild(mk('span','ccls',d.cls));det.appendChild(nr);
+    var nr=mk('div','cnmr');
+    nr.appendChild(mk('span','cnm',d.fn));
+    nr.appendChild(mk('span','ccls',d.cls));
+    if(d.id===G.leader){nr.appendChild(mk('span','ldr-badge','★ LEADER'));}
+    det.appendChild(nr);
     // ── fix 3: 次Lv EXP表示追加 ──
     var expNext=c.lv>=LV_CAP?'MAX':((c.en-c.exp).toLocaleString());
     det.appendChild(mk('div','clv','Lv.'+c.lv+(c.lv>=LV_CAP?' [MAX]':'')+' (次Lv: EXP '+expNext+')'));
@@ -1839,7 +1850,7 @@ function renderChars(){
     det.appendChild(eqd);
     var ew=mk('div','exw');var eb=mk('div','exb');eb.style.width=ep+'%';ew.appendChild(eb);det.appendChild(ew);
     card.appendChild(det);
-    if(row){var pb=mk('div','pb '+row,row==='fr'?'前衛':'後衛');card.appendChild(pb);}
+    if(row){var pb=mk('div','pb '+(row==='fr'?'fr':'bk2'),row==='fr'?'前衛':'後衛');card.appendChild(pb);}
     (function(id){card.addEventListener('click',function(){toggleP(id);});})(d.id);
     list.appendChild(card);
   }
