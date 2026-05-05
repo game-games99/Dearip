@@ -97,7 +97,7 @@ nav{background:#0a0916;border-top:1px solid var(--brd2);display:flex;flex-shrink
 /* LOG */
 .blog{flex-shrink:0;height:84px;overflow:hidden;padding:3px 8px 2px;
   background:#060510;border-top:1px solid var(--brd);border-bottom:1px solid var(--brd);
-  font-size:10.5px;line-height:1.7;display:flex;flex-direction:column;justify-content:flex-end;gap:0}
+  font-size:12px;line-height:1.75;display:flex;flex-direction:column;justify-content:flex-end;gap:0}
 .ll{width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 /* Floor select */
 .fs-grid{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px;justify-content:center;max-height:55vh;overflow-y:auto}
@@ -119,44 +119,50 @@ nav{background:#0a0916;border-top:1px solid var(--brd2);display:flex;flex-shrink
 .ll.ch{color:#7838a8}.ll.cg{color:var(--gold)}.ll.cd{color:#30a8c8}.ll.ca{color:#c09820}
 .ll.er{color:#ff4040}.ll.ev{color:#8860d0}.ll.wa{color:#c07820}
 /* PARTY */
-.psec{flex-shrink:0;background:#05040c;padding:3px 4px;display:flex;flex-direction:column;gap:2px}
+.psec{flex-shrink:0;background:#05040c;padding:2px 4px;display:flex;flex-direction:column;gap:1px}
 .rlbl{font-size:8px;color:var(--tdim);letter-spacing:.1em;padding:1px 3px}
 .prow{display:flex;gap:3px}
-.pc{flex:1;position:relative;border-radius:5px;border:1px solid #1c2e50;
-  height:130px;background:linear-gradient(180deg,#0f1c36,#0a1428);
-  display:flex;flex-direction:column;align-items:center;padding:5px 3px 3px}
+.pc{flex:1;position:relative;border-radius:4px;border:1px solid #1c2e50;
+  height:96px;background:linear-gradient(180deg,#0f1c36,#0a1428);
+  display:flex;flex-direction:column;align-items:center;padding:4px 3px 2px}
 .pc.dead{opacity:.35;filter:grayscale(.8)}
-.pc.sel{border-color:#c9a227;box-shadow:0 0 8px rgba(201,162,39,.5);}
-.pc.bk{border-color:#14204a;height:120px;background:linear-gradient(180deg,#101830,#080e22)}
-.pc-nm{font-size:10.5px;font-weight:bold;color:#d0dff8;white-space:nowrap;overflow:hidden;
-  text-overflow:ellipsis;width:100%;text-align:center;margin-bottom:1px}
-.pc-cls{font-size:8px;color:#6880a0;text-align:center;margin-bottom:3px;
+.pc.sel{border-color:#c9a227;box-shadow:0 0 6px rgba(201,162,39,.5);}
+.pc.bk{border-color:#14204a;height:88px;background:linear-gradient(180deg,#101830,#080e22)}
+.pc.leader{}
+.pc-nm{font-size:10px;font-weight:bold;color:#d0dff8;white-space:nowrap;overflow:hidden;
+  text-overflow:ellipsis;width:100%;text-align:center;margin-bottom:0px}
+.pc-cls{font-size:7.5px;color:#6880a0;text-align:center;margin-bottom:2px;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%}
 .pc-buffs{display:flex;gap:2px;flex-wrap:wrap;justify-content:center;
-  min-height:14px;margin-bottom:3px;width:100%}
-.pc-buff{font-size:8px;background:rgba(20,40,70,.9);border-radius:2px;
-  padding:0 3px;line-height:14px;white-space:nowrap}
-.pc-buff.up{color:#50d080}   /* バフ */
-.pc-buff.dn{color:#e05050}   /* デバフ */
-.pc-buff.st{color:#e0c040}   /* 状態異常 */
-.pc-buff.ld{color:#c9a227}   /* リーダー効果 */
-.pc-ht{font-size:7.5px;color:#8898b8;text-align:center;margin-bottom:2px}
-.pc-hw{width:100%;height:5px;background:rgba(8,12,24,.7);border-radius:2px;overflow:hidden}
+  min-height:12px;margin-bottom:2px;width:100%}
+.pc-buff{font-size:7.5px;background:rgba(20,40,70,.9);border-radius:2px;
+  padding:0 2px;line-height:12px;white-space:nowrap}
+.pc-buff.up{color:#50d080}
+.pc-buff.dn{color:#e05050}
+.pc-buff.st{color:#e0c040}
+.pc-buff.ld{color:#c9a227}
+.pc-ht{font-size:7px;color:#8898b8;text-align:center;margin-bottom:1px}
+.pc-hw{width:100%;height:4px;background:rgba(8,12,24,.7);border-radius:2px;overflow:hidden}
 .pc-hb{height:100%;background:linear-gradient(90deg,#1e5428,#2e8040);transition:width .3s}
 .pc-hb.lo{background:linear-gradient(90deg,#786018,#b09028)}
 .pc-hb.cr{background:linear-gradient(90deg,#701818,#a82828)}
 .pc-do{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-  font-size:22px;background:rgba(0,0,0,.5);border-radius:5px}
-.pc-ct{font-size:7px;color:#6880a0;text-align:center;height:11px;line-height:11px;margin-top:1px}
-.pslot{flex:1;height:130px;background:rgba(255,255,255,.02);
-  border:1px dashed #1a2840;border-radius:5px;
+  font-size:20px;background:rgba(0,0,0,.5);border-radius:4px}
+.pc-ct{font-size:7px;color:#6880a0;text-align:center;height:10px;line-height:10px;margin-top:0}
+.pc-ldr-badge{position:absolute;top:2px;right:2px;font-size:7px;color:#c9a227;
+  background:rgba(0,0,0,.7);border-radius:2px;padding:0 2px;pointer-events:none;line-height:12px}
+.pslot{flex:1;height:96px;background:rgba(255,255,255,.02);
+  border:1px dashed #1a2840;border-radius:4px;
   display:flex;align-items:center;justify-content:center}
-.pslot.bk{height:120px}
+.pslot.bk{height:88px}
 .pslot-t{font-size:9px;color:var(--tdim);text-align:center;line-height:1.6}
 /* CONTROLS */
 .ctrl{flex-shrink:0;display:flex;align-items:center;gap:5px;
   padding:4px 6px;background:#08070e;border-top:1px solid var(--brd)}
 .gd{font-size:12px;color:var(--gold)}
+.gd-leader{flex:1;min-width:0;overflow:hidden}
+.gd-leader-eff{font-size:9px;color:var(--tdim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gd-leader-nm{font-size:9px;color:var(--gold);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .sbtn{margin-left:auto;background:linear-gradient(180deg,#1a2c44,#0e1c2c);
   border:1px solid var(--tel);color:#68a0c0;border-radius:4px;padding:9px 15px;
   cursor:pointer;font-size:12px;letter-spacing:.06em}
@@ -166,22 +172,21 @@ nav{background:#0a0916;border-top:1px solid var(--brd2);display:flex;flex-shrink
   margin-bottom:4px;padding-bottom:4px;border-bottom:1px solid var(--brd);flex-shrink:0}
 .vs{font-size:11px;color:var(--tdim);margin-bottom:7px;flex-shrink:0}
 .cc{background:var(--bg2);border:1px solid var(--brd);border-radius:5px;
-  padding:8px;display:flex;align-items:flex-start;gap:8px;cursor:pointer;
-  margin-bottom:5px;position:relative}
+  padding:11px 10px;display:flex;align-items:flex-start;gap:8px;cursor:pointer;
+  margin-bottom:6px;position:relative}
 .cc.fr{border-color:var(--gdim)}.cc.bk2{border-color:#2a3870}.cc.lk{opacity:.38;cursor:default}
-.cav{width:42px;height:50px;flex-shrink:0;background:#0a1020;border-radius:3px;
-  display:flex;align-items:center;justify-content:center;font-size:26px}
+.cav{display:none}  /* 短縮アルファベット非表示 */
 .cdet{flex:1;min-width:0}
-.cnmr{display:flex;align-items:center;gap:5px;margin-bottom:1px;flex-wrap:wrap}
-.cnm{font-size:13px;font-weight:bold}
-.ccls{font-size:9px;color:var(--tdim);background:var(--bg3);border:1px solid var(--brd);padding:1px 5px;border-radius:2px}
-.cfn{font-size:9px;color:var(--tdim);margin-bottom:2px}
-.clv{font-size:11px;color:var(--gold);margin-bottom:3px}
-.cst{display:flex;gap:5px;flex-wrap:nowrap;margin-bottom:2px;overflow:hidden}
-.st{font-size:9px;color:var(--tdim);white-space:nowrap}.st span{color:var(--txt)}
-.csk{font-size:10px;color:var(--tdim);font-style:italic;margin-bottom:3px}
-.ceq{display:flex;gap:3px;flex-wrap:wrap}
-.eqb{font-size:9px;background:var(--bg3);border:1px solid var(--brd);padding:1px 4px;border-radius:2px;color:var(--tdim)}
+.cnmr{display:flex;align-items:center;gap:7px;margin-bottom:3px;flex-wrap:wrap}
+.cnm{font-size:17px;font-weight:bold}
+.ccls{font-size:11px;color:var(--tdim);background:var(--bg3);border:1px solid var(--brd);padding:2px 7px;border-radius:3px}
+.cfn{font-size:11px;color:var(--tdim);margin-bottom:3px}
+.clv{font-size:13px;color:var(--gold);margin-bottom:4px}
+.cst{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:3px}
+.st{font-size:11px;color:var(--tdim);white-space:nowrap}.st span{color:var(--txt);font-weight:bold}
+.csk{font-size:11px;color:var(--tdim);font-style:italic;margin-bottom:4px}
+.ceq{display:flex;gap:4px;flex-wrap:wrap}
+.eqb{font-size:11px;background:var(--bg3);border:1px solid var(--brd);padding:3px 7px;border-radius:3px;color:var(--tdim)}
 .pb{position:absolute;top:6px;right:6px;font-size:8px;padding:1px 6px;border-radius:2px}
 .pb.fr{background:var(--gdim);color:#060400}
 .pb.bk2{background:#182858;color:#6888c0;border:1px solid #2a3870}
@@ -190,13 +195,13 @@ nav{background:#0a0916;border-top:1px solid var(--brd2);display:flex;flex-shrink
 .ulk{font-size:10px;color:var(--tdim);margin-top:3px}
 /* INV */
 .ii{background:var(--bg2);border:1px solid var(--brd);border-radius:4px;
-  padding:7px 9px;display:flex;align-items:center;gap:8px;margin-bottom:5px;cursor:pointer}
-.iic{font-size:24px;flex-shrink:0;width:32px;text-align:center}
+  padding:8px 10px;display:flex;align-items:center;gap:9px;margin-bottom:6px;cursor:pointer}
+.iic{font-size:26px;flex-shrink:0;width:34px;text-align:center}
 .iid{flex:1;min-width:0}
-.iinm{font-size:12px;font-weight:bold}
-.iisub{font-size:10px;margin-top:1px}
-.iistat{font-size:10px;color:var(--tdim);margin-top:2px}
-.iipl{font-size:11px;background:var(--bg3);border:1px solid var(--brd2);padding:2px 6px;
+.iinm{font-size:14px;font-weight:bold}
+.iisub{font-size:12px;margin-top:2px}
+.iistat{font-size:12px;color:var(--tdim);margin-top:3px}
+.iipl{font-size:13px;background:var(--bg3);border:1px solid var(--brd2);padding:3px 8px;
   border-radius:3px;color:var(--tel);flex-shrink:0}
 .em2{color:var(--tdim);font-size:12px;text-align:center;padding:30px 10px}
 .st2{font-size:11px;color:var(--gold);letter-spacing:.08em;
@@ -217,12 +222,12 @@ nav{background:#0a0916;border-top:1px solid var(--brd2);display:flex;flex-shrink
 .ii.rq6{border-color:#781818}  /* オリジン 赤 */
 /* INV TABS */
 .inv-tabs{display:flex;gap:0;margin-bottom:6px;border:1px solid var(--brd2);border-radius:4px;overflow:hidden;flex-shrink:0}
-.inv-tab{flex:1;background:var(--bg3);border:none;color:var(--tdim);padding:7px 4px;cursor:pointer;font-size:10px;border-right:1px solid var(--brd2)}
+.inv-tab{flex:1;background:var(--bg3);border:none;color:var(--tdim);padding:8px 4px;cursor:pointer;font-size:12px;border-right:1px solid var(--brd2)}
 .inv-tab:last-child{border-right:none}
 .inv-tab.active{background:rgba(28,48,70,.9);color:var(--txt);border-bottom:2px solid var(--tel)}
 .bulk-bar{display:flex;gap:5px;padding:5px 0;flex-shrink:0}
 .bulk-btn{flex:1;background:var(--bg3);border:1px solid var(--brd2);border-radius:3px;
-  color:var(--tdim);padding:6px 4px;cursor:pointer;font-size:10px}
+  color:var(--tdim);padding:7px 4px;cursor:pointer;font-size:12px}
 .bulk-btn:active{background:var(--bg2)}
 /* OVERLAYS */
 .ovl{position:fixed;inset:0;background:rgba(4,3,10,.88);
@@ -231,8 +236,8 @@ nav{background:#0a0916;border-top:1px solid var(--brd2);display:flex;flex-shrink
   padding:14px;width:310px;max-height:85vh;overflow-y:auto}
 .dlg h3{color:var(--gold);text-align:center;font-size:13px;margin-bottom:10px}
 .dr{background:var(--bg3);border:1px solid var(--brd);border-radius:4px;
-  padding:7px 9px;display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:5px}
-.drd{flex:1}.drnm{font-size:12px;font-weight:bold}.drsub{font-size:10px;color:var(--tdim)}
+  padding:9px 11px;display:flex;align-items:center;gap:9px;cursor:pointer;margin-bottom:6px}
+.drd{flex:1}.drnm{font-size:14px;font-weight:bold}.drsub{font-size:11px;color:var(--tdim)}
 .dr.ded{opacity:.38;cursor:not-allowed}
 .cbtn{width:100%;background:none;border:1px solid var(--brd);border-radius:3px;
   color:var(--tdim);padding:8px;cursor:pointer;font-size:13px;margin-top:6px}
@@ -242,14 +247,24 @@ nav{background:#0a0916;border-top:1px solid var(--brd2);display:flex;flex-shrink
 .sdsc{font-size:11px;color:var(--tdim)}
 /* Comparison UI */
 .cmp-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px}
-.cmp-col{background:var(--bg3);border:1px solid var(--brd);border-radius:4px;padding:6px}
-.cmp-title{font-size:9px;color:var(--tdim);margin-bottom:3px;letter-spacing:.08em}
-.cmp-nm{font-size:11px;font-weight:bold;margin-bottom:2px}
-.cmp-stat{font-size:10px;margin:1px 0}
-.cmp-up{color:#40c060}.cmp-dn{color:#c04040}.cmp-eq{color:var(--tdim)}
+.cmp-col{background:var(--bg3);border:1px solid var(--brd);border-radius:4px;padding:8px}
+.cmp-title{font-size:9px;color:var(--tdim);margin-bottom:4px;letter-spacing:.08em;text-transform:uppercase}
+.cmp-nm{font-size:12px;font-weight:bold;margin-bottom:5px}
+.cmp-stat{font-size:13px;font-weight:bold;margin:3px 0;padding:2px 4px;border-radius:3px}
+.cmp-up{color:#40e870;background:rgba(40,120,60,.2)}
+.cmp-dn{color:#ff5050;background:rgba(120,30,30,.2)}
+.cmp-eq{color:var(--tdim)}
 /* Choice overlay */
-.choice-ovl{position:absolute;inset:0;background:rgba(5,3,12,.88);
-  display:flex;align-items:center;justify-content:center;z-index:25}
+/* Event flash overlay */
+.ev-flash{position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;pointer-events:none;z-index:20;
+  animation:ev-fade 2.0s ease-out forwards}
+@keyframes ev-fade{0%{opacity:1}65%{opacity:1}100%{opacity:0}}
+.ev-flash-icon{font-size:52px;margin-bottom:6px;filter:drop-shadow(0 0 14px rgba(255,240,180,.7))}
+.ev-flash-txt{font-size:13px;font-weight:bold;color:#fff;text-shadow:0 0 8px rgba(0,0,0,.9);
+  text-align:center;padding:3px 12px;border-radius:4px;background:rgba(0,0,0,.45)}
+.choice-ovl{position:fixed;inset:0;background:rgba(5,3,12,.88);
+  display:flex;align-items:center;justify-content:center;z-index:50}
 .choice-dlg{background:var(--bg2);border:1px solid var(--gdim);border-radius:8px;
   padding:18px;text-align:center;width:230px}
 .choice-dlg h3{color:var(--gold);font-size:13px;margin-bottom:6px}
@@ -288,6 +303,8 @@ margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 .inv-lock-btn{background:none;border:none;font-size:14px;cursor:pointer;padding:0 2px;flex-shrink:0;line-height:1;}
 /* Pending loot */
 .loot-bar{font-size:9px;color:var(–gold);padding:1px 4px;background:rgba(90,70,10,.3);border-radius:2px;text-align:center}
+.pc-medal-hint{position:absolute;bottom:14px;left:0;right:0;text-align:center;
+font-size:8px;color:#b8922a;background:rgba(0,0,0,.65);padding:1px 0;pointer-events:none}
 .pc-rem-hint{position:absolute;bottom:2px;left:0;right:0;text-align:center;
 font-size:9px;color:#e04040;background:rgba(0,0,0,.7);padding:1px 0;pointer-events:none;}
 /* Sort buttons */
@@ -302,10 +319,12 @@ padding:7px 10px;margin-bottom:8px;flex-shrink:0}
 .ceq-cur-st{font-size:10px;color:var(–tdim)}
 .ceq-cur-st span{color:var(–txt)}
 /* stat diff tags */
-.sd-up{font-size:10px;color:#4ccc6a;font-weight:bold}
-.sd-dn{font-size:10px;color:#cc5050;font-weight:bold}
-.sd-eq{font-size:10px;color:var(–tdim)}
-.ceq-diff{display:flex;gap:5px;flex-wrap:wrap;margin-top:2px}
+.sd-up{font-size:12px;color:#40e870;font-weight:bold;background:rgba(40,120,60,.15);
+padding:1px 5px;border-radius:3px}
+.sd-dn{font-size:12px;color:#ff5050;font-weight:bold;background:rgba(120,30,30,.15);
+padding:1px 5px;border-radius:3px}
+.sd-eq{font-size:11px;color:var(–tdim)}
+.ceq-diff{display:flex;gap:5px;flex-wrap:wrap;margin-top:4px}
 /* Leader skill */
 .ldr-badge{position:absolute;top:3px;right:3px;background:#b8920a;border-radius:3px;
 font-size:8px;color:#fff;padding:1px 4px;font-weight:bold;pointer-events:none}
@@ -394,9 +413,11 @@ font-size:9px;color:var(–gold);padding:2px 7px;cursor:pointer;margin-top:4px;w
       </div>
       <div class="blog" id="blog"></div>
       <div class="psec" id="psec"></div>
-      <div id="ls-panel" style="flex-shrink:0;padding:4px 8px 0"></div>
       <div class="ctrl">
-        <div class="gd">Best:<span id="best">1F</span></div>
+        <div class="gd-leader" id="ls-panel-inline">
+          <div class="gd-leader-nm" id="ls-inline-nm">リーダー未設定</div>
+          <div class="gd-leader-eff" id="ls-inline-eff">騎士タブで設定</div>
+        </div>
         <div id="loot-cnt" class="loot-bar hidden"></div>
         <button class="sbtn" id="sbtn">▶ 出発</button>
       </div>
@@ -708,6 +729,18 @@ function rollEvent(){
   for(var i=0;i<EVENTS.length;i++){r-=EVENTS[i].w;if(r<=0)return EVENTS[i];}
   return EVENTS[0];
 }
+function showEvFlash(icon, txt, bg){
+  var sc=document.querySelector('.sc');if(!sc)return;
+  // 既存フラッシュ削除
+  var old=sc.querySelector('.ev-flash');if(old)old.remove();
+  var div=mk('div','ev-flash');
+  div.style.background=bg||'rgba(10,8,24,.5)';
+  div.appendChild(mk('div','ev-flash-icon',icon));
+  div.appendChild(mk('div','ev-flash-txt',txt));
+  sc.appendChild(div);
+  setTimeout(function(){if(div.parentNode)div.remove();},2100);
+}
+
 function runEvent(ev){
   var alive=G.dun.bp.filter(function(b){return b.hp>0;});
   if(!alive.length)return;
@@ -715,9 +748,12 @@ function runEvent(ev){
     var tg=alive[rnd(0,alive.length-1)];
     var dex=tg.dex||50;
     var success=Math.random()<(dex/300);
-    if(success){log('ev','⚠️ マジックトラップ → '+tg.nm+'が解除した!');}
-    else{
+    if(success){
+      showEvFlash('⚠️','マジックトラップ → '+tg.nm+'が解除!','rgba(40,30,10,.6)');
+      log('ev','⚠️ マジックトラップ → '+tg.nm+'が解除した!');
+    } else {
       var dmg=Math.floor(tg.mhp*0.15);tg.hp=Math.max(0,tg.hp-dmg);
+      showEvFlash('💥','トラップ発動! '+tg.nm+' -'+dmg,'rgba(60,10,10,.65)');
       log('ev','⚠️ マジックトラップ発動! '+tg.nm+' に'+dmg+'ダメージ!');
       if(tg.hp<=0)log('dt',tg.nm+' 倒れた...');
     }
@@ -725,20 +761,26 @@ function runEvent(ev){
     var t=['iron','iron','iron','copper','copper','silver'];
     if(Math.random()<0.08)t.push('gold');
     var ct=t[rnd(0,t.length-1)];
+    var cIcon={'iron':'📦','copper':'🟫','silver':'🗝️','gold':'✨'}[ct]||'📦';
+    showEvFlash(cIcon,'宝箱発見!','rgba(10,30,50,.6)');
     log('ev','📦 宝箱発見! (帰還後に確認)');
     dropPending(ct,G.fl);
   } else if(ev.id==='heal'){
     for(var i=0;i<alive.length;i++){alive[i].hp=alive[i].mhp;}
+    showEvFlash('💧','回復の泉! 全員HP全回復!','rgba(10,40,50,.6)');
     log('ev','💧 回復の泉! 全員HP全回復!');
   } else if(ev.id==='atk_buff'){
     G.dun.atkBuff=true;
+    showEvFlash('⚔️','力の泉! 次の戦闘 攻撃+20%!','rgba(50,20,10,.6)');
     log('ev','⚔️ 力の泉! 次の戦闘で攻撃力+20%!');
   } else if(ev.id==='def_buff'){
     G.dun.defBuff=true;
+    showEvFlash('🛡️','守りの泉! 次の戦闘 防御+20%!','rgba(10,20,50,.6)');
     log('ev','🛡️ 守りの泉! 次の戦闘で防御力+20%!');
   } else if(ev.id==='stampede'){
     var cnt=rnd(3,5);
     G.dun.stampede=cnt;
+    showEvFlash('💥','スタンピード!\n'+cnt+'連戦!','rgba(60,10,10,.7)');
     log('ev','💥 スタンピード! '+cnt+'連戦が始まる!');
     updStampedeUI();
     trigEnc(Math.random()<0.7?'named_elite':'normal');
@@ -1401,19 +1443,19 @@ function gTick(){
         // 会心倍率（セレネリーダースキル: critMulで変動、デフォルト1.5）
         var dm=isCrit?Math.floor(baseDmg*(ac.critMul||1.5)):baseDmg;
         en.hp=Math.max(0,en.hp-dm);
-        if(en.slp>0){en.slp=0;log('dm',ac.em+'->'+en.nm+': '+dm+(isCrit?' [会心]':'')+(ac.row==='b'?' [後]':'')+' [睡眠解除]');}
-        else log('dm',ac.em+'->'+en.nm+': '+dm+(isCrit?' [会心]':'')+(ac.row==='b'?' [後]':''));
+        if(en.slp>0){en.slp=0;log('dm',ac.nm+'->'+en.nm+': '+dm+(isCrit?' [会心]':'')+(ac.row==='b'?' [後]':'')+' [睡眠解除]');}
+        else log('dm',ac.nm+'->'+en.nm+': '+dm+(isCrit?' [会心]':'')+(ac.row==='b'?' [後]':''));
         // 固定追加ダメ（フィオナ・DEF無視）
         if(ac.fixedBonusDmg>0&&en.hp>0){
           var fbd=Math.max(1,Math.floor(ac.at*ac.fixedBonusDmg));
           en.hp=Math.max(0,en.hp-fbd);
-          log('sk','🐉 固定追加: -'+fbd);
+          log('sk','🐉 固定追加('+ac.nm+'): -'+fbd);
         }
         // 連続攻撃（キリガ）
         if(ac.doubleAtk>0&&Math.random()<ac.doubleAtk&&en.hp>0){
           var d2=Math.max(1,Math.floor((ac.at*am*atkMul-effDef*.28)*(0.7+Math.random()*.3)));
           en.hp=Math.max(0,en.hp-d2);
-          log('sk','⚡ 連続攻撃: -'+d2);
+          log('sk','⚡ 連続('+ac.nm+'): -'+d2);
         }
       } else {
         if(en.slp>0&&res.tp!=='hl'){en.slp=0;}
@@ -1669,6 +1711,9 @@ function makePCard(id,row,partyIdx){
   var isLdr=(G.leader===id);
   var card=mk('div','pc'+(dead?' dead':'')+(row==='b'?' bk':'')+(isSel?' sel':'')+(isLdr?' leader':''));
 
+  // ── リーダーバッジ ────────────────────────────────────
+  if(isLdr)card.appendChild(mk('div','pc-ldr-badge','★'));
+
   // ── 名前 ─────────────────────────────────────────────
   var nmEl=mk('div','pc-nm',c.nm);
   if(isLdr)nmEl.style.color='#c9a227';
@@ -1680,10 +1725,6 @@ function makePCard(id,row,partyIdx){
   // ── バフ/デバフ/状態異常アイコン ────────────────────
   var buffs=mk('div','pc-buffs');
   if(bp){
-    // リーダー
-    if(isLdr&&G.leader&&LS[G.leader]){
-      buffs.appendChild(mk('span','pc-buff ld','★'+LS[G.leader].nm.slice(0,4)));
-    }
     // 技量バフ（クロノスキル等）
     if(bp.dexBufRem>0){
       buffs.appendChild(mk('span','pc-buff up','↑技量 '+bp.dexBufRem+'T'));
@@ -1692,7 +1733,7 @@ function makePCard(id,row,partyIdx){
     if(bp.skCd>0){
       buffs.appendChild(mk('span','pc-buff st','CT:'+bp.skCd));
     }
-    // リーダースキル由来の永続バフ表示
+    // リーダースキル由来の永続バフ
     if(bp.dmgReduce>0)  buffs.appendChild(mk('span','pc-buff up','🛡-'+Math.round(bp.dmgReduce*100)+'%'));
     if(bp.evade>0)      buffs.appendChild(mk('span','pc-buff up','💨'+Math.round(bp.evade*100)+'%'));
     if(bp.critMul>1.5)  buffs.appendChild(mk('span','pc-buff up','🎯×'+bp.critMul));
@@ -1701,7 +1742,6 @@ function makePCard(id,row,partyIdx){
     if(bp.doubleAtk>0)  buffs.appendChild(mk('span','pc-buff up','⚡連撃'));
     if(bp.skRtBonus>0)  buffs.appendChild(mk('span','pc-buff up','✨発動↑'));
     if(bp.fixedBonusDmg>0) buffs.appendChild(mk('span','pc-buff up','🐉固定'));
-    if(bp.dmgAmp>0)     buffs.appendChild(mk('span','pc-buff dn','↑被ダメ'));
   }
   card.appendChild(buffs);
 
@@ -1773,7 +1813,20 @@ function openCharPicker(toIdx){
   ovl.classList.remove('hidden');
 }
 function onPartyCardTap(idx){
-  if(G.dun.active){log('sy','探索中は編成を変更できません');return;}
+  if(G.dun.active){
+    // 探索中: 加護を使うか確認
+    var id=G.party[idx];if(!id)return;
+    var bp=null;for(var i=0;i<G.dun.bp.length;i++){if(G.dun.bp[i].id===id){bp=G.dun.bp[i];break;}}
+    if(!bp||bp.hp<=0){log('sy',G.chars[id].nm+' は戦闘不能');return;}
+    if(!G.medals){log('sy','加護がありません');return;}
+    // 加護を直接使用
+    var h=Math.floor(bp.mhp*.4);
+    bp.hp=Math.min(bp.mhp,bp.hp+h);
+    G.medals--;
+    log('hl','✨ '+G.chars[id].nm+' に加護! HP+'+h+' (残'+G.medals+')');
+    updH();renderPC();save();
+    return;
+  }
   if(_selPartyIdx===-1){
     _selPartyIdx=idx;
     renderPC();
@@ -1797,16 +1850,17 @@ function onPartyCardTap(idx){
   }
 }
 function updLeaderPanel(){
-  var panel=g('ls-panel');if(!panel)return;
-  panel.innerHTML='';
-  if(G.leader&&LS[G.leader]&&G.party.indexOf(G.leader)>=0){
+  var nm=g('ls-inline-nm');var ef=g('ls-inline-eff');
+  if(!nm||!ef)return;
+  if(G.leader&&LS[G.leader]&&G.party.filter(Boolean).indexOf(G.leader)>=0){
     var ls=LS[G.leader];var lnm=G.chars[G.leader]?G.chars[G.leader].nm:'?';
-    var box=mk('div','ls-box');
-    box.appendChild(mk('div','ls-nm','★ リーダー: '+lnm+'「'+ls.nm+'」'));
-    box.appendChild(mk('div','ls-dc',ls.dc));
-    panel.appendChild(box);
+    nm.textContent='★ '+lnm+' ['+ls.nm+']';
+    nm.style.color='#c9a227';
+    ef.textContent=ls.dc;
   } else {
-    panel.appendChild(mk('div','ls-none','リーダー未設定 — 騎士タブで設定'));
+    nm.textContent='リーダー未設定';
+    nm.style.color='var(--tdim)';
+    ef.textContent='騎士タブで設定';
   }
 }
 function setLeader(id){
@@ -1917,7 +1971,8 @@ function rarityBorderClass(plus,isAnc){
 }
 
 var _invTab='weapon';
-var _selPartyIdx=-1; // selected party slot index for swap
+var _selPartyIdx=-1;
+var _charSort='join';
 function renderInv(){
   var list=g('ilist');if(!list)return;list.innerHTML='';
   // Tab bar
@@ -2067,12 +2122,17 @@ function openEQ(it,idx){
         Object.keys(oldStats).forEach(function(k){allKeys[k]=1;});
         Object.keys(allKeys).forEach(function(k){
           var n=newStats[k]||0,o=oldStats[k]||0;
-          if(n!==o)diff.push(k.toUpperCase()+(n>o?'↑':'↓')+(n-o));
+          if(n!==o){
+            var arrow=n>o?'▲':'▼';
+            var col=n>o?'#40e870':'#ff5050';
+            diff.push('<span style="color:'+col+';font-weight:bold">'+arrow+k.toUpperCase()+(n>o?'+':(n-o))+'</span>');
+          }
         });
         if(diff.length)cmpTxt+='  '+diff.join(' ');
       }
     }
-    inf.appendChild(mk('div','drsub',cmpTxt));
+    var cmpEl2=mk('div','drsub');cmpEl2.innerHTML=cmpTxt;
+    inf.appendChild(cmpEl2);
     row.appendChild(inf);
     (function(cid,sl,itm){
       row.addEventListener('click',function(){doEQ(cid,sl,itm);});
