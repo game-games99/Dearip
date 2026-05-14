@@ -113,6 +113,9 @@ nav{background:#0a0916;border-top:1px solid var(--brd2);display:flex;flex-shrink
 .drop-info{flex:1;min-width:0}
 .drop-nm{font-size:11px;font-weight:bold}
 .drop-sub{font-size:10px;color:var(--tdim)}
+.drop-stat{font-size:10px;color:#8898b8;margin-top:2px}
+.drop-opt{font-size:10px;color:#50c8a0;margin-top:1px}
+.drop-opt-rare{color:#e8b820;font-weight:bold}
 .ll.sk{color:#c8a030;font-style:italic}.ll.dm{color:#a05838}
 .ll.hl{color:#389848}.ll.dt{color:#902020;font-weight:600}
 .ll.sy{color:#287888}.ll.lv{color:#b8a82a;font-weight:600}
@@ -355,6 +358,22 @@ padding:7px 10px;margin-bottom:7px;flex-shrink:0}
 .ldr-set-btn{background:rgba(30,24,55,.9);border:1px solid var(--gdim);border-radius:3px;
 font-size:9px;color:var(--gold);padding:2px 7px;cursor:pointer;margin-top:4px;white-space:nowrap}
 .ldr-set-btn.active{background:#3a2a08;border-color:var(--gold);color:#ffe08a}
+/* ── SHOP VIEWS ── */
+#vs.active{overflow-y:auto;padding:8px}
+.shop-sec{background:var(--bg2);border:1px solid var(--brd);border-radius:6px;padding:10px;margin-bottom:10px}
+.shop-sec-title{font-size:12px;color:var(--gold);font-weight:bold;margin-bottom:7px;display:flex;align-items:center;gap:6px}
+.shop-item{background:var(--bg3);border:1px solid var(--brd2);border-radius:4px;padding:8px 10px;
+  display:flex;align-items:center;gap:8px;margin-bottom:6px;cursor:pointer;transition:border-color .15s}
+.shop-item:active{border-color:var(--tel)}
+.shop-item.disabled{opacity:.4;cursor:default}
+.shop-item-info{flex:1;min-width:0}
+.shop-item-nm{font-size:13px;font-weight:bold}
+.shop-item-dc{font-size:11px;color:var(--tdim);margin-top:2px}
+.shop-price{font-size:13px;color:var(--gold);white-space:nowrap;font-weight:bold}
+.smith-star{font-size:16px}
+.buff-active{background:rgba(28,60,40,.8);border:1px solid #306040;border-radius:4px;
+  padding:4px 8px;font-size:11px;color:#50d080;margin-bottom:6px}
+.buff-exclusive{font-size:10px;color:#c07020;margin-bottom:6px}
 .hidden{display:none!important}
 </style>
 
@@ -453,6 +472,11 @@ font-size:9px;color:var(--gold);padding:2px 7px;cursor:pointer;margin-top:4px;wh
       <div class="vs">タップ: 未参加 → 前衛 → 後衛 → 除外</div>
       <div id="clist"></div>
     </div>
+
+    <div id="vs" class="view">
+      <div class="vt">施設</div>
+      <div id="shop-content"></div>
+    </div>
     <div id="vi" class="view">
       <div class="vt">装備品</div>
       <!-- ── fix 7: 売却ボタンのみ ── -->
@@ -466,6 +490,7 @@ font-size:9px;color:var(--gold);padding:2px 7px;cursor:pointer;margin-top:4px;wh
     <button class="nb active" id="nvb">&#x1F5FC; BABEL</button>
     <button class="nb"        id="nvc">&#x2694; 騎士</button>
     <button class="nb"        id="nvi">&#x1F5E1; 装備</button>
+    <button class="nb"        id="nvs">&#x1F3EA; 施設</button>
   </nav>
 </div>
 
@@ -488,7 +513,7 @@ font-size:9px;color:var(--gold);padding:2px 7px;cursor:pointer;margin-top:4px;wh
     <div id="edesc" style="font-size:11px;color:var(--tdim);text-align:center;margin-bottom:6px"></div>
     <div class="cmp-grid" id="ecmp" style="display:none"></div>
     <div id="echars"></div>
-    <button class="cbtn red" id="ediscard">この装備を捨てる</button>
+    <button class="cbtn red" id="ediscard">この装備を売却する</button>
     <button class="cbtn" id="ecancel">キャンセル</button>
   </div>
 </div>
@@ -516,6 +541,25 @@ font-size:9px;color:var(--gold);padding:2px 7px;cursor:pointer;margin-top:4px;wh
     <p style="font-size:11px;color:var(--tdim);text-align:center;margin-bottom:8px">緑=クリア済み / 青=挑戦中</p>
     <div class="fs-grid" id="fslist"></div>
     <button class="cbtn" id="fscancel">キャンセル</button>
+  </div>
+</div>
+
+<!-- 鍛冶屋: 装備選択 -->
+<div class="ovl hidden" id="smithOvl">
+  <div class="dlg">
+    <h3>🔨 鍛冶屋</h3>
+    <p id="smithDesc" style="font-size:11px;color:var(--tdim);text-align:center;margin-bottom:8px"></p>
+    <div id="smithList"></div>
+    <button class="cbtn" id="smithCancel">キャンセル</button>
+  </div>
+</div>
+<!-- 市場: 装備購入 -->
+<div class="ovl hidden" id="marketOvl">
+  <div class="dlg">
+    <h3>🏪 市場</h3>
+    <p style="font-size:11px;color:var(--tdim);text-align:center;margin-bottom:8px">フロアに応じた装備が並ぶ</p>
+    <div id="marketList"></div>
+    <button class="cbtn" id="marketCancel">キャンセル</button>
   </div>
 </div>
 <!-- ── fix 7: 売却確認モーダル ── -->
@@ -630,43 +674,43 @@ function tierF(f){return Math.min(3,Math.floor((f-1)/20));}
 // ── DATA: ENEMIES ─────────────────────────────────────
 var ET=[
  {r:[1,15],pool:[
-  {nm:'グリーンスライム',em:'🟢',hm:1.4,am:1.2,dm:1.0,sm:.5,xp:1.0,sk:'regen'},
-  {nm:'ブラッドバット',  em:'🦇',hm:1.2,am:1.8,dm:0.9,sm:1.5,xp:1.2,sk:'rage'},
-  {nm:'スケルトン',      em:'💀',hm:1.6,am:2.0,dm:1.8,sm:.9,xp:1.3,sk:'charge'},
-  {nm:'スプリン',        em:'👺',hm:1.7,am:1.7,dm:1.2,sm:1.0,xp:1.1,sk:'debuff'},
-  {nm:'ウルフ',          em:'🐺',hm:1.5,am:1.9,dm:1.0,sm:1.2,xp:1.2,sk:'aoe'},
-  {nm:'マッシュ',        em:'🍄',hm:1.9,am:1.5,dm:1.4,sm:.6,xp:1.1,sk:'regen'},
-  {nm:'ゴースト',        em:'👻',hm:1.2,am:2.2,dm:0.7,sm:1.4,xp:1.3,sk:'debuff'},
-  {nm:'シーフ',          em:'🌘',hm:1.4,am:1.9,dm:0.9,sm:1.5,xp:1.2,sk:'rage'},
-  {nm:'ダークフラワー',  em:'🌻',hm:1.5,am:2.0,dm:0.8,sm:.8,xp:1.2,sk:'aoe'},
-  {nm:'リビングアーマー',em:'⚔', hm:2.2,am:1.8,dm:2.8,sm:.5,xp:1.4,sk:'guard'},
+  {nm:'グリーンスライム',em:'🟢',hm:1.4,am:1.2,dm:1.0,sm:.5,xp:0.6,sk:'regen'},
+  {nm:'ブラッドバット',  em:'🦇',hm:1.2,am:1.8,dm:0.9,sm:1.5,xp:0.8,sk:'rage'},
+  {nm:'スケルトン',      em:'💀',hm:1.6,am:2.0,dm:1.8,sm:.9,xp:1.1,sk:'charge'},
+  {nm:'スプリン',        em:'👺',hm:1.7,am:1.7,dm:1.2,sm:1.0,xp:0.7,sk:'debuff'},
+  {nm:'ウルフ',          em:'🐺',hm:1.5,am:1.9,dm:1.0,sm:1.2,xp:0.9,sk:'aoe'},
+  {nm:'マッシュ',        em:'🍄',hm:1.9,am:1.5,dm:1.4,sm:.6,xp:0.7,sk:'regen'},
+  {nm:'ゴースト',        em:'👻',hm:1.2,am:2.2,dm:0.7,sm:1.4,xp:1.0,sk:'debuff'},
+  {nm:'シーフ',          em:'🌘',hm:1.4,am:1.9,dm:0.9,sm:1.5,xp:0.9,sk:'rage'},
+  {nm:'ダークフラワー',  em:'🌻',hm:1.5,am:2.0,dm:0.8,sm:.8,xp:0.8,sk:'aoe'},
+  {nm:'リビングアーマー',em:'⚔', hm:2.2,am:1.8,dm:2.8,sm:.5,xp:1.3,sk:'guard'},
   {nm:'ダイヤモンドゴーレム',em:'💎',hm:5.5,am:2.5,dm:4.5,sm:.3,xp:3.0,rare:true,isDG:true,sk:'charge'}
  ]},
  {r:[16,50],pool:[
-  {nm:'オーガ',          em:'👹',hm:2.5,am:2.4,dm:1.8,sm:.8,xp:1.6,sk:'rage'},
-  {nm:'メデューサ',      em:'🐍',hm:2.0,am:2.3,dm:1.4,sm:1.0,xp:1.7,sk:'debuff'},
-  {nm:'ウェアウルフ',    em:'🐺',hm:2.7,am:2.8,dm:1.8,sm:1.3,xp:1.8,sk:'aoe'},
-  {nm:'ダークメイジ',    em:'🔮',hm:1.8,am:3.2,dm:1.2,sm:.9,xp:1.8,sk:'charge'},
-  {nm:'ストーンゴーレム',em:'🗿',hm:4.0,am:2.2,dm:3.5,sm:.3,xp:2.0,sk:'guard'},
-  {nm:'ハーピー',        em:'🦅',hm:1.6,am:2.5,dm:1.0,sm:1.4,xp:1.7,sk:'rage'},
-  {nm:'ミミック',        em:'📦',hm:3.2,am:2.6,dm:2.0,sm:.7,xp:2.2,rare:true,sk:'aoe'},
+  {nm:'オーガ',          em:'👹',hm:2.5,am:2.4,dm:1.8,sm:.8,xp:1.2,sk:'rage'},
+  {nm:'メデューサ',      em:'🐍',hm:2.0,am:2.3,dm:1.4,sm:1.0,xp:1.1,sk:'debuff'},
+  {nm:'ウェアウルフ',    em:'🐺',hm:2.7,am:2.8,dm:1.8,sm:1.3,xp:1.4,sk:'aoe'},
+  {nm:'ダークメイジ',    em:'🔮',hm:1.8,am:3.2,dm:1.2,sm:.9,xp:1.5,sk:'charge'},
+  {nm:'ストーンゴーレム',em:'🗿',hm:4.0,am:2.2,dm:3.5,sm:.3,xp:1.8,sk:'guard'},
+  {nm:'ハーピー',        em:'🦅',hm:1.6,am:2.5,dm:1.0,sm:1.4,xp:1.0,sk:'rage'},
+  {nm:'ミミック',        em:'📦',hm:3.2,am:2.6,dm:2.0,sm:.7,xp:3.5,rare:true,sk:'aoe'},
   {nm:'ダイヤモンドゴーレム',em:'💎',hm:6.0,am:3.0,dm:5.0,sm:.3,xp:3.5,rare:true,isDG:true,sk:'charge'},
-  {nm:'ブラックナイト',  em:'🖤',hm:3.0,am:2.8,dm:2.6,sm:1.0,xp:2.0,sk:'charge'},
-  {nm:'トロール',        em:'👾',hm:3.5,am:2.5,dm:2.2,sm:.7,xp:1.9,sk:'regen'},
-  {nm:'ネクロマンサー',  em:'💜',hm:1.8,am:3.5,dm:1.0,sm:.9,xp:2.1,sk:'debuff'}
+  {nm:'ブラックナイト',  em:'🖤',hm:3.0,am:2.8,dm:2.6,sm:1.0,xp:1.7,sk:'charge'},
+  {nm:'トロール',        em:'👾',hm:3.5,am:2.5,dm:2.2,sm:.7,xp:1.5,sk:'regen'},
+  {nm:'ネクロマンサー',  em:'💜',hm:1.8,am:3.5,dm:1.0,sm:.9,xp:1.6,sk:'debuff'}
  ]},
  {r:[51,99],pool:[
-  {nm:'レッドドラゴン',  em:'🐉',hm:4.0,am:3.8,dm:3.0,sm:1.1,xp:2.8,sk:'aoe'},
-  {nm:'デーモンロード',  em:'😈',hm:3.5,am:4.2,dm:2.5,sm:1.1,xp:3.0,sk:'debuff'},
-  {nm:'リッチ',          em:'💀',hm:3.0,am:4.8,dm:1.8,sm:1.0,xp:3.2,sk:'charge'},
-  {nm:'ダークゴッド',    em:'👁',hm:3.5,am:4.3,dm:2.5,sm:.9,xp:3.0,sk:'debuff'},
-  {nm:'ベヒーモス',      em:'🦏',hm:6.5,am:3.5,dm:4.2,sm:.5,xp:3.5,sk:'guard'},
-  {nm:'堕天使',          em:'🌑',hm:3.0,am:4.8,dm:2.0,sm:1.3,xp:3.2,sk:'aoe'},
-  {nm:'カオスナイト',    em:'⚫',hm:3.8,am:4.3,dm:3.5,sm:1.1,xp:3.3,sk:'charge'},
-  {nm:'クトゥルフ',      em:'🐙',hm:5.0,am:3.8,dm:3.5,sm:.8,xp:3.5,sk:'aoe'},
-  {nm:'時喰らい',        em:'⏳',hm:4.0,am:5.0,dm:2.5,sm:1.1,xp:4.0,rare:true,sk:'debuff'},
+  {nm:'レッドドラゴン',  em:'🐉',hm:4.0,am:3.8,dm:3.0,sm:1.1,xp:2.2,sk:'aoe'},
+  {nm:'デーモンロード',  em:'😈',hm:3.5,am:4.2,dm:2.5,sm:1.1,xp:2.0,sk:'debuff'},
+  {nm:'リッチ',          em:'💀',hm:3.0,am:4.8,dm:1.8,sm:1.0,xp:2.5,sk:'charge'},
+  {nm:'ダークゴッド',    em:'👁',hm:3.5,am:4.3,dm:2.5,sm:.9,xp:2.3,sk:'debuff'},
+  {nm:'ベヒーモス',      em:'🦏',hm:6.5,am:3.5,dm:4.2,sm:.5,xp:3.0,sk:'guard'},
+  {nm:'堕天使',          em:'🌑',hm:3.0,am:4.8,dm:2.0,sm:1.3,xp:2.4,sk:'aoe'},
+  {nm:'カオスナイト',    em:'⚫',hm:3.8,am:4.3,dm:3.5,sm:1.1,xp:2.6,sk:'charge'},
+  {nm:'クトゥルフ',      em:'🐙',hm:5.0,am:3.8,dm:3.5,sm:.8,xp:2.8,sk:'aoe'},
+  {nm:'時喰らい',        em:'⏳',hm:4.0,am:5.0,dm:2.5,sm:1.1,xp:5.0,rare:true,sk:'debuff'},
   {nm:'ダイヤモンドゴーレム',em:'💎',hm:8.0,am:3.8,dm:6.0,sm:.3,xp:4.5,rare:true,isDG:true,sk:'charge'},
-  {nm:'魔王',            em:'👑',hm:5.0,am:4.8,dm:3.5,sm:1.0,xp:3.8,sk:'rage'}
+  {nm:'魔王',            em:'👑',hm:5.0,am:4.8,dm:3.5,sm:1.0,xp:3.2,sk:'rage'}
  ]}
 ];
 var EL=[
@@ -679,18 +723,122 @@ var EL=[
   {nm:'アイ・オブ・カオス',em:'👁',hm:4.8,am:4.5,dm:1.8,sm:.9,sk:'debuff'},
   {nm:'シャドウドラゴン',em:'🐲',hm:6.0,am:3.8,dm:3.5,sm:1.0,sk:'charge'}
 ];
-var GB={
-  5:{nm:'子×牡羊座',em:'🐏'},10:{nm:'丑×牡牛座',em:'🐂'},
-  15:{nm:'寅×双子座',em:'🐯'},20:{nm:'卯×蟹座',em:'🦀'},
-  25:{nm:'辰×獅子座',em:'🦁'},30:{nm:'巳×乙女座',em:'🐍'},
-  35:{nm:'午×天秤座',em:'⚖'},40:{nm:'未×蠍座',em:'🦂'},
-  45:{nm:'申×射手座',em:'🏹'},50:{nm:'酉×山羊座',em:'🐓'},
-  55:{nm:'戌×水瓶座',em:'🐕'},60:{nm:'亥×魚座',em:'🐟'},
-  65:{nm:'スケルトンロード',em:'💀'},70:{nm:'ヒュドラ',em:'🐍'},
-  75:{nm:'デーモンクイーン',em:'🔥'},80:{nm:'古代の守護者',em:'🗿'},
-  85:{nm:'アイ・オブ・カオス',em:'👁'},90:{nm:'シャドウドラゴン',em:'🐲'},
-  95:{nm:'深淵の魔王',em:'👑'},99:{nm:'虚無の神',em:'🌌'}
+// フロアマスター定義（全フロア対応）
+// 特定フロアは固有名、それ以外は階層帯ごとの汎用マスター
+var FM_NAMED={
+  5:{nm:'子×牡羊座の番人',em:'🐏'},
+  10:{nm:'丑×牡牛座の番人',em:'🐂'},
+  15:{nm:'寅×双子座の番人',em:'🐯'},
+  20:{nm:'卯×蟹座の番人',em:'🦀'},
+  25:{nm:'辰×獅子座の番人',em:'🦁'},
+  30:{nm:'巳×乙女座の番人',em:'🐍'},
+  35:{nm:'午×天秤座の番人',em:'⚖'},
+  40:{nm:'未×蠍座の番人',em:'🦂'},
+  45:{nm:'申×射手座の番人',em:'🏹'},
+  50:{nm:'酉×山羊座の番人',em:'🐓'},
+  55:{nm:'戌×水瓶座の番人',em:'🐕'},
+  60:{nm:'亥×魚座の番人',em:'🐟'},
+  65:{nm:'スケルトンロード',em:'💀'},
+  70:{nm:'ヒュドラ',em:'🐍'},
+  75:{nm:'デーモンクイーン',em:'🔥'},
+  80:{nm:'古代の守護者',em:'🗿'},
+  85:{nm:'アイ・オブ・カオス',em:'👁'},
+  90:{nm:'シャドウドラゴン',em:'🐲'},
+  95:{nm:'深淵の魔王',em:'👑'},
+  99:{nm:'虚無の神',em:'🌌'}
 };
+// 階層帯ごとの汎用フロアマスター（固有定義のないフロア用）
+var FM_GENERIC=[
+  {r:[1,9],   nm:'フロアガーディアン',   em:'👹'},
+  {r:[10,19], nm:'古城の番兵',           em:'💀'},
+  {r:[20,29], nm:'遺跡の守護者',         em:'🗿'},
+  {r:[30,39], nm:'深淵の門番',           em:'😈'},
+  {r:[40,49], nm:'封印の守り手',         em:'👁'},
+  {r:[50,59], nm:'虚空の審判者',         em:'⚡'},
+  {r:[60,69], nm:'時の番人',             em:'⏳'},
+  {r:[70,79], nm:'竜族の長',             em:'🐉'},
+  {r:[80,89], nm:'零界の支配者',         em:'🌑'},
+  {r:[90,98], nm:'煉獄の魔将',           em:'🔥'},
+  {r:[99,99], nm:'虚無の神',             em:'🌌'}
+];
+function getFM(f){
+  if(FM_NAMED[f])return FM_NAMED[f];
+  for(var i=0;i<FM_GENERIC.length;i++){if(f>=FM_GENERIC[i].r[0]&&f<=FM_GENERIC[i].r[1])return FM_GENERIC[i];}
+  return{nm:'深淵の支配者',em:'👑'};
+}
+// 後方互換
+var GB=FM_NAMED;
+
+// ── RANDOM OPTIONS ────────────────────────────────────
+// plusごとに付くオプション数: +2=1個, +3=2個, +4=3個
+// オプションはアイテム生成時にroll→item.optsに配列保存
+var ROPT_TIERS = [
+  // tier1 (+2で抽選対象, 基本オプション)
+  {id:'atk_pct',   nm:'ATK',     sfx:'%UP',    tier:1,
+   apply:function(bp,v){bp.at=Math.floor(bp.at*(1+v/100));}},
+  {id:'def_pct',   nm:'DEF',     sfx:'%UP',    tier:1,
+   apply:function(bp,v){bp.df=Math.floor(bp.df*(1+v/100));}},
+  {id:'hp_pct',    nm:'MaxHP',   sfx:'%UP',    tier:1,
+   apply:function(bp,v){var a=Math.floor(bp.mhp*v/100);bp.mhp+=a;bp.hp=Math.min(bp.mhp,bp.hp+a);}},
+  {id:'crit_pct',  nm:'会心率',  sfx:'%UP',    tier:1,
+   apply:function(bp,v){bp._critBonus=(bp._critBonus||0)+v/100;}},
+  // tier2 (+3以上で追加解放)
+  {id:'exp_pct',   nm:'EXP獲得', sfx:'%UP',    tier:2,
+   apply:function(bp,v){bp._expBonus=(bp._expBonus||0)+v/100;}},
+  {id:'gold_pct',  nm:'Gold獲得',sfx:'%UP',    tier:2,
+   apply:function(bp,v){bp._goldBonus=(bp._goldBonus||0)+v/100;}},
+  {id:'sk_cd',     nm:'スキルCT',sfx:'回減',   tier:2,
+   apply:function(bp,v){bp.skCd=Math.max(0,bp.skCd-v);}},
+  {id:'psn_res',   nm:'毒耐性',  sfx:'%',      tier:2,
+   apply:function(bp,v){bp._psnRes=(bp._psnRes||0)+v/100;}},
+  // tier3 (+4専用, 高効果レア)
+  {id:'dex_to_atk',nm:'技量→ATK変換', sfx:'%',tier:3,
+   apply:function(bp,v){bp.at+=Math.floor(bp.dex*v/100);}},
+  {id:'fix_dmg',   nm:'固定追加ダメ',  sfx:'%',tier:3,
+   apply:function(bp,v){bp.fixedBonusDmg=(bp.fixedBonusDmg||0)+v/100;}},
+  {id:'dmg_cut',   nm:'被ダメ軽減',    sfx:'%',tier:3,
+   apply:function(bp,v){bp.dmgReduce=(bp.dmgReduce||0)+v/100;}},
+  {id:'double_atk',nm:'連撃確率',      sfx:'%',tier:3,
+   apply:function(bp,v){bp.doubleAtk=(bp.doubleAtk||0)+v/100;}},
+  {id:'def_pen',   nm:'防御貫通',      sfx:'%',tier:3,
+   apply:function(bp,v){bp.defPen=(bp.defPen||0)+v/100;}}
+];
+
+// plusに応じた抽選上限tierと値範囲
+var ROPT_CFG = {
+  2:{count:1, maxTier:1, valRange:[5,15]},
+  3:{count:2, maxTier:2, valRange:[8,20]},
+  4:{count:3, maxTier:3, valRange:[12,30]}
+};
+
+function rollOpts(plus){
+  var cfg=ROPT_CFG[plus];
+  if(!cfg)return[];
+  var pool=ROPT_TIERS.filter(function(o){return o.tier<=cfg.maxTier;});
+  // shuffle pool
+  for(var i=pool.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=pool[i];pool[i]=pool[j];pool[j]=t;}
+  var picked=pool.slice(0,cfg.count);
+  return picked.map(function(o){
+    var v=rnd(cfg.valRange[0],cfg.valRange[1]);
+    return{id:o.id,nm:o.nm,sfx:o.sfx,v:v,tier:o.tier};
+  });
+}
+
+function optLabel(opt){
+  return opt.nm+' +'+opt.v+opt.sfx;
+}
+
+// アイテム装備時にoptをbpに適用
+function applyOpts(bp,opts){
+  if(!opts||!opts.length)return;
+  for(var i=0;i<opts.length;i++){
+    var o=opts[i];
+    var def=null;
+    for(var j=0;j<ROPT_TIERS.length;j++){if(ROPT_TIERS[j].id===o.id){def=ROPT_TIERS[j];break;}}
+    if(def)def.apply(bp,o.v);
+  }
+}
+
 
 function getET(f){for(var i=0;i<ET.length;i++){if(f>=ET[i].r[0]&&f<=ET[i].r[1])return ET[i];}return ET[ET.length-1];}
 function buildEn(f,tp){
@@ -699,9 +847,9 @@ function buildEn(f,tp){
   var pool=[];for(var i=0;i<tierD.pool.length;i++){if(!tierD.pool[i].rare)pool.push(tierD.pool[i]);}
   var base=pool[rnd(0,pool.length-1)];
   var lv=rnd(Math.max(1,f-1),f+2);
-  var bHP=Math.floor((90+f*52)*base.hm);
-  var bAT=Math.floor((18+f*10)*base.am);
-  var bDF=Math.floor((8+f*5)*base.dm);
+  var bHP=Math.floor((60+f*35)*base.hm);
+  var bAT=Math.floor((8+f*5)*base.am);
+  var bDF=Math.floor((5+f*3)*base.dm);
   var bSP=Math.floor(55*base.sm);
   var hm=1,am=1,dm=1,isE=false,isB=false,isR=false,isEl=false;
   var nm=base.nm,em=base.em;
@@ -715,17 +863,18 @@ function buildEn(f,tp){
   } else if(tp==='elite'){
     var ep=EL[(f-1)%EL.length];nm=ep.nm;em=ep.em;hm=ep.hm;am=ep.am;dm=ep.dm;skType=ep.sk||'charge';lv=f+2;isE=true;
   } else if(tp==='boss'){
-    var bd=GB[f]||{nm:'深淵の支配者',em:'👑'};nm=bd.nm;em=bd.em;hm=11.0;am=3.8;dm=3.2;skType='charge';lv=f+5;isB=true;
+    var bd=getFM(f);nm=bd.nm;em=bd.em;hm=11.0;am=3.8;dm=3.2;skType='charge';lv=f+5;isB=true;
   } else if(tp==='named_elite'){
     nm=base.nm+'エリート';hm=2.8;am=2.2;dm=2.0;skType='rage';lv=f+1;isEl=true;
     if(base.isDG){nm='ダイヤモンドゴーレムエリート';hm=8.0;am=3.5;dm=7.0;skType='charge';}
   }
   var hp=Math.floor(bHP*hm);
   var isDG=!!(base&&base.isDG);
-  return{nm:nm,em:em,lv:lv,hp:hp,mhp:hp,atk:Math.floor(bAT*am),def:Math.floor(bDF*dm),spd:bSP,
+  var atkFinal=Math.floor(bAT*am);if(G.shopBuff&&G.shopBuff.type==='guild_weak')atkFinal=Math.floor(atkFinal*0.80);
+  return{nm:nm,em:em,lv:lv,hp:hp,mhp:hp,atk:atkFinal,def:Math.floor(bDF*dm),spd:bSP,
     ch:0,dd:1,ad:1,psn:0,par:0,slp:0,cnf:0,
     skType:skType,skCd:0,charging:false,guardUp:false,
-    exp:Math.floor((22+f*18)*base.xp*hm),gold:rnd(12+f*7,20+f*13),
+    exp:Math.max(1,Math.floor(Math.pow(f,1.8)*base.xp*0.15*hm)),gold:rnd(Math.max(1,Math.floor(Math.pow(f,1.6)*0.40)),Math.max(2,Math.floor(Math.pow(f,1.6)*0.90))),
     isE:isE,isB:isB,isR:isR,isEl:isEl,isDG:isDG};
 }
 
@@ -951,10 +1100,10 @@ var LS={
 var LV_CAP=40;
 function expN(lv){
   if(lv>=LV_CAP)return Infinity;
-  return Math.floor(120*Math.pow(lv,2.2));
+  return Math.floor(32*Math.pow(lv,1.8));
 }
 var G={
-  gold:200,medals:5,cf:0,hf:1,fl:1,leader:null,
+  gold:200,medals:5,cf:0,hf:1,fl:1,leader:null,shopBuff:{type:null,val:null},
   party:[],chars:{},eq:{},inv:[],
   dun:{
     active:false,auto:true,fast:false,dist:0,phase:'idle',enemy:null,pend:null,bp:[],
@@ -999,7 +1148,7 @@ function initNewGame(){
 }
 function save(){
   try{
-    var s={gold:G.gold,medals:G.medals,cf:G.cf,hf:G.hf,fl:G.fl,leader:G.leader,
+    var s={gold:G.gold,medals:G.medals,cf:G.cf,hf:G.hf,fl:G.fl,leader:G.leader,shopBuff:G.shopBuff,
       party:G.party,inv:G.inv,eq:G.eq,chars:{}};
     for(var id in G.chars){var c=G.chars[id];s.chars[id]={lv:c.lv,exp:c.exp,en:c.en,ul:c.ul};}
     localStorage.setItem('dt6',JSON.stringify(s));
@@ -1011,6 +1160,7 @@ function load(){
     if(!raw){initNewGame();return;}
     var s=JSON.parse(raw);
     G.gold=s.gold||200;G.medals=s.medals||5;G.cf=s.cf||0;G.hf=s.hf||1;G.fl=s.fl||1;
+    G.shopBuff=s.shopBuff||{type:null,val:null};
     G.leader=s.leader||null;
     var vi={};for(var i=0;i<CD.length;i++)vi[CD[i].id]=true;
     G.party=(s.party||[]).map(function(id){return (id&&vi[id])?id:null;});
@@ -1035,7 +1185,8 @@ function dropPending(ct,f){
   var isAnc=!!cd.u;
   var pool=isAnc?UQ:IT[Math.min(3,tierF(f))];
   var iD=pool[rnd(0,pool.length-1)];
-  var item={id2:iD.id,q:q,plus:plus,anc:isAnc,chest:ct};
+  var opts=plus>=2?rollOpts(plus):[];
+  var item={id2:iD.id,q:q,plus:plus,anc:isAnc,chest:ct,opts:opts};
   G.dun.pendingLoot.push(item);
   updLootCount();
 }
@@ -1097,8 +1248,28 @@ function initBP(fh){
       ch:Math.random()*30,sk:c.sk,skCd:0,row:i<3?'f':'b'});
   }
   G.dun.bp=nb;
+  // 装備オプション適用
+  for(var _oi=0;_oi<G.dun.bp.length;_oi++){
+    var _bp=G.dun.bp[_oi];
+    var _eq=G.eq[_bp.id]||{};
+    var _slots=['weapon','armor','ring'];
+    for(var _si=0;_si<_slots.length;_si++){
+      var _it=_eq[_slots[_si]];
+      if(_it&&_it.smith)applySmithBonus(_bp,_it);
+      if(_it&&_it.opts)applyOpts(_bp,_it.opts);
+    }
+  }
   if(G.leader&&LS[G.leader]&&G.party.indexOf(G.leader)>=0){
     LS[G.leader].apply(G.dun.bp);
+  }
+  // ショップバフ適用
+  if(G.shopBuff&&G.shopBuff.type){
+    if(G.shopBuff.type==='guild_crit'){
+      for(var _sbi=0;_sbi<G.dun.bp.length;_sbi++)G.dun.bp[_sbi]._critBonus=(G.dun.bp[_sbi]._critBonus||0)+0.30;
+    }
+    if(G.shopBuff.type==='train'){
+      G.dun._trainBuff=true;
+    }
   }
 }
 function toggleD(){
@@ -1147,6 +1318,8 @@ function returnToBase(){
     var el=g(id);if(el)el.classList.add('hidden');
   });
   G.medals=5;
+  consumeShopBuff();
+  refreshMarket();
   for(var _ri=0;_ri<G.dun.bp.length;_ri++){
     var _rb=G.dun.bp[_ri];_rb.hp=_rb.mhp;
   }
@@ -1182,6 +1355,17 @@ function showDropModal(items){
       var inf=mk('div','drop-info');
       inf.appendChild(mk('div','drop-nm '+qi2.c,d.name+plusStr));
       inf.appendChild(mk('div','drop-sub',cd.em+' '+qi2.n+'  品質'+it.q+'%'));
+      // ステータス表示
+      var stTxt=ss(d,it.plus,it.q);
+      inf.appendChild(mk('div','drop-stat',stTxt));
+      // ランダムオプション表示
+      if(it.opts&&it.opts.length){
+        for(var oi=0;oi<it.opts.length;oi++){
+          var oc=mk('div','drop-opt'+(it.opts[oi].tier===3?' drop-opt-rare':''),
+            '◆ '+optLabel(it.opts[oi]));
+          inf.appendChild(oc);
+        }
+      }
       row.appendChild(inf);
       list.appendChild(row);
     }
@@ -1221,10 +1405,10 @@ function eTick(){
   }
   if(G.dun.dist>=cfg.dist){
     G.dun.dist=cfg.dist;updFloor();
-    var partyCount2=G.party.filter(Boolean).length;
-    var bossOrElite=(cfg.boss||partyCount2>=4&&G.fl>=4);
-    log('sy',cfg.boss?'大ボス出現!':(bossOrElite?'エリート出現!':'強敵出現!'));
-    trigEnc(cfg.boss?'boss':(bossOrElite?'elite':'named_elite'));
+    // 全フロア100%到達でフロアマスター出現
+    var fm=getFM(G.fl);
+    log('sy','⚠️ フロアマスター「'+fm.nm+'」出現!');
+    trigEnc('boss');
   }
 }
 function trigEnc(tp){
@@ -1235,7 +1419,7 @@ function trigEnc(tp){
   else{
     G.dun.pend=e;G.dun.phase='pend';
     var et=g('enctx');
-    if(et)et.textContent=e.isB?'大ボス出現!':e.isE?'エリート出現!':e.isR?'レア!':e.isEl?'エリートモンスター!':'敵が現れた!';
+    if(et)et.textContent=e.isB?'⚠️ フロアマスター出現!':e.isE?'エリート出現!':e.isR?'レア!':e.isEl?'エリートモンスター!':'敵が現れた!';
     var ed=g('encdsc');if(ed)ed.textContent=e.nm+' Lv.'+e.lv;
     var eo=g('encovl');if(eo)eo.classList.remove('hidden');
   }
@@ -1243,7 +1427,7 @@ function trigEnc(tp){
 function startB(e){
   G.dun.phase='battle';G.dun.enemy=e;
   var an=g('ann');if(an)an.textContent='LV'+e.lv+' '+e.nm+'が現れた!';
-  var label=e.isB?'[BOSS] ':e.isE?'[ELITE] ':e.isR?'[RARE] ':e.isEl?'[エリート] ':'';
+  var label=e.isB?'[FLOOR MASTER] ':e.isE?'[ELITE] ':e.isR?'[RARE] ':e.isEl?'[エリート] ':'';
   log('dm',label+e.em+' '+e.nm+' Lv.'+e.lv);
   renderB();
 }
@@ -1379,7 +1563,7 @@ function gTick(){
         var penMul=1-(ac.defPen||0);
         var effDef=Math.floor(en.def*(en.dd||1)*slpDefMul*penMul);
         var baseDmg=Math.max(1,Math.floor((ac.at*am*atkMul-effDef*.28)*(0.85+Math.random()*.3)));
-        var critRate=Math.min(0.5,ac.dex/500);
+        var critRate=Math.min(0.75,ac.dex/500+(ac._critBonus||0));
         var isCrit=Math.random()<critRate;
         var dm=isCrit?Math.floor(baseDmg*(ac.critMul||1.5)):baseDmg;
         en.hp=Math.max(0,en.hp-dm);
@@ -1449,9 +1633,15 @@ function onKill(){
   log('lv',en.nm+' 倒した! EXP+'+en.exp+' G+'+en.gold);
   var earnedGold=en.gold;
   if(G.leader==='kaede')earnedGold=Math.floor(earnedGold*1.50);
+  if(G.shopBuff&&G.shopBuff.type==='guild_gold')earnedGold=Math.floor(earnedGold*1.50);
   G.gold+=earnedGold;
   for(var i=0;i<G.party.length;i++)gainE(G.party[i],en.exp);
   dropPending(rollC(et),G.fl);
+  // guild_drop: 追加ドロップ50%確率
+  if(G.shopBuff&&G.shopBuff.type==='guild_drop'&&Math.random()<0.5){
+    var bonusChest=['iron','copper','silver'][Math.floor(Math.random()*3)];
+    dropPending(bonusChest,G.fl);
+  }
   if(G.leader==='lilith'){
     var chestTypes=['iron','iron','copper','silver'];
     var bonusCt=chestTypes[rnd(0,chestTypes.length-1)];
@@ -1485,7 +1675,7 @@ function onKill(){
     }
   }
   var cfg=fcfg(G.fl);
-  if((en.isE||en.isB)&&G.dun.dist>=cfg.dist){onFC();return;}
+  if(en.isB&&G.dun.dist>=cfg.dist){onFC();return;}
   G.dun.phase='exploring';
   if(!eT)eT=setInterval(eTick,200);
   var an=g('ann');if(an)an.textContent='探索中...';
@@ -1541,6 +1731,8 @@ function gainE(id,exp){
   var c=G.chars[id];if(!c)return;
   if(c.lv>=LV_CAP){c.exp=0;c.en=Infinity;return;}
   if(G.leader==='ryuka')exp=Math.floor(exp*1.40);
+  if(G.shopBuff&&G.shopBuff.type==='train'&&G.dun._trainBuff)exp=Math.floor(exp*2.0);
+  if(G.shopBuff&&G.shopBuff.type==='guild_exp')exp=Math.floor(exp*1.50);
   c.exp+=exp;
   while(c.lv<LV_CAP&&c.exp>=c.en){
     c.exp-=c.en;c.lv++;c.en=expN(c.lv);
@@ -1912,9 +2104,16 @@ function renderInv(){
     row.appendChild(mk('div','iic',e.d.em));
     var det=mk('div','iid');
     var plusStr=e.it.plus>0?(' +'+e.it.plus):'';
-    det.appendChild(mk('div','iinm',e.d.name+plusStr));
+    var smithStr=e.it.smith?(' '+'⭐'.repeat(e.it.smith)):'';
+    det.appendChild(mk('div','iinm',e.d.name+plusStr+smithStr));
     det.appendChild(mk('div','iisub '+qi2.c,qi2.n+'  品質'+e.it.q+'%'));
     det.appendChild(mk('div','iistat',ss(e.d,e.it.plus,e.it.q)));
+    if(e.it.opts&&e.it.opts.length){
+      for(var _opi=0;_opi<e.it.opts.length;_opi++){
+        det.appendChild(mk('div','drop-opt'+(e.it.opts[_opi].tier===3?' drop-opt-rare':''),
+          '◆ '+optLabel(e.it.opts[_opi])));
+      }
+    }
     row.appendChild(det);
     if(e.it.plus>0)row.appendChild(mk('div','iipl','+'+e.it.plus));
     var lockBtn=mk('button','inv-lock-btn',e.it.locked?'🔒':'🔓');
@@ -2030,337 +2229,4 @@ function openEQ(it,idx){
     }
     var cmpEl2=mk('div','drsub');cmpEl2.innerHTML=cmpTxt;
     inf.appendChild(cmpEl2);
-    row.appendChild(inf);
-    (function(cid,sl,itm){
-      row.addEventListener('click',function(){doEQ(cid,sl,itm);});
-      row.addEventListener('mouseenter',function(){showCmp(cid,iD,it);});
-    })(d.id,iD.t,it);
-    cl.appendChild(row);
-  }
-  var ov=g('eovl');if(ov)ov.classList.remove('hidden');
-}
-function getStatTotals(iD,plus,q){
-  var r={};
-  var ks=Object.keys(iD.stats);
-  for(var i=0;i<ks.length;i++){r[ks[i]]=cs(iD.stats[ks[i]],plus,q);}
-  return r;
-}
-function showCmp(charId,newItemD,newItem){
-  var cmpEl=g('ecmp');if(!cmpEl)return;
-  var eq=G.eq[charId]||{};
-  var cur=eq[newItemD.t];
-  cmpEl.style.display='grid';
-  cmpEl.innerHTML='';
-  var nc=mk('div','cmp-col');
-  nc.appendChild(mk('div','cmp-title','NEW'));
-  nc.appendChild(mk('div','cmp-nm',newItemD.name+(newItem.plus>0?' +'+newItem.plus:'')));
-  var ns=getStatTotals(newItemD,newItem.plus,newItem.q);
-  var ks=Object.keys(newItemD.stats);
-  for(var i=0;i<ks.length;i++){
-    var k=ks[i];var nv=ns[k]||0;
-    var ov2=0;if(cur){var od=gid(cur.id2);if(od&&od.stats[k])ov2=cs(od.stats[k],cur.plus,cur.q);}
-    var cls='cmp-stat '+(nv>ov2?'cmp-up':nv<ov2?'cmp-dn':'cmp-eq');
-    // ── fix 8: 同値なら (同値) 表示 ──
-    var eqSuffix=(nv===ov2&&ov2>0)?' (同値)':'';
-    nc.appendChild(mk('div',cls,k.toUpperCase()+': '+nv+eqSuffix));
-  }
-  cmpEl.appendChild(nc);
-  var oc=mk('div','cmp-col');
-  oc.appendChild(mk('div','cmp-title','現在'));
-  if(cur){
-    var cd=gid(cur.id2);
-    oc.appendChild(mk('div','cmp-nm',cd?(cd.name+(cur.plus>0?' +'+cur.plus:'')):'なし'));
-    if(cd){
-      var os=getStatTotals(cd,cur.plus,cur.q);
-      var ks2=Object.keys(cd.stats);
-      for(var i=0;i<ks2.length;i++){
-        var k2=ks2[i];var ov3=os[k2]||0;
-        var nv2=ns[k2]||0;
-        var cls2='cmp-stat '+(ov3<nv2?'cmp-dn':ov3>nv2?'cmp-up':'cmp-eq');
-        var eqSuffix2=(ov3===nv2&&nv2>0)?' (同値)':'';
-        oc.appendChild(mk('div',cls2,k2.toUpperCase()+': '+ov3+eqSuffix2));
-      }
-    }
-  } else {
-    oc.appendChild(mk('div','cmp-nm','なし'));
-  }
-  cmpEl.appendChild(oc);
-}
-function doEQ(cid,sl,it,invIdxOverride){
-  var eq=G.eq[cid]||{};
-  if(eq[sl])G.inv.push(eq[sl]);
-  eq[sl]={id2:it.id2,q:it.q,plus:it.plus};
-  G.eq[cid]=eq;
-  var useIdx=(invIdxOverride!==undefined)?invIdxOverride:_eqIdx;
-  if(useIdx>=0)G.inv.splice(useIdx,1);
-  if(G.dun.active){
-    var bp=null;for(var i=0;i<G.dun.bp.length;i++){if(G.dun.bp[i].id===cid){bp=G.dun.bp[i];break;}}
-    if(bp){var st=cst(cid);var pv=bp.mhp;bp.mhp=st.hp;bp.hp=Math.min(bp.mhp,bp.hp+Math.max(0,bp.mhp-pv));bp.at=st.at;bp.df=st.df;}
-  }
-  var iD=gid(it.id2);log('sy',G.chars[cid].nm+' が '+(iD?iD.name:'?')+' を装備!');
-  var ov=g('eovl');if(ov)ov.classList.add('hidden');
-  renderInv();renderChars();renderPC();save();
-}
-
-// ── CHAR EQUIP FROM WARRIOR TAB ───────────────────────
-var _ceqCharId=null, _ceqSlot=null;
-var STAT_LABEL={atk:'ATK',def:'DEF',hp:'HP'};
-
-function itemStats(it){
-  if(!it)return{};
-  var d=gid(it.id2);if(!d)return{};
-  var r={};
-  var ks=Object.keys(d.stats);
-  for(var i=0;i<ks.length;i++)r[ks[i]]=cs(d.stats[ks[i]],it.plus,it.q);
-  return r;
-}
-
-function buildDiffEl(newSt, curSt){
-  var allKeys={};
-  var ks1=Object.keys(newSt);var ks2=Object.keys(curSt);
-  for(var i=0;i<ks1.length;i++)allKeys[ks1[i]]=1;
-  for(var i=0;i<ks2.length;i++)allKeys[ks2[i]]=1;
-  var wrap=mk('div','ceq-diff');
-  var keys=Object.keys(allKeys);
-  for(var i=0;i<keys.length;i++){
-    var k=keys[i];
-    var nv=newSt[k]||0;var ov=curSt[k]||0;
-    var diff=nv-ov;
-    var lbl=STAT_LABEL[k]||k.toUpperCase();
-    var el;
-    if(diff>0){
-      el=mk('span','sd-up','▲'+lbl+' +'+diff);
-    } else if(diff<0){
-      el=mk('span','sd-dn','▼'+lbl+' '+diff);
-    } else {
-      // ── fix 8: 同値はグレーで「＝同値」表示 ──
-      el=mk('span','sd-eq','＝'+lbl+' '+nv+' (同値)');
-    }
-    wrap.appendChild(el);
-  }
-  return wrap;
-}
-
-function openCharEqPicker(charId, slot){
-  _ceqCharId=charId; _ceqSlot=slot;
-  var slotIcon=slot==='weapon'?'⚔':slot==='armor'?'🛡':'💍';
-  var slotName=slot==='weapon'?'武器':slot==='armor'?'防具':'アクセサリー';
-  var t=g('ceqTitle');if(t)t.textContent=slotIcon+' '+G.chars[charId].nm+' の'+slotName;
-
-  var panel=g('ceqCurPanel');
-  if(panel){
-    panel.innerHTML='';
-    var eq=G.eq[charId]||{};
-    var cur=eq[slot];
-    var curPanel=mk('div','ceq-cur');
-    if(cur){
-      var curD=gid(cur.id2);
-      var curQi=qi(cur.plus,!!cur.anc);
-      var plusStr=cur.plus>0?' +'+cur.plus:'';
-      var nmEl=mk('div','ceq-cur-nm '+curQi.c,(curD?curD.name:'?')+plusStr+' ['+curQi.n+'] 品質'+cur.q+'%');
-      curPanel.appendChild(nmEl);
-      var curSt=itemStats(cur);
-      var statsRow=mk('div','ceq-cur-stats');
-      var stKeys=Object.keys(curSt);
-      for(var si=0;si<stKeys.length;si++){
-        var sk2=stKeys[si];
-        var sv2=mk('div','ceq-cur-st');
-        sv2.appendChild(mk('span',null,(STAT_LABEL[sk2]||sk2.toUpperCase())+': '));
-        sv2.appendChild(mk('span',null,''+curSt[sk2]));
-        statsRow.appendChild(sv2);
-      }
-      curPanel.appendChild(statsRow);
-    } else {
-      curPanel.appendChild(mk('div','ceq-cur-nm',slotName+'未装備'));
-      curPanel.appendChild(mk('div','ceq-cur-stats',mk('span','ceq-cur-st','装備するとステータスが上昇します')));
-    }
-    panel.appendChild(curPanel);
-  }
-
-  var list=g('ceqList');if(!list)return;
-  list.innerHTML='';
-  var cur2=(G.eq[charId]||{})[slot];
-
-  if(cur2){
-    var curRow=mk('div','dr');
-    curRow.appendChild(mk('div',null,'🔲'));
-    var ci2=mk('div','drd');
-    ci2.appendChild(mk('div','drnm','外す'));
-    var lostSt=itemStats(cur2);
-    var lostKeys=Object.keys(lostSt);
-    var lostTxt=lostKeys.map(function(k){return (STAT_LABEL[k]||k.toUpperCase())+' -'+lostSt[k];}).join('  ');
-    ci2.appendChild(mk('div','drsub sd-dn',lostTxt||''));
-    curRow.appendChild(ci2);
-    curRow.addEventListener('click',function(){
-      var eq2=G.eq[_ceqCharId]||{};
-      if(eq2[_ceqSlot])G.inv.push(eq2[_ceqSlot]);
-      eq2[_ceqSlot]=null;G.eq[_ceqCharId]=eq2;
-      if(G.dun.active){
-        var bp=null;for(var i=0;i<G.dun.bp.length;i++){if(G.dun.bp[i].id===_ceqCharId){bp=G.dun.bp[i];break;}}
-        if(bp){var st2=cst(_ceqCharId);bp.mhp=st2.hp;bp.at=st2.at;bp.df=st2.df;}
-      }
-      var o=g('ceqOvl');if(o)o.classList.add('hidden');
-      renderChars();renderInv();renderPC();save();
-    });
-    list.appendChild(curRow);
-  }
-
-  var matches=[];
-  for(var i=0;i<G.inv.length;i++){
-    var it=G.inv[i];var d=gid(it.id2);
-    if(d&&d.t===slot)matches.push({it:it,d:d,i:i});
-  }
-  matches.sort(function(a,b){
-    return (b.it.q*RARITY_MULT[b.it.plus])-(a.it.q*RARITY_MULT[a.it.plus]);
-  });
-
-  if(!matches.length){
-    list.appendChild(mk('div','em2','該当装備なし'));
-  }
-  var curStForDiff=(G.eq[charId]||{})[slot];
-  for(var mi=0;mi<matches.length;mi++){
-    var m=matches[mi];
-    var qi2=qi(m.it.plus,!!m.it.anc);
-    var row=mk('div','dr');
-    row.appendChild(mk('div',null,m.d.em));
-    var inf=mk('div','drd');
-    var ps=m.it.plus>0?' +'+m.it.plus:'';
-    inf.appendChild(mk('div','drnm '+qi2.c,m.d.name+ps+'  ['+qi2.n+'] 品質'+m.it.q+'%'));
-
-    var newSt=itemStats(m.it);
-    var stTxt=Object.keys(newSt).map(function(k){return (STAT_LABEL[k]||k.toUpperCase())+' '+newSt[k];}).join('  ');
-    inf.appendChild(mk('div','drsub',stTxt));
-
-    if(curStForDiff){
-      var curSt2=itemStats(curStForDiff);
-      inf.appendChild(buildDiffEl(newSt,curSt2));
-    } else {
-      var upWrap=mk('div','ceq-diff');
-      var upKeys=Object.keys(newSt);
-      for(var ui=0;ui<upKeys.length;ui++){
-        var uk=upKeys[ui];
-        upWrap.appendChild(mk('span','sd-up','▲'+(STAT_LABEL[uk]||uk.toUpperCase())+' +'+newSt[uk]));
-      }
-      inf.appendChild(upWrap);
-    }
-
-    row.appendChild(inf);
-    if(m.it.locked){row.appendChild(mk('span',null,' 🔒'));}
-    (function(it2,oi){row.addEventListener('click',function(){
-      doEQ(_ceqCharId,_ceqSlot,it2,oi);
-      var o=g('ceqOvl');if(o)o.classList.add('hidden');
-      renderChars();
-    });})(m.it,m.i);
-    list.appendChild(row);
-  }
-  var o=g('ceqOvl');if(o)o.classList.remove('hidden');
-}
-
-// ── VIEW SWITCH ───────────────────────────────────────
-function sv(v){
-  var vs=['vb','vc','vi'];var ns=['nvb','nvc','nvi'];
-  for(var i=0;i<vs.length;i++){
-    var ve=g(vs[i]);var ne=g(ns[i]);
-    if(vs[i]===v){if(ve)ve.classList.add('active');if(ne)ne.classList.add('active');}
-    else{if(ve)ve.classList.remove('active');if(ne)ne.classList.remove('active');}
-  }
-  if(v==='vc')renderChars();
-  if(v==='vi')renderInv();
-  if(v==='vb')updLeaderPanel();
-}
-
-// ── BIND ─────────────────────────────────────────────
-on('nvb',function(){sv('vb');});
-on('nvc',function(){sv('vc');});
-on('nvi',function(){sv('vi');});
-on('srt-join',function(){setSortChar('join');});
-on('srt-lv',function(){setSortChar('lv');});
-on('srt-hp',function(){setSortChar('hp');});
-on('srt-atk',function(){setSortChar('atk');});
-on('srt-def',function(){setSortChar('def');});
-on('sbtn',toggleD);
-on('ta',function(){G.dun.auto=true;var a=g('ta'),m=g('tm');if(a)a.className='tog on';if(m)m.className='tog';});
-on('tm',function(){G.dun.auto=false;var a=g('ta'),m=g('tm');if(m)m.className='tog on';if(a)a.className='tog';});
-on('spdbtn',function(){
-  var speeds=[1,2,4];
-  var cur=G.dun.speedIdx||0;
-  var next=(cur+1)%speeds.length;
-  G.dun.speedIdx=next;
-  G.dun.speedMul=speeds[next];
-  var b=g('spdbtn');
-  if(b){b.textContent=speeds[next]+'x';b.className=next>0?'tog on':'tog';}
-});
-on('mcancel',function(){var o=g('movl');if(o)o.classList.add('hidden');});
-on('scancel',function(){var o=g('sovl');if(o)o.classList.add('hidden');});
-on('mchip',openMedal);
-on('ecancel',function(){var o=g('eovl');if(o)o.classList.add('hidden');});
-on('ceqCancel',function(){var o=g('ceqOvl');if(o)o.classList.add('hidden');});
-on('cpickCancel',function(){var o=g('cpickOvl');if(o)o.classList.add('hidden');});
-on('fscancel',function(){var o=g('fsovl');if(o)o.classList.add('hidden');});
-on('dropclose',function(){var o=g('dropovl');if(o)o.classList.add('hidden');});
-on('ediscard',function(){
-  if(_eqIdx>=0){G.inv.splice(_eqIdx,1);log('sy','装備を捨てた。');}
-  var o=g('eovl');if(o)o.classList.add('hidden');
-  renderInv();save();
-});
-on('bfight',function(){var e=G.dun.pend;G.dun.pend=null;var o=g('encovl');if(o)o.classList.add('hidden');if(e)startB(e);});
-on('bflee',function(){
-  G.dun.pend=null;
-  var o=g('encovl');if(o)o.classList.add('hidden');
-  G.dun.phase='exploring';
-  log('sy','逃げた!');
-  if(!eT)eT=setInterval(eTick,200);
-  updFloor();
-});
-on('mid-cont',function(){
-  var o=g('midcovl');if(o)o.classList.add('hidden');
-  G.dun.phase='exploring';
-  if(!eT)eT=setInterval(eTick,200);
-  log('sy','探索続行!');
-});
-on('mid-back',function(){
-  var o=g('midcovl');if(o)o.classList.add('hidden');
-  returnToBase();
-});
-on('fc-next',function(){
-  var o=g('fcovl');if(o)o.classList.add('hidden');
-  advanceNextFloor();
-});
-on('fc-back',function(){
-  var o=g('fcovl');if(o)o.classList.add('hidden');
-  returnToBase();
-});
-// ── fix 7: 売却確認モーダル経由 ──
-on('bulk-sell',function(){
-  var eq_ids=getEquippedItemKeys();
-  var cnt=0;
-  G.inv.forEach(function(it){if(!it.locked&&!eq_ids[invKey(it)])cnt++;});
-  var txt=g('sell-confirm-txt');
-  if(txt)txt.textContent='装備中・ロック以外の装備品を\n'+cnt+'個売却します。\nこの操作は取り消せません。';
-  var o=g('sellovl');if(o)o.classList.remove('hidden');
-});
-on('sell-confirm-ok',function(){
-  var eq_ids=getEquippedItemKeys();
-  var removed=0;
-  G.inv=G.inv.filter(function(it){
-    if(it.locked)return true;
-    if(eq_ids[invKey(it)])return true;
-    removed++;return false;
-  });
-  log('sy','装備中・ロック以外 '+removed+'個を売却した');
-  var o=g('sellovl');if(o)o.classList.add('hidden');
-  renderInv();save();
-});
-on('sell-confirm-cancel',function(){var o=g('sellovl');if(o)o.classList.add('hidden');});
-
-// ── INIT ─────────────────────────────────────────────
-load();updH();updFloor();renderPC();renderB();updLootCount();updLeaderPanel();
-log('sy','BABEL へようこそ。 塔の頂点を目指せ！');
-setInterval(save,30000);
-setInterval(updH,3000);
-
-})();
-</script>
-
-</body>
-</html>
+    row.appendChil
