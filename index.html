@@ -579,6 +579,15 @@ font-size:9px;color:var(--gold);padding:2px 7px;cursor:pointer;margin-top:4px;wh
     <button class="cbtn" id="dropclose">閉じる</button>
   </div>
 </div>
+<!-- 騎士団バフ確認モーダル -->
+<div class="ovl hidden" id="knightOvl">
+  <div class="dlg">
+    <h3>⚜ 騎士団バフ確認</h3>
+    <p id="knightConfirmTxt" style="font-size:12px;color:var(--tdim);text-align:center;margin-bottom:14px;line-height:1.8;white-space:pre-line"></p>
+    <button class="cbtn" id="knight-confirm-ok" style="background:linear-gradient(180deg,#1a2c10,#0e1808);border:1px solid #405a20;color:#80c040;margin-bottom:6px">購入する</button>
+    <button class="cbtn" id="knight-confirm-cancel">キャンセル</button>
+  </div>
+</div>
 
 <script>
 (function(){
@@ -674,43 +683,43 @@ function tierF(f){return Math.min(3,Math.floor((f-1)/20));}
 // ── DATA: ENEMIES ─────────────────────────────────────
 var ET=[
  {r:[1,15],pool:[
-  {nm:'グリーンスライム',em:'🟢',hm:1.4,am:1.2,dm:1.0,sm:.5,xp:0.6,sk:'regen'},
-  {nm:'ブラッドバット',  em:'🦇',hm:1.2,am:1.8,dm:0.9,sm:1.5,xp:0.8,sk:'rage'},
-  {nm:'スケルトン',      em:'💀',hm:1.6,am:2.0,dm:1.8,sm:.9,xp:1.1,sk:'charge'},
-  {nm:'スプリン',        em:'👺',hm:1.7,am:1.7,dm:1.2,sm:1.0,xp:0.7,sk:'debuff'},
-  {nm:'ウルフ',          em:'🐺',hm:1.5,am:1.9,dm:1.0,sm:1.2,xp:0.9,sk:'aoe'},
-  {nm:'マッシュ',        em:'🍄',hm:1.9,am:1.5,dm:1.4,sm:.6,xp:0.7,sk:'regen'},
-  {nm:'ゴースト',        em:'👻',hm:1.2,am:2.2,dm:0.7,sm:1.4,xp:1.0,sk:'debuff'},
-  {nm:'シーフ',          em:'🌘',hm:1.4,am:1.9,dm:0.9,sm:1.5,xp:0.9,sk:'rage'},
-  {nm:'ダークフラワー',  em:'🌻',hm:1.5,am:2.0,dm:0.8,sm:.8,xp:0.8,sk:'aoe'},
-  {nm:'リビングアーマー',em:'⚔', hm:2.2,am:1.8,dm:2.8,sm:.5,xp:1.3,sk:'guard'},
-  {nm:'ダイヤモンドゴーレム',em:'💎',hm:5.5,am:2.5,dm:4.5,sm:.3,xp:3.0,rare:true,isDG:true,sk:'charge'}
+  {nm:'グリーンスライム',em:'🟢',hm:1.4,am:1.2,dm:1.0,sm:.5,xp:0.6,gm:0.5,sk:'regen'},
+  {nm:'ブラッドバット',  em:'🦇',hm:1.2,am:1.8,dm:0.9,sm:1.5,xp:0.8,gm:0.7,sk:'rage'},
+  {nm:'スケルトン',      em:'💀',hm:1.6,am:2.0,dm:1.8,sm:.9,xp:1.1,gm:1.0,sk:'charge'},
+  {nm:'スプリン',        em:'👺',hm:1.7,am:1.7,dm:1.2,sm:1.0,xp:0.7,gm:0.8,sk:'debuff'},
+  {nm:'ウルフ',          em:'🐺',hm:1.5,am:1.9,dm:1.0,sm:1.2,xp:0.9,gm:0.9,sk:'aoe'},
+  {nm:'マッシュ',        em:'🍄',hm:1.9,am:1.5,dm:1.4,sm:.6,xp:0.7,gm:0.6,sk:'regen'},
+  {nm:'ゴースト',        em:'👻',hm:1.2,am:2.2,dm:0.7,sm:1.4,xp:1.0,gm:0.8,sk:'debuff'},
+  {nm:'シーフ',          em:'🌘',hm:1.4,am:1.9,dm:0.9,sm:1.5,xp:0.9,gm:1.8,sk:'rage'},
+  {nm:'ダークフラワー',  em:'🌻',hm:1.5,am:2.0,dm:0.8,sm:.8,xp:0.8,gm:0.7,sk:'aoe'},
+  {nm:'リビングアーマー',em:'⚔', hm:2.2,am:1.8,dm:2.8,sm:.5,xp:1.3,gm:1.2,sk:'guard'},
+  {nm:'ダイヤモンドゴーレム',em:'💎',hm:5.5,am:2.5,dm:4.5,sm:.3,xp:3.0,gm:5.0,rare:true,isDG:true,sk:'charge'}
  ]},
  {r:[16,50],pool:[
-  {nm:'オーガ',          em:'👹',hm:2.5,am:2.4,dm:1.8,sm:.8,xp:1.2,sk:'rage'},
-  {nm:'メデューサ',      em:'🐍',hm:2.0,am:2.3,dm:1.4,sm:1.0,xp:1.1,sk:'debuff'},
-  {nm:'ウェアウルフ',    em:'🐺',hm:2.7,am:2.8,dm:1.8,sm:1.3,xp:1.4,sk:'aoe'},
-  {nm:'ダークメイジ',    em:'🔮',hm:1.8,am:3.2,dm:1.2,sm:.9,xp:1.5,sk:'charge'},
-  {nm:'ストーンゴーレム',em:'🗿',hm:4.0,am:2.2,dm:3.5,sm:.3,xp:1.8,sk:'guard'},
-  {nm:'ハーピー',        em:'🦅',hm:1.6,am:2.5,dm:1.0,sm:1.4,xp:1.0,sk:'rage'},
-  {nm:'ミミック',        em:'📦',hm:3.2,am:2.6,dm:2.0,sm:.7,xp:3.5,rare:true,sk:'aoe'},
-  {nm:'ダイヤモンドゴーレム',em:'💎',hm:6.0,am:3.0,dm:5.0,sm:.3,xp:3.5,rare:true,isDG:true,sk:'charge'},
-  {nm:'ブラックナイト',  em:'🖤',hm:3.0,am:2.8,dm:2.6,sm:1.0,xp:1.7,sk:'charge'},
-  {nm:'トロール',        em:'👾',hm:3.5,am:2.5,dm:2.2,sm:.7,xp:1.5,sk:'regen'},
-  {nm:'ネクロマンサー',  em:'💜',hm:1.8,am:3.5,dm:1.0,sm:.9,xp:1.6,sk:'debuff'}
+  {nm:'オーガ',          em:'👹',hm:2.5,am:2.4,dm:1.8,sm:.8,xp:1.2,gm:1.3,sk:'rage'},
+  {nm:'メデューサ',      em:'🐍',hm:2.0,am:2.3,dm:1.4,sm:1.0,xp:1.1,gm:1.2,sk:'debuff'},
+  {nm:'ウェアウルフ',    em:'🐺',hm:2.7,am:2.8,dm:1.8,sm:1.3,xp:1.4,gm:1.1,sk:'aoe'},
+  {nm:'ダークメイジ',    em:'🔮',hm:1.8,am:3.2,dm:1.2,sm:.9,xp:1.5,gm:1.5,sk:'charge'},
+  {nm:'ストーンゴーレム',em:'🗿',hm:4.0,am:2.2,dm:3.5,sm:.3,xp:1.8,gm:0.8,sk:'guard'},
+  {nm:'ハーピー',        em:'🦅',hm:1.6,am:2.5,dm:1.0,sm:1.4,xp:1.0,gm:1.0,sk:'rage'},
+  {nm:'ミミック',        em:'📦',hm:3.2,am:2.6,dm:2.0,sm:.7,xp:3.5,gm:6.0,rare:true,sk:'aoe'},
+  {nm:'ダイヤモンドゴーレム',em:'💎',hm:6.0,am:3.0,dm:5.0,sm:.3,xp:3.5,gm:5.0,rare:true,isDG:true,sk:'charge'},
+  {nm:'ブラックナイト',  em:'🖤',hm:3.0,am:2.8,dm:2.6,sm:1.0,xp:1.7,gm:1.8,sk:'charge'},
+  {nm:'トロール',        em:'👾',hm:3.5,am:2.5,dm:2.2,sm:.7,xp:1.5,gm:1.0,sk:'regen'},
+  {nm:'ネクロマンサー',  em:'💜',hm:1.8,am:3.5,dm:1.0,sm:.9,xp:1.6,gm:2.0,sk:'debuff'}
  ]},
  {r:[51,99],pool:[
-  {nm:'レッドドラゴン',  em:'🐉',hm:4.0,am:3.8,dm:3.0,sm:1.1,xp:2.2,sk:'aoe'},
-  {nm:'デーモンロード',  em:'😈',hm:3.5,am:4.2,dm:2.5,sm:1.1,xp:2.0,sk:'debuff'},
-  {nm:'リッチ',          em:'💀',hm:3.0,am:4.8,dm:1.8,sm:1.0,xp:2.5,sk:'charge'},
-  {nm:'ダークゴッド',    em:'👁',hm:3.5,am:4.3,dm:2.5,sm:.9,xp:2.3,sk:'debuff'},
-  {nm:'ベヒーモス',      em:'🦏',hm:6.5,am:3.5,dm:4.2,sm:.5,xp:3.0,sk:'guard'},
-  {nm:'堕天使',          em:'🌑',hm:3.0,am:4.8,dm:2.0,sm:1.3,xp:2.4,sk:'aoe'},
-  {nm:'カオスナイト',    em:'⚫',hm:3.8,am:4.3,dm:3.5,sm:1.1,xp:2.6,sk:'charge'},
-  {nm:'クトゥルフ',      em:'🐙',hm:5.0,am:3.8,dm:3.5,sm:.8,xp:2.8,sk:'aoe'},
-  {nm:'時喰らい',        em:'⏳',hm:4.0,am:5.0,dm:2.5,sm:1.1,xp:5.0,rare:true,sk:'debuff'},
-  {nm:'ダイヤモンドゴーレム',em:'💎',hm:8.0,am:3.8,dm:6.0,sm:.3,xp:4.5,rare:true,isDG:true,sk:'charge'},
-  {nm:'魔王',            em:'👑',hm:5.0,am:4.8,dm:3.5,sm:1.0,xp:3.2,sk:'rage'}
+  {nm:'レッドドラゴン',  em:'🐉',hm:4.0,am:3.8,dm:3.0,sm:1.1,xp:2.2,gm:2.5,sk:'aoe'},
+  {nm:'デーモンロード',  em:'😈',hm:3.5,am:4.2,dm:2.5,sm:1.1,xp:2.0,gm:3.0,sk:'debuff'},
+  {nm:'リッチ',          em:'💀',hm:3.0,am:4.8,dm:1.8,sm:1.0,xp:2.5,gm:2.5,sk:'charge'},
+  {nm:'ダークゴッド',    em:'👁',hm:3.5,am:4.3,dm:2.5,sm:.9,xp:2.3,gm:3.0,sk:'debuff'},
+  {nm:'ベヒーモス',      em:'🦏',hm:6.5,am:3.5,dm:4.2,sm:.5,xp:3.0,gm:1.5,sk:'guard'},
+  {nm:'堕天使',          em:'🌑',hm:3.0,am:4.8,dm:2.0,sm:1.3,xp:2.4,gm:2.8,sk:'aoe'},
+  {nm:'カオスナイト',    em:'⚫',hm:3.8,am:4.3,dm:3.5,sm:1.1,xp:2.6,gm:2.5,sk:'charge'},
+  {nm:'クトゥルフ',      em:'🐙',hm:5.0,am:3.8,dm:3.5,sm:.8,xp:2.8,gm:2.2,sk:'aoe'},
+  {nm:'時喰らい',        em:'⏳',hm:4.0,am:5.0,dm:2.5,sm:1.1,xp:5.0,gm:6.0,rare:true,sk:'debuff'},
+  {nm:'ダイヤモンドゴーレム',em:'💎',hm:8.0,am:3.8,dm:6.0,sm:.3,xp:4.5,gm:5.0,rare:true,isDG:true,sk:'charge'},
+  {nm:'魔王',            em:'👑',hm:5.0,am:4.8,dm:3.5,sm:1.0,xp:3.2,gm:4.0,sk:'rage'}
  ]}
 ];
 var EL=[
@@ -874,7 +883,7 @@ function buildEn(f,tp){
   return{nm:nm,em:em,lv:lv,hp:hp,mhp:hp,atk:atkFinal,def:Math.floor(bDF*dm),spd:bSP,
     ch:0,dd:1,ad:1,psn:0,par:0,slp:0,cnf:0,
     skType:skType,skCd:0,charging:false,guardUp:false,
-    exp:Math.max(1,Math.floor(Math.pow(f,1.8)*base.xp*0.15*hm)),gold:rnd(Math.max(1,Math.floor(Math.pow(f,1.6)*0.40)),Math.max(2,Math.floor(Math.pow(f,1.6)*0.90))),
+    exp:Math.max(Math.ceil(base.xp),Math.floor((5+Math.pow(f,1.7)*0.22)*base.xp*hm)),gold:rnd(Math.max(1,Math.floor((base.gm||1.0)*(3+Math.pow(f,1.5)*0.35)*hm)),Math.max(2,Math.floor((base.gm||1.0)*(6+Math.pow(f,1.5)*0.60)*hm))),
     isE:isE,isB:isB,isR:isR,isEl:isEl,isDG:isDG};
 }
 
@@ -1105,6 +1114,7 @@ function expN(lv){
 var G={
   gold:200,medals:5,cf:0,hf:1,fl:1,leader:null,shopBuff:{type:null,val:null},
   party:[],chars:{},eq:{},inv:[],
+  mats:{reroll:0,mat3:0,mat4:0,mat5:0},
   dun:{
     active:false,auto:true,fast:false,dist:0,phase:'idle',enemy:null,pend:null,bp:[],
     pendingLoot:[],
@@ -1149,7 +1159,7 @@ function initNewGame(){
 function save(){
   try{
     var s={gold:G.gold,medals:G.medals,cf:G.cf,hf:G.hf,fl:G.fl,leader:G.leader,shopBuff:G.shopBuff,
-      party:G.party,inv:G.inv,eq:G.eq,chars:{}};
+      party:G.party,inv:G.inv,eq:G.eq,mats:G.mats||{reroll:0,mat3:0,mat4:0,mat5:0},chars:{}};
     for(var id in G.chars){var c=G.chars[id];s.chars[id]={lv:c.lv,exp:c.exp,en:c.en,ul:c.ul};}
     localStorage.setItem('dt6',JSON.stringify(s));
   }catch(e){}
@@ -1162,6 +1172,7 @@ function load(){
     G.gold=s.gold||200;G.medals=s.medals||5;G.cf=s.cf||0;G.hf=s.hf||1;G.fl=s.fl||1;
     G.shopBuff=s.shopBuff||{type:null,val:null};
     G.leader=s.leader||null;
+    G.mats=s.mats||{reroll:0,mat3:0,mat4:0,mat5:0};
     var vi={};for(var i=0;i<CD.length;i++)vi[CD[i].id]=true;
     G.party=(s.party||[]).map(function(id){return (id&&vi[id])?id:null;});
     while(G.party.length>0&&!G.party[G.party.length-1])G.party.pop();
@@ -1266,9 +1277,6 @@ function initBP(fh){
   if(G.shopBuff&&G.shopBuff.type){
     if(G.shopBuff.type==='guild_crit'){
       for(var _sbi=0;_sbi<G.dun.bp.length;_sbi++)G.dun.bp[_sbi]._critBonus=(G.dun.bp[_sbi]._critBonus||0)+0.30;
-    }
-    if(G.shopBuff.type==='train'){
-      G.dun._trainBuff=true;
     }
   }
 }
@@ -1637,6 +1645,20 @@ function onKill(){
   G.gold+=earnedGold;
   for(var i=0;i<G.party.length;i++)gainE(G.party[i],en.exp);
   dropPending(rollC(et),G.fl);
+  // 素材ドロップ（極低確率）
+  var _matDrops=[
+    {key:'reroll',nm:'再抽選石',rate:0.003},
+    {key:'mat3',  nm:'強化石(Ⅲ)',rate:0.004},
+    {key:'mat4',  nm:'精錬石(Ⅳ)',rate:0.0025},
+    {key:'mat5',  nm:'伝説石(Ⅴ)',rate:0.001}
+  ];
+  for(var _mi=0;_mi<_matDrops.length;_mi++){
+    if(Math.random()<_matDrops[_mi].rate){
+      if(!G.mats)G.mats={reroll:0,mat3:0,mat4:0,mat5:0};
+      G.mats[_matDrops[_mi].key]=(G.mats[_matDrops[_mi].key]||0)+1;
+      log('ca','✨ 素材入手: '+_matDrops[_mi].nm+'!');
+    }
+  }
   // guild_drop: 追加ドロップ50%確率
   if(G.shopBuff&&G.shopBuff.type==='guild_drop'&&Math.random()<0.5){
     var bonusChest=['iron','copper','silver'][Math.floor(Math.random()*3)];
@@ -1731,7 +1753,6 @@ function gainE(id,exp){
   var c=G.chars[id];if(!c)return;
   if(c.lv>=LV_CAP){c.exp=0;c.en=Infinity;return;}
   if(G.leader==='ryuka')exp=Math.floor(exp*1.40);
-  if(G.shopBuff&&G.shopBuff.type==='train'&&G.dun._trainBuff)exp=Math.floor(exp*2.0);
   if(G.shopBuff&&G.shopBuff.type==='guild_exp')exp=Math.floor(exp*1.50);
   c.exp+=exp;
   while(c.lv<LV_CAP&&c.exp>=c.en){
@@ -2586,7 +2607,7 @@ function calcSellPrice(it){
 
 // 鍛冶屋: 別軸の強化度(smith ⭐1〜5)
 // ⭐ごとにATK/DEF/HPを+15%ずつ加算（装備時に適用）
-var SMITH_COST=[0,50,200,600,1800,5000];
+var SMITH_COST=[0,150,600,2000,6000,18000];
 var SMITH_BONUS=0.15; // ⭐1あたり+15%
 
 function applySmithBonus(bp,it){
@@ -2599,32 +2620,54 @@ function applySmithBonus(bp,it){
 }
 
 var _smithMode=null; // 'upgrade'|'reroll'
+// 素材名称
+var MAT_NAMES={reroll:'再抽選石',mat3:'強化石(Ⅲ)',mat4:'精錬石(Ⅳ)',mat5:'伝説石(Ⅴ)'};
+function getMatsText(){
+  if(!G.mats)G.mats={reroll:0,mat3:0,mat4:0,mat5:0};
+  return '再抽選石:'+G.mats.reroll+'  強化石Ⅲ:'+G.mats.mat3+'  精錬石Ⅳ:'+G.mats.mat4+'  伝説石Ⅴ:'+G.mats.mat5;
+}
+function getUpgradeMat(nextStar){
+  if(nextStar>=5)return 'mat5';
+  if(nextStar>=4)return 'mat4';
+  if(nextStar>=3)return 'mat3';
+  return null;
+}
 function openSmith(mode){
   _smithMode=mode;
+  if(!G.mats)G.mats={reroll:0,mat3:0,mat4:0,mat5:0};
   var desc=g('smithDesc');
   var list=g('smithList');if(!list)return;
   list.innerHTML='';
   if(mode==='upgrade'){
-    if(desc)desc.textContent='⭐を上げる装備を選択（現在の⭐+1、最大⭐5）';
+    if(desc)desc.textContent='⭐を上げる装備を選択（⭐3以上は素材が必要）\n'+getMatsText();
     for(var i=0;i<G.inv.length;i++){
       var it=G.inv[i];var d=gid(it.id2);if(!d)continue;
       var cur=it.smith||0;
       if(cur>=5)continue;
       var cost=SMITH_COST[cur+1];
+      var matKey=getUpgradeMat(cur+1);
+      var matOk=(matKey===null)||(G.mats[matKey]>=1);
+      var matTxt=matKey?(MAT_NAMES[matKey]+' ×1 '+(matOk?'✅':'❌ 不足')):'';
       var qi2=qi(it.plus,!!it.anc);
-      var row=mk('div','shop-item'+(G.gold<cost?' disabled':''));
+      var canDo=G.gold>=cost&&matOk;
+      var row=mk('div','shop-item'+(canDo?'':' disabled'));
       var em=mk('div','smith-star','⭐'.repeat(cur)||'✦');
       row.appendChild(em);
       var inf=mk('div','shop-item-info');
       var plusStr=it.plus>0?' +'+it.plus:'';
       inf.appendChild(mk('div','shop-item-nm',d.name+plusStr+' ['+'⭐'.repeat(cur)+'→'+'⭐'.repeat(cur+1)+']'));
-      inf.appendChild(mk('div','shop-item-dc',ss(d,it.plus,it.q)+'  強化ボーナス: +'+Math.round((cur+1)*SMITH_BONUS*100)+'%'));
+      var dcTxt=ss(d,it.plus,it.q)+'  強化+'+Math.round((cur+1)*SMITH_BONUS*100)+'%'+(matTxt?' | '+matTxt:'');
+      inf.appendChild(mk('div','shop-item-dc',dcTxt));
       row.appendChild(inf);
-      row.appendChild(mk('div','shop-price',cost+'G'));
-      if(G.gold>=cost)(function(idx2,c){row.addEventListener('click',function(){
+      row.appendChild(mk('div','shop-price',cost.toLocaleString()+'G'));
+      if(canDo)(function(idx2,c,mk2){row.addEventListener('click',function(){
         if(G.gold<c)return;
+        var mKey=getUpgradeMat((G.inv[idx2].smith||0)+1);
+        if(mKey&&(!G.mats||G.mats[mKey]<1)){log('sy','素材が足りません!');return;}
         G.inv[idx2].smith=(G.inv[idx2].smith||0)+1;
         G.gold-=c;
+        if(mKey){G.mats[mKey]--;log('sy','⭐強化成功! (+'+G.inv[idx2].smith+') -'+c+'G  '+MAT_NAMES[mKey]+'消費');}
+        else{log('sy','⭐強化成功! (+'+G.inv[idx2].smith+') -'+c+'G');}
         // 装備中なら即座に適用
         for(var ci=0;ci<G.party.length;ci++){
           var cid=G.party[ci];if(!cid)continue;
@@ -2639,7 +2682,6 @@ function openSmith(mode){
             }
           }
         }
-        log('sy','⭐強化成功! (+'+G.inv[idx2].smith+') -'+c+'G');
         updH();save();
         var o=g('smithOvl');if(o)o.classList.add('hidden');
         renderShop();
@@ -2648,31 +2690,34 @@ function openSmith(mode){
     }
     if(!list.children.length)list.appendChild(mk('div','em2','強化できる装備がありません'));
   } else if(mode==='reroll'){
-    if(desc)desc.textContent='オプションを再抽選する装備を選択（+2以上のみ）';
+    var hasStone=(G.mats.reroll>=1);
+    if(desc)desc.textContent='オプションを再抽選する装備を選択（+2以上 + 再抽選石×1）\n'+getMatsText();
     for(var i=0;i<G.inv.length;i++){
       var it=G.inv[i];var d=gid(it.id2);if(!d||it.plus<2)continue;
       var cost=Math.floor(SMITH_COST[Math.min(5,it.plus+1)]*0.6);
+      var canDo=G.gold>=cost&&hasStone;
       var qi2=qi(it.plus,!!it.anc);
-      var row=mk('div','shop-item'+(G.gold<cost?' disabled':''));
+      var row=mk('div','shop-item'+(canDo?'':' disabled'));
       var inf=mk('div','shop-item-info');
       var plusStr=it.plus>0?' +'+it.plus:'';
       inf.appendChild(mk('div','shop-item-nm',d.name+plusStr));
       var optTxt=it.opts&&it.opts.length?it.opts.map(function(o){return optLabel(o);}).join(' / '):'オプションなし';
-      inf.appendChild(mk('div','shop-item-dc',optTxt));
+      inf.appendChild(mk('div','shop-item-dc',optTxt+' | 再抽選石 ×1 '+(hasStone?'✅':'❌ 不足')));
       row.appendChild(inf);
-      row.appendChild(mk('div','shop-price',cost+'G'));
-      if(G.gold>=cost)(function(idx2,c){row.addEventListener('click',function(){
-        if(G.gold<c)return;
+      row.appendChild(mk('div','shop-price',cost.toLocaleString()+'G'));
+      if(canDo)(function(idx2,c){row.addEventListener('click',function(){
+        if(G.gold<c||!G.mats||G.mats.reroll<1){log('sy','素材またはGが足りません');return;}
         G.inv[idx2].opts=rollOpts(G.inv[idx2].plus);
         G.gold-=c;
-        log('sy','オプション再抽選! -'+c+'G');
+        G.mats.reroll--;
+        log('sy','オプション再抽選! -'+c+'G  再抽選石消費');
         updH();save();
         var o=g('smithOvl');if(o)o.classList.add('hidden');
         renderShop();
       });})(i,cost);
       list.appendChild(row);
     }
-    if(!list.children.length)list.appendChild(mk('div','em2','+2以上の装備がありません'));
+    if(!list.children.length)list.appendChild(mk('div','em2','+2以上の装備がありません (再抽選石: '+(G.mats.reroll)+'個)'));
   }
   var o=g('smithOvl');if(o)o.classList.remove('hidden');
 }
@@ -2690,7 +2735,7 @@ function refreshMarket(){
   var picks=shuffled.slice(0,Math.min(6,shuffled.length));
   for(var i=0;i<picks.length;i++){
     var plus=Math.floor(Math.random()*(Math.min(4,Math.floor(f/15)+1)+1));
-    var q=60+Math.floor(Math.random()*40);
+    var q=(Math.random()<0.05)?100:50;
     var opts=plus>=2?rollOpts(plus):[];
     var basePrice=0;var ks=Object.keys(picks[i].stats);
     for(var j=0;j<ks.length;j++)basePrice+=cs(picks[i].stats[ks[j]],plus,q);
@@ -2743,24 +2788,21 @@ function openMarket(){
   var o=g('marketOvl');if(o)o.classList.remove('hidden');
 }
 
-// 訓練場: パーティ全体EXPバフ（次探索1フロア中EXP×2）
-// ギルドと排他
-function getTrainingCost(){
-  return Math.max(80,Math.floor(Math.pow(Math.max(1,G.hf-1),1.5)*3));
-}
-function getGuildCosts(){
-  var base=Math.max(1,G.hf-1);
-  return {
-    drop: Math.max(60, Math.floor(Math.pow(base,1.3)*0.8)),
-    exp:  Math.max(80, Math.floor(Math.pow(base,1.3)*1.0)),
-    gold: Math.max(50, Math.floor(Math.pow(base,1.3)*0.7)),
-    weak: Math.max(100,Math.floor(Math.pow(base,1.3)*1.3)),
-    crit: Math.max(90, Math.floor(Math.pow(base,1.3)*1.1))
-  };
+function guildBuffLabel(type){
+  var map={guild_drop:'ドロップ率+50%',guild_exp:'EXP+50%',guild_gold:'Gold+50%',guild_weak:'敵ATK-20%',guild_crit:'会心率+30%'};
+  return map[type]||type;
 }
 
 // 施設バフ状態
-if(!G.shopBuff)G.shopBuff={type:null,val:null}; // type:'train'|'guild_xxx'
+if(!G.shopBuff)G.shopBuff={type:null,val:null}; // type:'guild_xxx'
+
+var _pendingKnightBuff=null;
+function openKnightConfirm(gb){
+  _pendingKnightBuff=gb;
+  var txt=g('knightConfirmTxt');
+  if(txt)txt.textContent=gb.nm+'\n'+gb.dc+'\n\n費用: '+gb.cost.toLocaleString()+'G\n\nよろしいですか？';
+  var o=g('knightOvl');if(o)o.classList.remove('hidden');
+}
 
 function renderShop(){
   var sc=g('shop-content');if(!sc)return;
@@ -2773,20 +2815,26 @@ function renderShop(){
   s1.appendChild(mk('div',null,'⬆'));
   var s1i=mk('div','shop-item-info');
   s1i.appendChild(mk('div','shop-item-nm','装備強化 (⭐)'));
-  s1i.appendChild(mk('div','shop-item-dc','⭐1〜5の別軸強化。各⭐でATK/DEF/HP+15%'));
+  s1i.appendChild(mk('div','shop-item-dc','⭐1〜5の別軸強化。各⭐でATK/DEF/HP+15%（⭐3以上は素材必要）'));
   s1.appendChild(s1i);
-  s1.appendChild(mk('div','shop-price','50G〜'));
+  s1.appendChild(mk('div','shop-price','150G〜'));
   s1.addEventListener('click',function(){openSmith('upgrade');});
   smithSec.appendChild(s1);
   var s2=mk('div','shop-item');
   s2.appendChild(mk('div',null,'🎲'));
   var s2i=mk('div','shop-item-info');
   s2i.appendChild(mk('div','shop-item-nm','オプション再抽選'));
-  s2i.appendChild(mk('div','shop-item-dc','+2以上の装備のオプションを再抽選'));
+  s2i.appendChild(mk('div','shop-item-dc','+2以上の装備のオプションを再抽選（再抽選石×1必要）'));
   s2.appendChild(s2i);
   s2.appendChild(mk('div','shop-price','〜'));
   s2.addEventListener('click',function(){openSmith('reroll');});
   smithSec.appendChild(s2);
+  // 素材所持表示
+  if(!G.mats)G.mats={reroll:0,mat3:0,mat4:0,mat5:0};
+  var matInfo=mk('div','shop-item-dc');
+  matInfo.style.cssText='font-size:10px;color:#6880a0;padding:4px 2px;';
+  matInfo.textContent='📦 所持素材: 再抽選石×'+G.mats.reroll+'  強化石Ⅲ×'+G.mats.mat3+'  精錬石Ⅳ×'+G.mats.mat4+'  伝説石Ⅴ×'+G.mats.mat5;
+  smithSec.appendChild(matInfo);
   sc.appendChild(smithSec);
 
   // ── 市場 ──────────────────────────────────────────
@@ -2796,52 +2844,19 @@ function renderShop(){
   ms.appendChild(mk('div',null,'🛒'));
   var msi=mk('div','shop-item-info');
   msi.appendChild(mk('div','shop-item-nm','装備を購入'));
-  msi.appendChild(mk('div','shop-item-dc','現在の最高到達階に応じた装備が並ぶ'));
+  msi.appendChild(mk('div','shop-item-dc','現在の最高到達階に応じた装備が並ぶ（品質50%固定・稀に100%）'));
   ms.appendChild(msi);
   ms.appendChild(mk('div','shop-price','〜'));
   ms.addEventListener('click',openMarket);
   mktSec.appendChild(ms);
   sc.appendChild(mktSec);
 
-  // ── 訓練場 ──────────────────────────────────────────
-  var trainSec=mk('div','shop-sec');
-  trainSec.appendChild(mk('div','shop-sec-title','🏋 訓練場'));
-  var tc=getTrainingCost();
-  var isTrainActive=G.shopBuff&&G.shopBuff.type==='train';
+  // ── 騎士団 ──────────────────────────────────────────
   var isGuildActive=G.shopBuff&&G.shopBuff.type&&G.shopBuff.type.indexOf('guild')===0;
-  if(isTrainActive){
-    trainSec.appendChild(mk('div','buff-active','✅ 訓練中: 次探索のパーティ全体EXP×2'));
-  }
-  if(isGuildActive){
-    trainSec.appendChild(mk('div','buff-exclusive','⚠ ギルドバフ中は使用不可'));
-  }
-  var tb=mk('div','shop-item'+((G.gold<tc||isTrainActive||isGuildActive)?' disabled':''));
-  tb.appendChild(mk('div',null,'📚'));
-  var tbi=mk('div','shop-item-info');
-  tbi.appendChild(mk('div','shop-item-nm','特訓 (1探索)'));
-  tbi.appendChild(mk('div','shop-item-dc','次の探索1フロア中、パーティ全体のEXP獲得×2'));
-  tb.appendChild(tbi);
-  tb.appendChild(mk('div','shop-price',tc+'G'));
-  if(G.gold>=tc&&!isTrainActive&&!isGuildActive){
-    tb.addEventListener('click',function(){
-      if(G.gold<tc)return;
-      G.gold-=tc;
-      G.shopBuff={type:'train',val:2};
-      log('sy','特訓開始! 次探索EXP×2 -'+tc+'G');
-      updH();save();renderShop();
-    });
-  }
-  trainSec.appendChild(tb);
-  sc.appendChild(trainSec);
-
-  // ── ギルド ──────────────────────────────────────────
   var guildSec=mk('div','shop-sec');
-  guildSec.appendChild(mk('div','shop-sec-title','⚜ ギルド'));
+  guildSec.appendChild(mk('div','shop-sec-title','⚜ 騎士団'));
   if(isGuildActive){
-    guildSec.appendChild(mk('div','buff-active','✅ ギルドバフ中: '+guildBuffLabel(G.shopBuff.type)));
-  }
-  if(isTrainActive){
-    guildSec.appendChild(mk('div','buff-exclusive','⚠ 訓練中は使用不可'));
+    guildSec.appendChild(mk('div','buff-active','✅ 騎士団バフ中: '+guildBuffLabel(G.shopBuff.type)));
   }
   var gc=getGuildCosts();
   var guildBuffs=[
@@ -2854,21 +2869,15 @@ function renderShop(){
   for(var gi=0;gi<guildBuffs.length;gi++){
     (function(gb){
       var isActive=G.shopBuff&&G.shopBuff.type===gb.id;
-      var canUse=G.gold>=gb.cost&&!isTrainActive&&!isActive;
+      var canUse=G.gold>=gb.cost&&!isActive;
       var gr=mk('div','shop-item'+(canUse?'':' disabled'));
       var gri=mk('div','shop-item-info');
       gri.appendChild(mk('div','shop-item-nm'+(isActive?' buff-active':''),gb.nm+(isActive?' ✅':'')));
       gri.appendChild(mk('div','shop-item-dc',gb.dc));
       gr.appendChild(gri);
-      gr.appendChild(mk('div','shop-price',gb.cost+'G'));
+      gr.appendChild(mk('div','shop-price',gb.cost.toLocaleString()+'G'));
       if(canUse){
-        gr.addEventListener('click',function(){
-          if(G.gold<gb.cost)return;
-          G.gold-=gb.cost;
-          G.shopBuff={type:gb.id,val:gb.id};
-          log('sy',gb.nm+' 購入! -'+gb.cost+'G');
-          updH();save();renderShop();
-        });
+        gr.addEventListener('click',function(){openKnightConfirm(gb);});
       }
       guildSec.appendChild(gr);
     })(guildBuffs[gi]);
@@ -2891,6 +2900,17 @@ function consumeShopBuff(){
 
 on('smithCancel',function(){var o=g('smithOvl');if(o)o.classList.add('hidden');});
 on('marketCancel',function(){var o=g('marketOvl');if(o)o.classList.add('hidden');});
+on('knight-confirm-ok',function(){
+  if(!_pendingKnightBuff)return;
+  var gb=_pendingKnightBuff;_pendingKnightBuff=null;
+  if(G.gold<gb.cost){log('sy','Gが足りません');var o=g('knightOvl');if(o)o.classList.add('hidden');return;}
+  G.gold-=gb.cost;
+  G.shopBuff={type:gb.id,val:gb.id};
+  log('sy','⚜ 騎士団: '+gb.nm+' 購入! -'+gb.cost.toLocaleString()+'G');
+  updH();save();renderShop();
+  var o=g('knightOvl');if(o)o.classList.add('hidden');
+});
+on('knight-confirm-cancel',function(){_pendingKnightBuff=null;var o=g('knightOvl');if(o)o.classList.add('hidden');});
 // ── INIT ─────────────────────────────────────────────
 load();updH();updFloor();renderPC();renderB();updLootCount();updLeaderPanel();
 log('sy','BABEL へようこそ。 塔の頂点を目指せ！');
