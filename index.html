@@ -427,7 +427,7 @@ font-size:9px;color:var(--gold);padding:2px 7px;cursor:pointer;margin-top:4px;wh
         <!-- Mid-floor choice -->
         <div class="choice-ovl hidden" id="midcovl">
           <div class="choice-dlg">
-            <h3>🏕 折り返し地点</h3>
+            <h3>🗿 祝福の女神像</h3>
             <p id="midctxt">フロア半分を突破!<br>このまま進む？</p>
             <div class="edb">
               <button class="btn btn-g" id="mid-cont">▶ 探索続行</button>
@@ -863,19 +863,30 @@ function buildEn(f,tp){
   var hm=1,am=1,dm=1,isE=false,isB=false,isR=false,isEl=false;
   var nm=base.nm,em=base.em;
   var skType=base.sk||'rage';
+  // 解放済み騎士数（ダイヤモンドゴーレム出現条件に使用）
+  var _unlockCount=0;for(var _ui=0;_ui<CD.length;_ui++){if(G.chars[CD[_ui].id].ul)_unlockCount++;}
   if(tp==='rare'){
-    var rp=[];for(var i=0;i<tierD.pool.length;i++){if(tierD.pool[i].rare)rp.push(tierD.pool[i]);}
+    var rp=[];for(var i=0;i<tierD.pool.length;i++){
+      if(tierD.pool[i].rare){
+        if(tierD.pool[i].isDG&&_unlockCount<6)continue; // DG: 騎士6人以上が必要
+        rp.push(tierD.pool[i]);
+      }
+    }
     if(rp.length){
       base=rp[rnd(0,rp.length-1)];nm=base.nm;em=base.em;skType=base.sk||'charge';
       hm=base.hm||6;am=base.am||2.5;dm=base.dm||3.5;lv=f+3;isR=true;
     }
+    // レアプールが空の場合はそのまま通常戦闘へ（何も起きない）
   } else if(tp==='elite'){
     var ep=EL[(f-1)%EL.length];nm=ep.nm;em=ep.em;hm=ep.hm;am=ep.am;dm=ep.dm;skType=ep.sk||'charge';lv=f+2;isE=true;
   } else if(tp==='boss'){
     var bd=getFM(f);nm=bd.nm;em=bd.em;hm=11.0;am=3.8;dm=3.2;skType='charge';lv=f+5;isB=true;
   } else if(tp==='named_elite'){
     nm=base.nm+'エリート';hm=2.8;am=2.2;dm=2.0;skType='rage';lv=f+1;isEl=true;
-    if(base.isDG){nm='ダイヤモンドゴーレムエリート';hm=8.0;am=3.5;dm=7.0;skType='charge';}
+    if(base.isDG){
+      if(_unlockCount>=6){nm='ダイヤモンドゴーレムエリート';hm=8.0;am=3.5;dm=7.0;skType='charge';}
+      else{nm=base.nm+'エリート';} // DG条件未達なら通常エリートとして扱う
+    }
   }
   var hp=Math.floor(bHP*hm);
   var isDG=!!(base&&base.isDG);
@@ -1325,7 +1336,7 @@ function returnToBase(){
   ['encovl','midcovl','fcovl'].forEach(function(id){
     var el=g(id);if(el)el.classList.add('hidden');
   });
-  G.medals=5;
+  G.medals=5; // 帰還時は5に回復
   consumeShopBuff();
   refreshMarket();
   for(var _ri=0;_ri<G.dun.bp.length;_ri++){
@@ -1389,6 +1400,14 @@ function eTick(){
     G.dun.midShown=true;
     G.dun.phase='pend';
     clearInterval(eT);eT=null;
+    // 祝福の女神像: 加護+5（上限10）
+    var before=G.medals;
+    G.medals=Math.min(10,G.medals+5);
+    var gained=G.medals-before;
+    updH();save();
+    var midTxt=g('midctxt');
+    if(midTxt)midTxt.innerHTML='🗿 <b>祝福の女神像</b> を発見!<br>加護が <b>+'+gained+'</b> 回復した ('+G.medals+'/10)<br><br>フロア半分を突破! このまま進む？';
+    showEvFlash('🗿','女神の祝福! 加護+'+gained,'rgba(80,40,120,.75)');
     var mo=g('midcovl');if(mo)mo.classList.remove('hidden');
     return;
   }
