@@ -11,7 +11,7 @@
   --bg:#09080f;--bg2:#111020;--bg3:#181628;
   --brd:#221e38;--brd2:#342e55;
   --gold:#c9a227;--gdim:#7a6018;
-  --txt:#d0c8de;--tdim:#5e5672;
+  --txt:#e8e0f0;--tdim:#9090b8;
   --red:#b03030;--grn:#307040;--tel:#287080;
 }
 html,body{width:100%;height:100%;background:var(--bg);color:var(--txt);
@@ -181,9 +181,9 @@ nav{background:#0a0916;border-top:1px solid var(--brd2);display:flex;flex-shrink
   cursor:pointer;font-size:12px;letter-spacing:.06em}
 .sbtn.act{background:linear-gradient(180deg,#2c1010,#1a0808);border-color:#5a2020;color:#b06060}
 /* CHAR CARDS */
-.vt{color:var(--gold);font-size:12px;letter-spacing:.1em;
+.vt{color:var(--gold);font-size:13px;letter-spacing:.1em;
   margin-bottom:4px;padding-bottom:4px;border-bottom:1px solid var(--brd);flex-shrink:0}
-.vs{font-size:11px;color:var(--tdim);margin-bottom:7px;flex-shrink:0}
+.vs{font-size:12px;color:var(--tdim);margin-bottom:7px;flex-shrink:0}
 .cc{background:var(--bg2);border:1px solid var(--brd);border-radius:5px;
   padding:11px 10px;display:flex;align-items:flex-start;gap:8px;cursor:pointer;
   margin-bottom:6px;position:relative}
@@ -191,17 +191,17 @@ nav{background:#0a0916;border-top:1px solid var(--brd2);display:flex;flex-shrink
 .cav{display:none}
 .cdet{flex:1;min-width:0;padding-right:36px}
 .cnmr{display:flex;align-items:center;gap:7px;margin-bottom:3px;flex-wrap:wrap}
-.cnm{font-size:17px;font-weight:bold}
-.ccls{font-size:11px;color:var(--tdim);background:var(--bg3);border:1px solid var(--brd);padding:2px 7px;border-radius:3px}
-.cfn{font-size:11px;color:var(--tdim);margin-bottom:3px}
-.clv{font-size:13px;color:var(--gold);margin-bottom:4px}
+.cnm{font-size:18px;font-weight:bold}
+.ccls{font-size:12px;color:#b0b0d0;background:var(--bg3);border:1px solid var(--brd);padding:2px 7px;border-radius:3px}
+.cfn{font-size:12px;color:#9090b8;margin-bottom:3px}
+.clv{font-size:14px;color:var(--gold);margin-bottom:4px}
 /* ── fix 2: ステータス行の段ずれ修正 ── */
 .cst{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:4px;align-items:baseline}
-.st{font-size:11px;color:var(--tdim);white-space:nowrap;display:flex;align-items:baseline;gap:2px}
-.st span{color:var(--txt);font-weight:bold}
-.csk{font-size:11px;color:var(--tdim);font-style:italic;margin-bottom:4px}
-.ceq{display:flex;gap:4px;flex-wrap:wrap}
-.eqb{font-size:11px;background:var(--bg3);border:1px solid var(--brd);padding:3px 7px;border-radius:3px;color:var(--tdim)}
+.st{font-size:13px;color:#a0a0c8;white-space:nowrap;display:flex;align-items:baseline;gap:2px}
+.st span{color:var(--txt);font-weight:bold;font-size:14px}
+.csk{font-size:12px;color:#a0a0c0;font-style:italic;margin-bottom:4px}
+.ceq{display:flex;flex-direction:column;gap:5px}
+.eqb{font-size:12px;background:var(--bg3);border:1px solid var(--brd2);padding:5px 9px;border-radius:4px;color:#c0c0e0;text-align:left;width:100%}
 /* 前衛/後衛バッジ: 枠の右端に固定 */
 .pb{position:absolute;top:6px;right:6px;font-size:8px;padding:2px 7px;border-radius:3px;white-space:nowrap}
 .pb.fr{background:var(--gdim);color:#060400}
@@ -222,11 +222,11 @@ nav{background:#0a0916;border-top:1px solid var(--brd2);display:flex;flex-shrink
 .iid{flex:1;min-width:0}
 .iinm{font-size:14px;font-weight:bold}
 .iisub{font-size:13px;margin-top:2px}
-.iistat{font-size:13px;color:var(--tdim);margin-top:3px}
+.iistat{font-size:13px;color:#a8a8c8;margin-top:3px}
 .iipl{font-size:13px;background:var(--bg3);border:1px solid var(--brd2);padding:3px 8px;
   border-radius:3px;color:var(--tel);flex-shrink:0}
-.em2{color:var(--tdim);font-size:12px;text-align:center;padding:30px 10px}
-.st2{font-size:11px;color:var(--gold);letter-spacing:.08em;
+.em2{color:#9090b8;font-size:13px;text-align:center;padding:30px 10px}
+.st2{font-size:12px;color:var(--gold);letter-spacing:.08em;
   margin:7px 0 5px;padding-bottom:4px;border-bottom:1px solid var(--brd)}
 /* rarity colors */
 .qn{color:#909090}
@@ -360,9 +360,9 @@ padding:2px 6px;border-radius:3px}
 font-size:8px;color:#fff;padding:1px 5px;font-weight:bold;vertical-align:middle;white-space:nowrap;margin-left:4px}
 .ls-box{background:rgba(30,24,55,.95);border:1px solid var(--gdim);border-radius:6px;
 padding:7px 10px;margin-bottom:7px;flex-shrink:0}
-.ls-nm{font-size:11px;color:var(--gold);font-weight:bold;margin-bottom:1px}
-.ls-dc{font-size:10px;color:var(--tdim)}
-.ls-none{font-size:10px;color:var(--tdim);text-align:center;padding:6px 0}
+.ls-nm{font-size:12px;color:var(--gold);font-weight:bold;margin-bottom:1px}
+.ls-dc{font-size:11px;color:#a8a8c8}
+.ls-none{font-size:11px;color:#9090b8;text-align:center;padding:6px 0}
 /* Leader row in char list */
 .cc.leader{border-color:var(--gold)!important;box-shadow:0 0 8px rgba(200,162,39,.25)}
 .ldr-set-btn{background:rgba(30,24,55,.9);border:1px solid var(--gdim);border-radius:3px;
@@ -378,12 +378,12 @@ font-size:9px;color:var(--gold);padding:2px 7px;cursor:pointer;margin-top:4px;wh
 .shop-item.disabled{opacity:.4;cursor:default}
 .shop-item-info{flex:1;min-width:0}
 .shop-item-nm{font-size:13px;font-weight:bold}
-.shop-item-dc{font-size:11px;color:var(--tdim);margin-top:2px}
+.shop-item-dc{font-size:12px;color:#a8a8c8;margin-top:2px}
 .shop-price{font-size:13px;color:var(--gold);white-space:nowrap;font-weight:bold}
 .smith-star{font-size:16px}
 .buff-active{background:rgba(28,60,40,.8);border:1px solid #306040;border-radius:4px;
   padding:4px 8px;font-size:11px;color:#50d080;margin-bottom:6px}
-.buff-exclusive{font-size:10px;color:#c07020;margin-bottom:6px}
+.buff-exclusive{font-size:11px;color:#c08030;margin-bottom:6px}
 .hidden{display:none!important}
 </style>
 
@@ -2129,7 +2129,7 @@ function renderChars(){
       lsRow.appendChild(ldrBtn);
       det.appendChild(lsRow);
     }
-    // ── fix 4: 装備ステータスも表示 ──
+    // ── 装備ステータスも表示（縦並び: 武器→防具→アクセ）──
     var eqd=mk('div','ceq');
     var sl2=['weapon','armor','ring'];
     var slIcons=['⚔','🛡','💍'];
@@ -2138,26 +2138,29 @@ function renderChars(){
       var it=eq[sl2[si]];
       var iD=it?gid(it.id2):null;
       var plusStr=(it&&it.plus>0)?(' +'+it.plus):'';
-      var eqLabel=slIcons[si]+(iD?(iD.name+plusStr):slNames[si]+'なし');
-      if(iD){
-        var stTxt=ss(iD,it.plus,it.q);
-        eqLabel+='  ['+stTxt+']';
-        if(it.smith)eqLabel+=' '+'⭐'.repeat(it.smith);
-      }
-      var eqBtn=mk('button','eqb ceq-slot-btn',eqLabel);
-      if(iD){var qi3=qi(it.plus,!!it.anc);eqBtn.classList.add(qi3.c);}
-      // 装備中のオプションをボタン下に表示
+      var smithStr=(it&&it.smith)?(' '+'⭐'.repeat(it.smith)):'';
       var eqWrap=mk('div',null,'');
       eqWrap.style.cssText='display:flex;flex-direction:column;gap:2px;';
-      eqWrap.appendChild(eqBtn);
+      var eqLabel=slIcons[si]+'  ';
+      if(iD){
+        eqLabel+=iD.name+plusStr+smithStr+'  ['+ss(iD,it.plus,it.q)+']';
+      } else {
+        eqLabel+=slNames[si]+'  装備なし';
+      }
+      var eqBtn=mk('button','eqb',eqLabel);
+      if(iD){var qi3=qi(it.plus,!!it.anc);eqBtn.classList.add(qi3.c);}
+      // 装備中のオプションをボタン下に表示
       if(it&&it.opts&&it.opts.length){
         var optRow=mk('div',null,'');
-        optRow.style.cssText='display:flex;flex-wrap:wrap;gap:2px;margin-top:1px;';
+        optRow.style.cssText='display:flex;flex-wrap:wrap;gap:2px;margin-top:2px;';
         for(var _oi2=0;_oi2<it.opts.length;_oi2++){
           var ob2=mk('span','ceq-opt'+(it.opts[_oi2].tier===3?' ceq-opt-rare':''),'◆'+optLabel(it.opts[_oi2]));
           optRow.appendChild(ob2);
         }
+        eqWrap.appendChild(eqBtn);
         eqWrap.appendChild(optRow);
+      } else {
+        eqWrap.appendChild(eqBtn);
       }
       (function(cid2,slot2){eqBtn.addEventListener('click',function(ev){ev.stopPropagation();openCharEqPicker(cid2,slot2);});})(d.id,sl2[si]);
       eqd.appendChild(eqWrap);
