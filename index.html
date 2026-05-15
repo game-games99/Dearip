@@ -218,8 +218,8 @@ nav{background:#0a0916;border-top:1px solid var(--brd2);display:flex;flex-shrink
 .iic{font-size:26px;flex-shrink:0;width:34px;text-align:center}
 .iid{flex:1;min-width:0}
 .iinm{font-size:14px;font-weight:bold}
-.iisub{font-size:12px;margin-top:2px}
-.iistat{font-size:12px;color:var(--tdim);margin-top:3px}
+.iisub{font-size:13px;margin-top:2px}
+.iistat{font-size:13px;color:var(--tdim);margin-top:3px}
 .iipl{font-size:13px;background:var(--bg3);border:1px solid var(--brd2);padding:3px 8px;
   border-radius:3px;color:var(--tel);flex-shrink:0}
 .em2{color:var(--tdim);font-size:12px;text-align:center;padding:30px 10px}
@@ -253,11 +253,15 @@ nav{background:#0a0916;border-top:1px solid var(--brd2);display:flex;flex-shrink
 .ovl{position:fixed;inset:0;background:rgba(4,3,10,.88);
   display:flex;align-items:center;justify-content:center;z-index:100}
 .dlg{background:var(--bg2);border:1px solid var(--gdim);border-radius:7px;
-  padding:14px;width:310px;max-height:85vh;overflow-y:auto}
+  padding:14px;width:310px;max-height:85vh;overflow-y:auto;position:relative}
 .dlg h3{color:var(--gold);text-align:center;font-size:13px;margin-bottom:10px}
+.dlg-x{position:absolute;top:8px;right:10px;background:none;border:none;
+  color:var(--tdim);font-size:18px;cursor:pointer;line-height:1;padding:2px 5px;
+  border-radius:3px;z-index:10}
+.dlg-x:active{background:rgba(255,255,255,.1);color:var(--txt)}
 .dr{background:var(--bg3);border:1px solid var(--brd);border-radius:4px;
   padding:9px 11px;display:flex;align-items:center;gap:9px;cursor:pointer;margin-bottom:6px}
-.drd{flex:1}.drnm{font-size:14px;font-weight:bold}.drsub{font-size:11px;color:var(--tdim)}
+.drd{flex:1}.drnm{font-size:14px;font-weight:bold}.drsub{font-size:13px;color:var(--tdim)}
 .dr.ded{opacity:.38;cursor:not-allowed}
 .cbtn{width:100%;background:none;border:1px solid var(--brd);border-radius:3px;
   color:var(--tdim);padding:8px;cursor:pointer;font-size:13px;margin-top:6px}
@@ -332,20 +336,20 @@ color:var(--tdim);padding:3px 7px;cursor:pointer;font-size:9px;}
 /* CEQ: current equip panel */
 .ceq-cur{background:rgba(20,18,38,.9);border:1px solid var(--brd2);border-radius:5px;
 padding:7px 10px;margin-bottom:8px;flex-shrink:0}
-.ceq-cur-nm{font-size:11px;font-weight:bold;margin-bottom:3px}
+.ceq-cur-nm{font-size:13px;font-weight:bold;margin-bottom:4px}
 .ceq-cur-stats{display:flex;gap:8px;flex-wrap:wrap}
-.ceq-cur-st{font-size:10px;color:var(--tdim)}
-.ceq-cur-st span{color:var(--txt)}
+.ceq-cur-st{font-size:13px;color:var(--tdim)}
+.ceq-cur-st span{color:var(--txt);font-weight:bold}
 /* stat diff tags */
-.sd-up{font-size:12px;color:#40e870;font-weight:bold;background:rgba(40,120,60,.15);
-padding:1px 5px;border-radius:3px}
-.sd-dn{font-size:12px;color:#ff5050;font-weight:bold;background:rgba(120,30,30,.15);
-padding:1px 5px;border-radius:3px}
+.sd-up{font-size:13px;color:#40e870;font-weight:bold;background:rgba(40,120,60,.15);
+padding:2px 6px;border-radius:3px}
+.sd-dn{font-size:13px;color:#ff5050;font-weight:bold;background:rgba(120,30,30,.15);
+padding:2px 6px;border-radius:3px}
 /* ── fix 8: 同値タグ ── */
-.sd-eq{font-size:11px;color:#a0a0c0;background:rgba(40,40,70,.2);padding:1px 5px;border-radius:3px}
+.sd-eq{font-size:12px;color:#a0a0c0;background:rgba(40,40,70,.2);padding:2px 6px;border-radius:3px}
 .ceq-diff{display:flex;gap:5px;flex-wrap:wrap;margin-top:4px}
 .ceq-opts{display:flex;flex-wrap:wrap;gap:3px;margin-top:3px}
-.ceq-opt{font-size:9px;color:#70b0e0;background:rgba(20,40,70,.5);border:1px solid #2a4a7a;border-radius:3px;padding:1px 4px}
+.ceq-opt{font-size:11px;color:#70b0e0;background:rgba(20,40,70,.5);border:1px solid #2a4a7a;border-radius:3px;padding:2px 5px}
 .ceq-opt-rare{color:#e0a030;border-color:#7a5010;background:rgba(50,30,10,.5)}
 /* Leader skill */
 /* ★LEADERバッジ: 名前行末尾インライン */
@@ -2859,6 +2863,7 @@ if(!G.shopBuff)G.shopBuff={type:null,val:null}; // type:'guild_xxx'
 
 var _pendingKnightBuff=null;
 function openKnightConfirm(gb){
+  if(G.dun.active){log('sy','⚔ 探索中は騎士団バフを購入できません');return;}
   _pendingKnightBuff=gb;
   var txt=g('knightConfirmTxt');
   if(txt)txt.textContent=gb.nm+'\n'+gb.dc+'\n\n費用: '+gb.cost.toLocaleString()+'G\n\nよろしいですか？';
@@ -2914,10 +2919,14 @@ function renderShop(){
 
   // ── 騎士団 ──────────────────────────────────────────
   var isGuildActive=G.shopBuff&&G.shopBuff.type&&G.shopBuff.type.indexOf('guild')===0;
+  var isDunActive=G.dun.active;
   var guildSec=mk('div','shop-sec');
   guildSec.appendChild(mk('div','shop-sec-title','⚜ 騎士団'));
   if(isGuildActive){
     guildSec.appendChild(mk('div','buff-active','✅ 騎士団バフ中: '+guildBuffLabel(G.shopBuff.type)));
+  }
+  if(isDunActive){
+    guildSec.appendChild(mk('div','buff-exclusive','⚔ 探索中はバフを購入できません（拠点に戻ってから）'));
   }
   var gc=getGuildCosts();
   var guildBuffs=[
@@ -2930,7 +2939,7 @@ function renderShop(){
   for(var gi=0;gi<guildBuffs.length;gi++){
     (function(gb){
       var isActive=G.shopBuff&&G.shopBuff.type===gb.id;
-      var canUse=G.gold>=gb.cost&&!isActive;
+      var canUse=G.gold>=gb.cost&&!isActive&&!isDunActive;
       var gr=mk('div','shop-item'+(canUse?'':' disabled'));
       var gri=mk('div','shop-item-info');
       gri.appendChild(mk('div','shop-item-nm'+(isActive?' buff-active':''),gb.nm+(isActive?' ✅':'')));
@@ -2975,6 +2984,34 @@ on('knight-confirm-cancel',function(){_pendingKnightBuff=null;var o=g('knightOvl
 // ── INIT ─────────────────────────────────────────────
 load();updH();updFloor();renderPC();renderB();updLootCount();updLeaderPanel();
 log('sy','BABEL へようこそ。 塔の頂点を目指せ！');
+
+// ── 全ダイアログに×閉じるボタンを注入 ─────────────────
+(function(){
+  var ovlCloseMap={
+    movl:     function(){var o=g('movl');if(o)o.classList.add('hidden');},
+    sovl:     function(){var o=g('sovl');if(o)o.classList.add('hidden');},
+    eovl:     function(){var o=g('eovl');if(o)o.classList.add('hidden');},
+    ceqOvl:   function(){var o=g('ceqOvl');if(o)o.classList.add('hidden');},
+    cpickOvl: function(){var o=g('cpickOvl');if(o)o.classList.add('hidden');},
+    fsovl:    function(){var o=g('fsovl');if(o)o.classList.add('hidden');},
+    smithOvl: function(){var o=g('smithOvl');if(o)o.classList.add('hidden');},
+    marketOvl:function(){var o=g('marketOvl');if(o)o.classList.add('hidden');},
+    sellovl:  function(){var o=g('sellovl');if(o)o.classList.add('hidden');},
+    dropovl:  function(){var o=g('dropovl');if(o)o.classList.add('hidden');},
+    knightOvl:function(){var o=g('knightOvl');if(o)o.classList.add('hidden');}
+  };
+  var keys=Object.keys(ovlCloseMap);
+  for(var _ki=0;_ki<keys.length;_ki++){
+    (function(ovlId,closeFn){
+      var ovl=g(ovlId);if(!ovl)return;
+      var dlg=ovl.querySelector('.dlg');if(!dlg)return;
+      var xBtn=mk('button','dlg-x','✕');
+      xBtn.addEventListener('click',closeFn);
+      dlg.insertBefore(xBtn,dlg.firstChild);
+    })(keys[_ki],ovlCloseMap[keys[_ki]]);
+  }
+})();
+
 setInterval(save,30000);
 setInterval(updH,3000);
 
