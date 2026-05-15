@@ -16,7 +16,9 @@
 }
 html,body{width:100%;height:100%;background:var(--bg);color:var(--txt);
   font-size:15px;overflow:hidden;-webkit-tap-highlight-color:transparent;
-  font-family:Georgia,serif}
+  font-family:Georgia,serif;
+  touch-action:manipulation}
+* { touch-action:manipulation; }
 #app{display:flex;flex-direction:column;height:100dvh;max-width:480px;margin:0 auto}
 main{flex:1;overflow:hidden;position:relative;min-height:0}
 .view{display:none;height:100%;flex-direction:column}
@@ -168,12 +170,13 @@ nav{background:#0a0916;border-top:1px solid var(--brd2);display:flex;flex-shrink
 .pslot-t{font-size:9px;color:var(--tdim);text-align:center;line-height:1.6}
 /* CONTROLS */
 .ctrl{flex-shrink:0;display:flex;align-items:center;gap:5px;
-  padding:4px 6px;background:#08070e;border-top:1px solid var(--brd)}
+  padding:4px 6px;background:#08070e;border-top:1px solid var(--brd);
+  justify-content:flex-end}
 .gd{font-size:12px;color:var(--gold)}
 .gd-leader{flex:1;min-width:0;overflow:hidden}
 .gd-leader-eff{font-size:9px;color:var(--tdim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .gd-leader-nm{font-size:9px;color:var(--gold);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.sbtn{margin-left:auto;background:linear-gradient(180deg,#1a2c44,#0e1c2c);
+.sbtn{background:linear-gradient(180deg,#1a2c44,#0e1c2c);
   border:1px solid var(--tel);color:#68a0c0;border-radius:4px;padding:9px 15px;
   cursor:pointer;font-size:12px;letter-spacing:.06em}
 .sbtn.act{background:linear-gradient(180deg,#2c1010,#1a0808);border-color:#5a2020;color:#b06060}
@@ -462,10 +465,8 @@ font-size:9px;color:var(--gold);padding:2px 7px;cursor:pointer;margin-top:4px;wh
           <div class="gd-leader-eff" id="ls-inline-eff">騎士タブで設定</div>
         </div>
         <div id="loot-cnt" class="loot-bar hidden"></div>
-        <div style="display:flex;gap:4px;align-items:center">
-          <button class="sbtn" id="sbtn">▶ 出発</button>
-          <button class="tog" id="optsbtn" title="オプション">⚙</button>
-        </div>
+        <button class="sbtn" id="sbtn">▶ 出発</button>
+        <button class="tog" id="optsbtn" style="flex-shrink:0;min-width:32px;min-height:32px;font-size:14px;padding:6px 8px">⚙</button>
       </div>
     </div>
     <div id="vc" class="view">
@@ -1472,15 +1473,15 @@ function eTick(){
       trigEnc('boss');
     } else {
       // 1〜14層の通常フロア末尾: エリート1体のみ
-      var et2=getET(f2);
       var ep=EL[f2%EL.length];
       log('sy','👁 フロアの主「'+ep.nm+'」が行く手を阻む!');
-      trigEnc('elite');
+      trigEnc('elite', true); // isFloorEnd=true
     }
   }
 }
-function trigEnc(tp){
+function trigEnc(tp, isFloorEnd){
   var e=buildEn(G.fl,tp);
+  if(isFloorEnd)e.isFloorEnd=true;
   if(G.dun.atkBuff){G.dun.atkBuff=false;G.dun._atkBuff=true;}
   if(G.dun.defBuff){G.dun.defBuff=false;G.dun._defBuff=true;}
   if(G.dun.auto){startB(e);}
@@ -1773,7 +1774,7 @@ function onKill(){
     }
   }
   var cfg=fcfg(G.fl);
-  if(en.isB&&G.dun.dist>=cfg.dist){onFC();return;}
+  if((en.isB||en.isFloorEnd)&&G.dun.dist>=cfg.dist){onFC();return;}
   G.dun.phase='exploring';
   if(!eT)eT=setInterval(eTick,200);
   var an=g('ann');if(an)an.textContent='探索中...';
