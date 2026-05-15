@@ -462,7 +462,10 @@ font-size:9px;color:var(--gold);padding:2px 7px;cursor:pointer;margin-top:4px;wh
           <div class="gd-leader-eff" id="ls-inline-eff">騎士タブで設定</div>
         </div>
         <div id="loot-cnt" class="loot-bar hidden"></div>
-        <button class="sbtn" id="sbtn">▶ 出発</button>
+        <div style="display:flex;gap:4px;align-items:center">
+          <button class="sbtn" id="sbtn">▶ 出発</button>
+          <button class="tog" id="optsbtn" title="オプション">⚙</button>
+        </div>
       </div>
     </div>
     <div id="vc" class="view">
@@ -593,6 +596,14 @@ font-size:9px;color:var(--gold);padding:2px 7px;cursor:pointer;margin-top:4px;wh
     <p id="knightConfirmTxt" style="font-size:12px;color:var(--tdim);text-align:center;margin-bottom:14px;line-height:1.8;white-space:pre-line"></p>
     <button class="cbtn" id="knight-confirm-ok" style="background:linear-gradient(180deg,#1a2c10,#0e1808);border:1px solid #405a20;color:#80c040;margin-bottom:6px">購入する</button>
     <button class="cbtn" id="knight-confirm-cancel">キャンセル</button>
+  </div>
+</div>
+<!-- オプションモーダル -->
+<div class="ovl hidden" id="optsOvl">
+  <div class="dlg">
+    <h3>⚙ オプション</h3>
+    <div id="optsList"></div>
+    <button class="cbtn" id="optsClose">閉じる</button>
   </div>
 </div>
 
@@ -1134,6 +1145,7 @@ var G={
   gold:200,medals:5,cf:0,hf:1,fl:1,leader:null,shopBuff:{type:null,val:null},
   party:[],chars:{},eq:{},inv:[],
   mats:{reroll:0,mat3:0,mat4:0,mat5:0},
+  opts:{autoReturnSkip:false},
   dun:{
     active:false,auto:true,fast:false,dist:0,phase:'idle',enemy:null,pend:null,bp:[],
     pendingLoot:[],
@@ -1178,7 +1190,8 @@ function initNewGame(){
 function save(){
   try{
     var s={gold:G.gold,medals:G.medals,cf:G.cf,hf:G.hf,fl:G.fl,leader:G.leader,shopBuff:G.shopBuff,
-      party:G.party,inv:G.inv,eq:G.eq,mats:G.mats||{reroll:0,mat3:0,mat4:0,mat5:0},chars:{}};
+      party:G.party,inv:G.inv,eq:G.eq,mats:G.mats||{reroll:0,mat3:0,mat4:0,mat5:0},
+      opts:G.opts||{autoReturnSkip:false},chars:{}};
     for(var id in G.chars){var c=G.chars[id];s.chars[id]={lv:c.lv,exp:c.exp,en:c.en,ul:c.ul};}
     localStorage.setItem('dt6',JSON.stringify(s));
   }catch(e){}
@@ -1192,6 +1205,7 @@ function load(){
     G.shopBuff=s.shopBuff||{type:null,val:null};
     G.leader=s.leader||null;
     G.mats=s.mats||{reroll:0,mat3:0,mat4:0,mat5:0};
+    G.opts=s.opts||{autoReturnSkip:false};
     var vi={};for(var i=0;i<CD.length;i++)vi[CD[i].id]=true;
     G.party=(s.party||[]).map(function(id){return (id&&vi[id])?id:null;});
     while(G.party.length>0&&!G.party[G.party.length-1])G.party.pop();
@@ -1440,10 +1454,29 @@ function eTick(){
   }
   if(G.dun.dist>=cfg.dist){
     G.dun.dist=cfg.dist;updFloor();
-    // 全フロア100%到達でフロアマスター出現
-    var fm=getFM(G.fl);
-    log('sy','⚠️ フロアマスター「'+fm.nm+'」出現!');
-    trigEnc('boss');
+    var f2=G.fl;
+    if(f2>=15){
+      // 15層以降: 全フロアでフロアマスター（現状通り）
+      var fm=getFM(f2);
+      log('sy','⚠️ フロアマスター「'+fm.nm+'」出現!');
+      trigEnc('boss');
+    } else if(f2%10===0){
+      // 10の倍数: ボス系フロアマスター
+      var fm=getFM(f2);
+      log('sy','💀 フロアマスター「'+fm.nm+'」出現!');
+      trigEnc('boss');
+    } else if(f2%5===0){
+      // 5の倍数(10除く): ボスモンスター
+      var fm=getFM(f2);
+      log('sy','⚔ ボス「'+fm.nm+'」出現!');
+      trigEnc('boss');
+    } else {
+      // 1〜14層の通常フロア末尾: エリート1体のみ
+      var et2=getET(f2);
+      var ep=EL[f2%EL.length];
+      log('sy','👁 フロアの主「'+ep.nm+'」が行く手を阻む!');
+      trigEnc('elite');
+    }
   }
 }
 function trigEnc(tp){
@@ -1763,6 +1796,12 @@ function onFC(){
   updH();save();
   clearInterval(eT);eT=null;
   G.dun.phase='pend';
+  // オートモード中 & 帰還確認スキップ有効 → 自動帰還
+  if(G.dun.auto&&G.opts&&G.opts.autoReturnSkip){
+    log('sy',f+'F クリア! (オート帰還)');
+    setTimeout(function(){returnToBase();},400);
+    return;
+  }
   var fc=g('fcovl');
   var ft=g('fctxt');
   if(ft)ft.textContent=f+'F を制覇!\n次の階層へ進むか拠点に戻るか?';
@@ -2143,6 +2182,8 @@ function rarityBorderClass(plus,isAnc){
 var _invTab='weapon';
 var _selPartyIdx=-1;
 var _charSort='join';
+var _invSort='quality'; // 'quality'|'rarity'|'power'|'acquired'
+
 function renderInv(){
   var list=g('ilist');if(!list)return;list.innerHTML='';
   var tabs=[['weapon','⚔ 武器'],['armor','🛡 防具'],['ring','💍 アクセ']];
@@ -2153,6 +2194,27 @@ function renderInv(){
     tabBar.appendChild(btn);
   });
   list.appendChild(tabBar);
+
+  // ソートバー
+  var sortDefs=[
+    {key:'quality', lbl:'品質↓'},
+    {key:'rarity',  lbl:'レア↓'},
+    {key:'power',   lbl:'能力↓'},
+    {key:'acquired',lbl:'取得順'},
+  ];
+  var sortBar=mk('div',null,'');
+  sortBar.style.cssText='display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px;align-items:center;flex-shrink:0';
+  sortBar.appendChild(mk('span',null,'並び替え:'));
+  sortBar.querySelector('span').style.cssText='font-size:9px;color:var(--tdim);align-self:center';
+  for(var _si=0;_si<sortDefs.length;_si++){
+    (function(sd){
+      var sb=mk('button','sort-btn'+(_invSort===sd.key?' active':''),sd.lbl);
+      sb.addEventListener('click',function(){_invSort=sd.key;renderInv();});
+      sortBar.appendChild(sb);
+    })(sortDefs[_si]);
+  }
+  list.appendChild(sortBar);
+
   var filtered=[];
   for(var i=0;i<G.inv.length;i++){
     var it=G.inv[i];var d=gid(it.id2);
@@ -2161,7 +2223,24 @@ function renderInv(){
   if(!filtered.length){list.appendChild(mk('div','em2','なし'));return;}
   var typeLabel={weapon:'武器',armor:'防具',ring:'アクセサリー'};
   list.appendChild(mk('div','st2',(typeLabel[_invTab]||'装備')+'  '+filtered.length+'個'));
-  filtered.sort(function(a,b){return b.it.q-a.it.q;});
+
+  // ソート処理
+  filtered.sort(function(a,b){
+    if(_invSort==='quality') return b.it.q-a.it.q;
+    if(_invSort==='rarity'){
+      var rd=b.it.plus-a.it.plus;
+      return rd!==0?rd:(b.it.q-a.it.q);
+    }
+    if(_invSort==='power'){
+      var pa=0,pb2=0;
+      var ksa=Object.keys(a.d.stats);for(var _ki=0;_ki<ksa.length;_ki++)pa+=cs(a.d.stats[ksa[_ki]],a.it.plus,a.it.q);
+      var ksb=Object.keys(b.d.stats);for(var _ki=0;_ki<ksb.length;_ki++)pb2+=cs(b.d.stats[ksb[_ki]],b.it.plus,b.it.q);
+      return pb2-pa;
+    }
+    // acquired: インデックス順（G.inv元の順番）
+    return a.i-b.i;
+  });
+
   for(var i=0;i<filtered.length;i++){
     var e=filtered[i];var qi2=qi(e.it.plus,!!e.it.anc);
     var row=mk('div','ii '+rarityBorderClass(e.it.plus,!!e.it.anc));
@@ -2263,7 +2342,9 @@ function openEQ(it,idx){
     var d=CD[ci];if(!G.chars[d.id].ul)continue;
     var eq=G.eq[d.id]||{};var cur=eq[iD.t];
     var curTxt=cur?(function(){var cd=gid(cur.id2);var ps=cur.plus>0?(' +'+cur.plus):'';return cd?cd.name+ps:'?';})():'なし';
-    var row=mk('div','dr');
+    // 探索中パーティ参加中はロック
+    var isInPartyDun=G.dun.active&&G.party.indexOf(d.id)>=0;
+    var row=mk('div','dr'+(isInPartyDun?' ded':''));
     row.appendChild(mk('div',null,d.em));
     var inf=mk('div','drd');
     inf.appendChild(mk('div','drnm',d.nm));
@@ -2292,9 +2373,13 @@ function openEQ(it,idx){
       }
     }
     var cmpEl2=mk('div','drsub');cmpEl2.innerHTML=cmpTxt;
+    if(isInPartyDun){
+      var lockNote=mk('div','drsub');lockNote.style.color='#c04040';lockNote.textContent='⚔ 探索中は変更不可';
+      inf.appendChild(lockNote);
+    }
     inf.appendChild(cmpEl2);
     row.appendChild(inf);
-    (function(cid,sl,itm){
+    if(!isInPartyDun)(function(cid,sl,itm){
       row.addEventListener('click',function(){doEQ(cid,sl,itm);});
       row.addEventListener('mouseenter',function(){showCmp(cid,iD,it);});
     })(d.id,iD.t,it);
@@ -2408,6 +2493,11 @@ function buildDiffEl(newSt, curSt){
 }
 
 function openCharEqPicker(charId, slot){
+  // 探索中はパーティ参加中の騎士の装備変更をブロック
+  if(G.dun.active && G.party.indexOf(charId)>=0){
+    log('sy','⚔ 探索中はパーティ参加中の騎士の装備を変更できません');
+    return;
+  }
   _ceqCharId=charId; _ceqSlot=slot;
   var slotIcon=slot==='weapon'?'⚔':slot==='armor'?'🛡':'💍';
   var slotName=slot==='weapon'?'武器':slot==='armor'?'防具':'アクセサリー';
@@ -2618,10 +2708,12 @@ on('fc-back',function(){
 // ── fix 7: 売却確認モーダル経由 ──
 on('bulk-sell',function(){
   var eq_ids=getEquippedItemKeys();
-  var cnt=0;
-  G.inv.forEach(function(it){if(!it.locked&&!eq_ids[invKey(it)])cnt++;});
+  var cnt=0,previewG=0;
+  G.inv.forEach(function(it){
+    if(!it.locked&&!eq_ids[invKey(it)]){cnt++;previewG+=calcSellPrice(it);}
+  });
   var txt=g('sell-confirm-txt');
-  if(txt)txt.textContent='装備中・ロック以外の装備品を\n'+cnt+'個売却します。\nこの操作は取り消せません。';
+  if(txt)txt.textContent='装備中・ロック以外の装備品を\n'+cnt+'個売却します。\n\n売却合計: '+previewG.toLocaleString()+' G\n\nこの操作は取り消せません。';
   var o=g('sellovl');if(o)o.classList.remove('hidden');
 });
 on('sell-confirm-ok',function(){
@@ -2874,6 +2966,22 @@ function renderShop(){
   var sc=g('shop-content');if(!sc)return;
   sc.innerHTML='';
 
+  // 探索中は全施設をロック
+  if(G.dun.active){
+    var lockDiv=mk('div','shop-sec');
+    var lockTxt=mk('div',null,'');
+    lockTxt.style.cssText='text-align:center;padding:18px 8px;';
+    lockTxt.appendChild(mk('div',null,'⚔'));
+    var ld1=mk('div',null,'探索中は施設を利用できません');
+    ld1.style.cssText='font-size:13px;color:#c04040;margin-top:6px;font-weight:bold';
+    var ld2=mk('div',null,'拠点に戻ってから利用してください');
+    ld2.style.cssText='font-size:11px;color:var(--tdim);margin-top:4px';
+    lockTxt.appendChild(ld1);lockTxt.appendChild(ld2);
+    lockDiv.appendChild(lockTxt);
+    sc.appendChild(lockDiv);
+    return;
+  }
+
   // ── 鍛冶屋 ──────────────────────────────────────────
   var smithSec=mk('div','shop-sec');
   smithSec.appendChild(mk('div','shop-sec-title','🔨 鍛冶屋'));
@@ -2968,7 +3076,44 @@ function consumeShopBuff(){
   }
 }
 
-on('smithCancel',function(){var o=g('smithOvl');if(o)o.classList.add('hidden');});
+on('optsClose',function(){var o=g('optsOvl');if(o)o.classList.add('hidden');});
+on('optsbtn',function(){openOpts();});
+
+function openOpts(){
+  if(!G.opts)G.opts={autoReturnSkip:false};
+  var list=g('optsList');if(!list)return;
+  list.innerHTML='';
+
+  var optDefs=[
+    {
+      key:'autoReturnSkip',
+      nm:'オート時: フロアクリア後 自動帰還',
+      dc:'オートモード中、フロアクリアの確認ダイアログをスキップして自動で拠点に帰還します（周回効率化）',
+    }
+  ];
+
+  for(var i=0;i<optDefs.length;i++){
+    (function(od){
+      var row=mk('div','shop-item');
+      row.style.cssText='cursor:pointer;margin-bottom:10px;';
+      var inf=mk('div','shop-item-info');
+      inf.appendChild(mk('div','shop-item-nm',od.nm));
+      inf.appendChild(mk('div','shop-item-dc',od.dc));
+      row.appendChild(inf);
+      var val=G.opts[od.key];
+      var tog=mk('div',null,val?'ON':'OFF');
+      tog.style.cssText='font-size:13px;font-weight:bold;white-space:nowrap;padding:4px 10px;border-radius:4px;border:1px solid;'
+        +(val?'color:#60c060;border-color:#306040;background:rgba(20,60,20,.5)':'color:#a0a0c0;border-color:#3a3a5a;background:rgba(20,20,40,.5)');
+      row.appendChild(tog);
+      row.addEventListener('click',function(){
+        G.opts[od.key]=!G.opts[od.key];
+        save();
+        openOpts(); // 再描画
+      });
+      list.appendChild(row);
+    })(optDefs[i]);
+  }
+}
 on('marketCancel',function(){var o=g('marketOvl');if(o)o.classList.add('hidden');});
 on('knight-confirm-ok',function(){
   if(!_pendingKnightBuff)return;
@@ -2998,7 +3143,8 @@ log('sy','BABEL へようこそ。 塔の頂点を目指せ！');
     marketOvl:function(){var o=g('marketOvl');if(o)o.classList.add('hidden');},
     sellovl:  function(){var o=g('sellovl');if(o)o.classList.add('hidden');},
     dropovl:  function(){var o=g('dropovl');if(o)o.classList.add('hidden');},
-    knightOvl:function(){var o=g('knightOvl');if(o)o.classList.add('hidden');}
+    knightOvl:function(){var o=g('knightOvl');if(o)o.classList.add('hidden');},
+    optsOvl:  function(){var o=g('optsOvl');if(o)o.classList.add('hidden');}
   };
   var keys=Object.keys(ovlCloseMap);
   for(var _ki=0;_ki<keys.length;_ki++){
