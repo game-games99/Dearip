@@ -466,7 +466,6 @@ font-size:9px;color:var(--gold);padding:2px 7px;cursor:pointer;margin-top:4px;wh
         </div>
         <div id="loot-cnt" class="loot-bar hidden"></div>
         <button class="sbtn" id="sbtn">▶ 出発</button>
-        <button class="tog" id="optsbtn" style="flex-shrink:0;min-width:32px;min-height:32px;font-size:14px;padding:6px 8px">⚙</button>
       </div>
     </div>
     <div id="vc" class="view">
@@ -648,12 +647,12 @@ function log(c,t){
 
 // ── DATA: CHESTS ─────────────────────────────────────
 var CH={
-  iron:  {name:'鉄の宝箱',      em:'[鉄]',pr:[0,1],lc:'ch'},
-  copper:{name:'銅の宝箱',      em:'[銅]',pr:[0,2],lc:'ch'},
-  silver:{name:'銀の宝箱',      em:'[銀]',pr:[0,3],lc:'ch'},
-  gold:  {name:'金の宝箱',      em:'[金]',pr:[0,4],lc:'cg'},
-  dia:   {name:'ダイヤの宝箱',  em:'[D]', pr:[4,4],lc:'cd'},
-  anc:   {name:'いにしえの秘宝箱',em:'[古]',pr:[0,4],lc:'ca',u:true}
+  iron:  {name:'鉄の宝箱',        em:'📦', color:'#a0a0a0', pr:[0,1],lc:'ch'},
+  copper:{name:'銅の宝箱',        em:'🟫', color:'#c87940', pr:[0,2],lc:'ch'},
+  silver:{name:'銀の宝箱',        em:'🗝️', color:'#c0c8d8', pr:[0,3],lc:'ch'},
+  gold:  {name:'金の宝箱',        em:'✨', color:'#e8c030', pr:[0,4],lc:'cg'},
+  dia:   {name:'ダイヤの宝箱',    em:'💎', color:'#60d0ff', pr:[4,4],lc:'cd'},
+  anc:   {name:'いにしえの秘宝箱',em:'🌟', color:'#d060ff', pr:[0,4],lc:'ca',u:true}
 };
 
 // ── DATA: ITEMS ───────────────────────────────────────
@@ -1389,18 +1388,24 @@ function showDropModal(items){
   } else {
     for(var i=0;i<items.length;i++){
       var it=items[i];var d=gid(it.id2);if(!d)continue;
-      var cd=CH[it.chest]||{em:'📦'};
+      var cd=CH[it.chest]||{em:'📦',name:'宝箱',color:'#a0a0a0'};
       var qi2=qi(it.plus,!!it.anc);
       var plusStr=it.plus>0?(' +'+it.plus):'';
+      var smithStr=it.smith?(' '+'⭐'.repeat(it.smith)):'';
       var row=mk('div','drop-item');
       row.appendChild(mk('div','drop-em',d.em));
       var inf=mk('div','drop-info');
-      inf.appendChild(mk('div','drop-nm '+qi2.c,d.name+plusStr));
-      inf.appendChild(mk('div','drop-sub',cd.em+' '+qi2.n+'  品質'+it.q+'%'));
-      // ステータス表示
+      inf.appendChild(mk('div','drop-nm '+qi2.c,d.name+plusStr+smithStr));
+      // 宝箱名を色付きで表示
+      var chestSpan=mk('span',null,cd.em+' '+cd.name);
+      chestSpan.style.color=cd.color;
+      var subLine=mk('div','drop-sub');
+      subLine.appendChild(chestSpan);
+      var rarSpan=mk('span',null,'  '+qi2.n+'  品質'+it.q+'%');
+      subLine.appendChild(rarSpan);
+      inf.appendChild(subLine);
       var stTxt=ss(d,it.plus,it.q);
       inf.appendChild(mk('div','drop-stat',stTxt));
-      // ランダムオプション表示
       if(it.opts&&it.opts.length){
         for(var oi=0;oi<it.opts.length;oi++){
           var oc=mk('div','drop-opt'+(it.opts[oi].tier===3?' drop-opt-rare':''),
@@ -2137,11 +2142,25 @@ function renderChars(){
       if(iD){
         var stTxt=ss(iD,it.plus,it.q);
         eqLabel+='  ['+stTxt+']';
+        if(it.smith)eqLabel+=' '+'⭐'.repeat(it.smith);
       }
       var eqBtn=mk('button','eqb ceq-slot-btn',eqLabel);
       if(iD){var qi3=qi(it.plus,!!it.anc);eqBtn.classList.add(qi3.c);}
+      // 装備中のオプションをボタン下に表示
+      var eqWrap=mk('div',null,'');
+      eqWrap.style.cssText='display:flex;flex-direction:column;gap:2px;';
+      eqWrap.appendChild(eqBtn);
+      if(it&&it.opts&&it.opts.length){
+        var optRow=mk('div',null,'');
+        optRow.style.cssText='display:flex;flex-wrap:wrap;gap:2px;margin-top:1px;';
+        for(var _oi2=0;_oi2<it.opts.length;_oi2++){
+          var ob2=mk('span','ceq-opt'+(it.opts[_oi2].tier===3?' ceq-opt-rare':''),'◆'+optLabel(it.opts[_oi2]));
+          optRow.appendChild(ob2);
+        }
+        eqWrap.appendChild(optRow);
+      }
       (function(cid2,slot2){eqBtn.addEventListener('click',function(ev){ev.stopPropagation();openCharEqPicker(cid2,slot2);});})(d.id,sl2[si]);
-      eqd.appendChild(eqBtn);
+      eqd.appendChild(eqWrap);
     }
     det.appendChild(eqd);
     var ew=mk('div','exw');var eb=mk('div','exb');eb.style.width=ep+'%';ew.appendChild(eb);det.appendChild(ew);
@@ -2245,12 +2264,23 @@ function renderInv(){
   for(var i=0;i<filtered.length;i++){
     var e=filtered[i];var qi2=qi(e.it.plus,!!e.it.anc);
     var row=mk('div','ii '+rarityBorderClass(e.it.plus,!!e.it.anc));
-    row.appendChild(mk('div','iic',e.d.em));
+    row.style.position='relative';
+    // レア度バッジ（左上固定）
+    var rarBadge=mk('div','ii-rarity-badge',qi2.n);
+    rarBadge.style.cssText='position:absolute;top:4px;left:4px;font-size:8px;padding:1px 5px;border-radius:3px;font-weight:bold;line-height:14px;z-index:2;';
+    rarBadge.classList.add(qi2.c);
+    row.appendChild(rarBadge);
+    // ⭐強化済みバッジ（左上レア度の下）
+    if(e.it.smith){
+      var smithBadge=mk('div','ii-smith-badge','⭐'.repeat(e.it.smith));
+      smithBadge.style.cssText='position:absolute;top:20px;left:4px;font-size:8px;line-height:12px;z-index:2;';
+      row.appendChild(smithBadge);
+    }
     var det=mk('div','iid');
+    det.style.paddingTop='14px'; // レア度バッジ分の余白
     var plusStr=e.it.plus>0?(' +'+e.it.plus):'';
-    var smithStr=e.it.smith?(' '+'⭐'.repeat(e.it.smith)):'';
-    det.appendChild(mk('div','iinm',e.d.name+plusStr+smithStr));
-    det.appendChild(mk('div','iisub '+qi2.c,qi2.n+'  品質'+e.it.q+'%'));
+    det.appendChild(mk('div','iinm '+qi2.c, e.d.name+plusStr));
+    det.appendChild(mk('div','iisub','品質 '+e.it.q+'%'));
     det.appendChild(mk('div','iistat',ss(e.d,e.it.plus,e.it.q)));
     if(e.it.opts&&e.it.opts.length){
       for(var _opi=0;_opi<e.it.opts.length;_opi++){
@@ -2259,7 +2289,7 @@ function renderInv(){
       }
     }
     row.appendChild(det);
-    if(e.it.plus>0)row.appendChild(mk('div','iipl','+'+e.it.plus));
+    // +Nバッジは削除（レア度バッジで代替）
     var lockBtn=mk('button','inv-lock-btn',e.it.locked?'🔒':'🔓');
     lockBtn.title=e.it.locked?'ロック解除':'ロックする';
     (function(it2){lockBtn.addEventListener('click',function(ev){
@@ -2581,7 +2611,8 @@ function openCharEqPicker(charId, slot){
     row.appendChild(mk('div',null,m.d.em));
     var inf=mk('div','drd');
     var ps=m.it.plus>0?' +'+m.it.plus:'';
-    inf.appendChild(mk('div','drnm '+qi2.c,m.d.name+ps+'  ['+qi2.n+'] 品質'+m.it.q+'%'));
+    var smithStr2=m.it.smith?(' '+'⭐'.repeat(m.it.smith)):'';
+    inf.appendChild(mk('div','drnm '+qi2.c,m.d.name+ps+smithStr2+'  ['+qi2.n+'] 品質'+m.it.q+'%'));
 
     var newSt=itemStats(m.it);
     var stTxt=Object.keys(newSt).map(function(k){return (STAT_LABEL[k]||k.toUpperCase())+' '+newSt[k];}).join('  ');
@@ -2811,11 +2842,23 @@ function openSmith(mode){
         if(G.gold<c)return;
         var mKey=getUpgradeMat((G.inv[idx2].smith||0)+1);
         if(mKey&&(!G.mats||G.mats[mKey]<1)){log('sy','素材が足りません!');return;}
-        G.inv[idx2].smith=(G.inv[idx2].smith||0)+1;
+        var prevSmith=G.inv[idx2].smith||0;
+        G.inv[idx2].smith=prevSmith+1;
         G.gold-=c;
-        if(mKey){G.mats[mKey]--;log('sy','⭐強化成功! (+'+G.inv[idx2].smith+') -'+c+'G  '+MAT_NAMES[mKey]+'消費');}
-        else{log('sy','⭐強化成功! (+'+G.inv[idx2].smith+') -'+c+'G');}
-        // 装備中なら即座に適用
+        // ステータス変化ログ
+        var _d=gid(G.inv[idx2].id2);
+        var _prevMul=prevSmith*SMITH_BONUS;
+        var _newMul=G.inv[idx2].smith*SMITH_BONUS;
+        var _difParts=[];
+        if(_d){
+          if(_d.stats.atk){var _pv=Math.floor(_d.stats.atk*(1+_prevMul));var _nv=Math.floor(_d.stats.atk*(1+_newMul));_difParts.push('ATK+'+(_nv-_pv));}
+          if(_d.stats.def){var _pv=Math.floor(_d.stats.def*(1+_prevMul));var _nv=Math.floor(_d.stats.def*(1+_newMul));_difParts.push('DEF+'+(_nv-_pv));}
+          if(_d.stats.hp){var _pv=Math.floor(_d.stats.hp*(1+_prevMul));var _nv=Math.floor(_d.stats.hp*(1+_newMul));_difParts.push('HP+'+(_nv-_pv));}
+        }
+        var _difTxt=_difParts.length?(' ('+_difParts.join(' ')+')'):'';
+        if(mKey){G.mats[mKey]--;log('sy','⭐強化! +'+G.inv[idx2].smith+_difTxt+' -'+c+'G');}
+        else{log('sy','⭐強化! +'+G.inv[idx2].smith+_difTxt+' -'+c+'G');}
+        // 装備中なら即座に適用（装備は外さない）
         for(var ci=0;ci<G.party.length;ci++){
           var cid=G.party[ci];if(!cid)continue;
           var eq=G.eq[cid]||{};
@@ -2830,8 +2873,8 @@ function openSmith(mode){
           }
         }
         updH();save();
-        var o=g('smithOvl');if(o)o.classList.add('hidden');
-        renderShop();
+        // モーダルを閉じずに同じモードで再描画（装備外れ防止のためリスト更新のみ）
+        openSmith('upgrade');
       });})(i,cost);
       list.appendChild(row);
     }
@@ -2905,7 +2948,7 @@ function openMarket(){
     row.appendChild(mk('div',null,d.em));
     var inf=mk('div','shop-item-info');
     inf.appendChild(mk('div','shop-item-nm '+qi2.c,d.name+plusStr));
-    inf.appendChild(mk('div','shop-item-dc',ss(d,it.plus,it.q)));
+    inf.appendChild(mk('div','shop-item-dc',qi2.n+'  品質'+it.q+'%  '+ss(d,it.plus,it.q)));
     if(it.opts&&it.opts.length){
       inf.appendChild(mk('div','shop-item-dc',it.opts.map(function(o){return '◆'+optLabel(o);}).join(' ')));
     }
@@ -3062,6 +3105,36 @@ function renderShop(){
     })(guildBuffs[gi]);
   }
   sc.appendChild(guildSec);
+
+  // ── オプション ──────────────────────────────────────────
+  var optSec=mk('div','shop-sec');
+  optSec.appendChild(mk('div','shop-sec-title','⚙ オプション'));
+  if(!G.opts)G.opts={autoReturnSkip:false};
+  var optDefs=[
+    {key:'autoReturnSkip', nm:'オート時: フロアクリア後 自動帰還',
+     dc:'オートモード中にフロアクリアの確認をスキップして自動帰還（周回効率化）'}
+  ];
+  for(var _oi=0;_oi<optDefs.length;_oi++){
+    (function(od){
+      var val=!!G.opts[od.key];
+      var row=mk('div','shop-item');
+      row.style.cursor='pointer';
+      var inf=mk('div','shop-item-info');
+      inf.appendChild(mk('div','shop-item-nm',od.nm));
+      inf.appendChild(mk('div','shop-item-dc',od.dc));
+      row.appendChild(inf);
+      var tog=mk('div',null,val?'ON':'OFF');
+      tog.style.cssText='font-size:13px;font-weight:bold;white-space:nowrap;padding:5px 12px;border-radius:4px;border:1px solid;'
+        +(val?'color:#60c060;border-color:#306040;background:rgba(20,60,20,.5)':'color:#a0a0c0;border-color:#3a3a5a;background:rgba(20,20,40,.5)');
+      row.appendChild(tog);
+      row.addEventListener('click',function(){
+        G.opts[od.key]=!G.opts[od.key];
+        save();renderShop();
+      });
+      optSec.appendChild(row);
+    })(optDefs[_oi]);
+  }
+  sc.appendChild(optSec);
 }
 
 function guildBuffLabel(type){
@@ -3078,7 +3151,6 @@ function consumeShopBuff(){
 }
 
 on('optsClose',function(){var o=g('optsOvl');if(o)o.classList.add('hidden');});
-on('optsbtn',function(){openOpts();});
 
 function openOpts(){
   if(!G.opts)G.opts={autoReturnSkip:false};
@@ -3161,6 +3233,15 @@ log('sy','BABEL へようこそ。 塔の頂点を目指せ！');
 
 setInterval(save,30000);
 setInterval(updH,3000);
+
+// ⚙ボタンを直接バインド（on()ではなくgetElementByIdで確実に）
+(function(){
+  var ob=document.getElementById('optsbtn');
+  if(ob){
+    ob.addEventListener('click',function(e){e.stopPropagation();openOpts();});
+    ob.addEventListener('touchend',function(e){e.preventDefault();e.stopPropagation();openOpts();});
+  }
+})();
 
 })();
 </script>
