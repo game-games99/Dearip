@@ -344,6 +344,9 @@ padding:1px 5px;border-radius:3px}
 /* ── fix 8: 同値タグ ── */
 .sd-eq{font-size:11px;color:#a0a0c0;background:rgba(40,40,70,.2);padding:1px 5px;border-radius:3px}
 .ceq-diff{display:flex;gap:5px;flex-wrap:wrap;margin-top:4px}
+.ceq-opts{display:flex;flex-wrap:wrap;gap:3px;margin-top:3px}
+.ceq-opt{font-size:9px;color:#70b0e0;background:rgba(20,40,70,.5);border:1px solid #2a4a7a;border-radius:3px;padding:1px 4px}
+.ceq-opt-rare{color:#e0a030;border-color:#7a5010;background:rgba(50,30,10,.5)}
 /* Leader skill */
 /* ★LEADERバッジ: 名前行末尾インライン */
 .ldr-badge{display:inline-block;background:#b8920a;border-radius:3px;
@@ -1120,7 +1123,8 @@ var LS={
 var LV_CAP=40;
 function expN(lv){
   if(lv>=LV_CAP)return Infinity;
-  return Math.floor(32*Math.pow(lv,1.8));
+  // 序盤緩め・後半やや重めの自然な成長曲線
+  return Math.floor(18*Math.pow(lv,1.65)+10*lv);
 }
 var G={
   gold:200,medals:5,cf:0,hf:1,fl:1,leader:null,shopBuff:{type:null,val:null},
@@ -1639,6 +1643,22 @@ function gTick(){
     }
   }
   renderB();renderPC();
+  // ── オートAI: HP40%以下で加護自動発動 ──────────────
+  if(G.dun.auto&&G.medals>0&&G.dun.phase==='battle'){
+    var _lowHp=null,_lowPct=1.0;
+    for(var _ai=0;_ai<G.dun.bp.length;_ai++){
+      var _ab=G.dun.bp[_ai];if(_ab.hp<=0)continue;
+      var _pct=_ab.hp/_ab.mhp;
+      if(_pct<0.40&&_pct<_lowPct){_lowPct=_pct;_lowHp=_ab;}
+    }
+    if(_lowHp){
+      var _h=Math.floor(_lowHp.mhp*.4);
+      _lowHp.hp=Math.min(_lowHp.mhp,_lowHp.hp+_h);
+      G.medals--;
+      log('hl','[AUTO] '+_lowHp.nm+' HP+'+_h+'  加護残'+G.medals);
+      updH();
+    }
+  }
 }
 function clearBattleState(){
   for(var i=0;i<G.dun.bp.length;i++){
@@ -2413,8 +2433,7 @@ function openCharEqPicker(charId, slot){
       }
       curPanel.appendChild(statsRow);
     } else {
-      curPanel.appendChild(mk('div','ceq-cur-nm',slotName+'未装備'));
-      curPanel.appendChild(mk('div','ceq-cur-stats',mk('span','ceq-cur-st','装備するとステータスが上昇します')));
+      curPanel.appendChild(mk('div','ceq-cur-nm',slotName+'  装備なし'));
     }
     panel.appendChild(curPanel);
   }
@@ -2472,6 +2491,15 @@ function openCharEqPicker(charId, slot){
     var newSt=itemStats(m.it);
     var stTxt=Object.keys(newSt).map(function(k){return (STAT_LABEL[k]||k.toUpperCase())+' '+newSt[k];}).join('  ');
     inf.appendChild(mk('div','drsub',stTxt));
+
+    // オプション効果を表示
+    if(m.it.opts&&m.it.opts.length){
+      var optDiv=mk('div','ceq-opts');
+      for(var _oi=0;_oi<m.it.opts.length;_oi++){
+        optDiv.appendChild(mk('span','ceq-opt'+(m.it.opts[_oi].tier===3?' ceq-opt-rare':''),'◆'+optLabel(m.it.opts[_oi])));
+      }
+      inf.appendChild(optDiv);
+    }
 
     if(curStForDiff){
       var curSt2=itemStats(curStForDiff);
@@ -2545,9 +2573,12 @@ on('dropclose',function(){var o=g('dropovl');if(o)o.classList.add('hidden');});
 on('ediscard',function(){
   if(_eqIdx>=0&&_eqIt){
     var sellG=calcSellPrice(_eqIt);
+    var _sellD=gid(_eqIt.id2);
+    var _sellNm=_sellD?_sellD.name:'装備';
+    var _sellPlus=_eqIt.plus>0?(' +'+_eqIt.plus):'';
     G.inv.splice(_eqIdx,1);
     G.gold+=sellG;
-    log('sy','装備を売却: +'+sellG+'G');
+    log('sy',_sellNm+_sellPlus+' を売却 → +'+sellG.toLocaleString()+'G');
     updH();
   }
   var o=g('eovl');if(o)o.classList.add('hidden');
@@ -2810,6 +2841,17 @@ function openMarket(){
 function guildBuffLabel(type){
   var map={guild_drop:'ドロップ率+50%',guild_exp:'EXP+50%',guild_gold:'Gold+50%',guild_weak:'敵ATK-20%',guild_crit:'会心率+30%'};
   return map[type]||type;
+}
+
+function getGuildCosts(){
+  var base=Math.max(1,G.hf-1);
+  return {
+    drop: Math.max(60, Math.floor(Math.pow(base,1.3)*0.8)),
+    exp:  Math.max(80, Math.floor(Math.pow(base,1.3)*1.0)),
+    gold: Math.max(50, Math.floor(Math.pow(base,1.3)*0.7)),
+    weak: Math.max(100,Math.floor(Math.pow(base,1.3)*1.3)),
+    crit: Math.max(90, Math.floor(Math.pow(base,1.3)*1.1))
+  };
 }
 
 // 施設バフ状態
