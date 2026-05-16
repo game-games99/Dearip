@@ -2821,8 +2821,23 @@ function openSmith(mode){
   list.innerHTML='';
   if(mode==='upgrade'){
     if(desc)desc.textContent='⭐を上げる装備を選択（⭐3以上は素材が必要）\n'+getMatsText();
-    for(var i=0;i<G.inv.length;i++){
-      var it=G.inv[i];var d=gid(it.id2);if(!d)continue;
+
+    // G.inv + 全キャラの装備中アイテムを収集
+    var _upgradePool=[];
+    for(var i=0;i<G.inv.length;i++){_upgradePool.push({it:G.inv[i],equipped:null});}
+    var _eqSlots=['weapon','armor','ring'];
+    for(var _ci=0;_ci<CD.length;_ci++){
+      var _cid=CD[_ci].id;
+      var _eq=G.eq[_cid]||{};
+      for(var _si=0;_si<_eqSlots.length;_si++){
+        var _eqIt=_eq[_eqSlots[_si]];
+        if(_eqIt)_upgradePool.push({it:_eqIt,equipped:{cid:_cid,slot:_eqSlots[_si]}});
+      }
+    }
+
+    for(var i=0;i<_upgradePool.length;i++){
+      var _entry=_upgradePool[i];
+      var it=_entry.it;var d=gid(it.id2);if(!d)continue;
       var cur=it.smith||0;
       if(cur>=5)continue;
       var cost=SMITH_COST[cur+1];
@@ -2836,22 +2851,22 @@ function openSmith(mode){
       row.appendChild(em);
       var inf=mk('div','shop-item-info');
       var plusStr=it.plus>0?' +'+it.plus:'';
-      inf.appendChild(mk('div','shop-item-nm',d.name+plusStr+' ['+'⭐'.repeat(cur)+'→'+'⭐'.repeat(cur+1)+']'));
+      var eqNote=_entry.equipped?(' 【'+CD.filter(function(x){return x.id===_entry.equipped.cid;})[0].name+'装備中】'):'';
+      inf.appendChild(mk('div','shop-item-nm',d.name+plusStr+eqNote+' ['+'⭐'.repeat(cur)+'→'+'⭐'.repeat(cur+1)+']'));
       var dcTxt=ss(d,it.plus,it.q)+'  強化+'+Math.round((cur+1)*SMITH_BONUS*100)+'%'+(matTxt?' | '+matTxt:'');
       inf.appendChild(mk('div','shop-item-dc',dcTxt));
       row.appendChild(inf);
       row.appendChild(mk('div','shop-price',cost.toLocaleString()+'G'));
-      if(canDo)(function(idx2,c,mk2){row.addEventListener('click',function(){
+      if(canDo)(function(entry2,c){row.addEventListener('click',function(){
         if(G.gold<c)return;
-        var mKey=getUpgradeMat((G.inv[idx2].smith||0)+1);
+        var mKey=getUpgradeMat((entry2.it.smith||0)+1);
         if(mKey&&(!G.mats||G.mats[mKey]<1)){log('sy','素材が足りません!');return;}
-        var prevSmith=G.inv[idx2].smith||0;
-        G.inv[idx2].smith=prevSmith+1;
+        var prevSmith=entry2.it.smith||0;
+        entry2.it.smith=prevSmith+1;
         G.gold-=c;
-        // ステータス変化ログ
-        var _d=gid(G.inv[idx2].id2);
+        var _d=gid(entry2.it.id2);
         var _prevMul=prevSmith*SMITH_BONUS;
-        var _newMul=G.inv[idx2].smith*SMITH_BONUS;
+        var _newMul=entry2.it.smith*SMITH_BONUS;
         var _difParts=[];
         if(_d){
           if(_d.stats.atk){var _pv=Math.floor(_d.stats.atk*(1+_prevMul));var _nv=Math.floor(_d.stats.atk*(1+_newMul));_difParts.push('ATK+'+(_nv-_pv));}
@@ -2859,26 +2874,18 @@ function openSmith(mode){
           if(_d.stats.hp){var _pv=Math.floor(_d.stats.hp*(1+_prevMul));var _nv=Math.floor(_d.stats.hp*(1+_newMul));_difParts.push('HP+'+(_nv-_pv));}
         }
         var _difTxt=_difParts.length?(' ('+_difParts.join(' ')+')'):'';
-        if(mKey){G.mats[mKey]--;log('sy','⭐強化! +'+G.inv[idx2].smith+_difTxt+' -'+c+'G');}
-        else{log('sy','⭐強化! +'+G.inv[idx2].smith+_difTxt+' -'+c+'G');}
-        // 装備中なら即座に適用（装備は外さない）
-        for(var ci=0;ci<G.party.length;ci++){
-          var cid=G.party[ci];if(!cid)continue;
-          var eq=G.eq[cid]||{};
-          var slots=['weapon','armor','ring'];
-          for(var si=0;si<slots.length;si++){
-            if(eq[slots[si]]===G.inv[idx2]){
-              var bp=null;
-              for(var bi=0;bi<G.dun.bp.length;bi++){if(G.dun.bp[bi].id===cid){bp=G.dun.bp[bi];break;}}
-              if(bp){var st=cst(cid);bp.mhp=st.hp;bp.at=st.at;bp.df=st.df;applySmithBonus(bp,G.inv[idx2]);if(G.inv[idx2].opts)applyOpts(bp,G.inv[idx2].opts);}
-              break;
-            }
-          }
+        if(mKey){G.mats[mKey]--;log('sy','⭐強化! +'+entry2.it.smith+_difTxt+' -'+c.toLocaleString()+'G');}
+        else{log('sy','⭐強化! +'+entry2.it.smith+_difTxt+' -'+c.toLocaleString()+'G');}
+        // 装備中ならバトルパーティにも即反映
+        if(entry2.equipped){
+          var _cid2=entry2.equipped.cid;
+          var bp=null;
+          for(var bi=0;bi<G.dun.bp.length;bi++){if(G.dun.bp[bi].id===_cid2){bp=G.dun.bp[bi];break;}}
+          if(bp){var st=cst(_cid2);bp.mhp=st.hp;bp.at=st.at;bp.df=st.df;applySmithBonus(bp,entry2.it);if(entry2.it.opts)applyOpts(bp,entry2.it.opts);}
         }
         updH();save();
-        // モーダルを閉じずに同じモードで再描画（装備外れ防止のためリスト更新のみ）
         openSmith('upgrade');
-      });})(i,cost);
+      });})(  _entry,cost);
       list.appendChild(row);
     }
     if(!list.children.length)list.appendChild(mk('div','em2','強化できる装備がありません'));
