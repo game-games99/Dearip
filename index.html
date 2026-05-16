@@ -40,11 +40,11 @@ nav{background:#0a0916;border-top:1px solid var(--brd2);display:flex;flex-shrink
 .bt-info{flex:1;display:flex;flex-direction:column;justify-content:center;gap:3px}
 .ann{font-size:11px;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
   background:rgba(30,25,50,.7);border:1px solid var(--brd2);border-radius:3px;padding:3px 8px}
-.dw{background:#080612;border:1px solid var(--brd);height:10px;
-  border-radius:2px;overflow:hidden;position:relative}
+.dw{background:#080612;border:1px solid var(--brd);height:18px;
+  border-radius:4px;overflow:hidden;position:relative}
 .db{background:linear-gradient(90deg,#1a4060,#2a6898);height:100%;transition:width .5s}
 .dl{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-  font-size:7px;color:var(--tdim);letter-spacing:.06em}
+  font-size:11px;color:#c0d0e8;letter-spacing:.06em;font-weight:bold;text-shadow:0 0 4px #000}
 .hg{font-size:12px;color:var(--gold);flex-shrink:0}
 /* STAGE */
 .stage{flex:1;min-height:0;position:relative;overflow:hidden;
@@ -180,6 +180,9 @@ nav{background:#0a0916;border-top:1px solid var(--brd2);display:flex;flex-shrink
   border:1px solid var(--tel);color:#68a0c0;border-radius:4px;padding:9px 15px;
   cursor:pointer;font-size:12px;letter-spacing:.06em}
 .sbtn.act{background:linear-gradient(180deg,#2c1010,#1a0808);border-color:#5a2020;color:#b06060}
+.opts-btn{background:rgba(20,18,35,.8);border:1px solid var(--brd2);color:#9090b8;
+  border-radius:4px;padding:7px 10px;font-size:16px;cursor:pointer;flex-shrink:0;
+  line-height:1;-webkit-tap-highlight-color:transparent}
 /* CHAR CARDS */
 .vt{color:var(--gold);font-size:13px;letter-spacing:.1em;
   margin-bottom:4px;padding-bottom:4px;border-bottom:1px solid var(--brd);flex-shrink:0}
@@ -466,6 +469,7 @@ font-size:9px;color:var(--gold);padding:2px 7px;cursor:pointer;margin-top:4px;wh
         </div>
         <div id="loot-cnt" class="loot-bar hidden"></div>
         <button class="sbtn" id="sbtn">▶ 出発</button>
+        <button class="opts-btn" id="optsbtn">⚙</button>
       </div>
     </div>
     <div id="vc" class="view">
@@ -1145,7 +1149,7 @@ var G={
   gold:200,medals:5,cf:0,hf:1,fl:1,leader:null,shopBuff:{type:null,val:null},
   party:[],chars:{},eq:{},inv:[],
   mats:{reroll:0,mat3:0,mat4:0,mat5:0},
-  opts:{autoReturnSkip:false},
+  opts:{autoReturnSkip:false,autoMidSkip:false,autoFCSkip:false,autoReturnFloor:0},
   dun:{
     active:false,auto:true,fast:false,dist:0,phase:'idle',enemy:null,pend:null,bp:[],
     pendingLoot:[],
@@ -1191,7 +1195,7 @@ function save(){
   try{
     var s={gold:G.gold,medals:G.medals,cf:G.cf,hf:G.hf,fl:G.fl,leader:G.leader,shopBuff:G.shopBuff,
       party:G.party,inv:G.inv,eq:G.eq,mats:G.mats||{reroll:0,mat3:0,mat4:0,mat5:0},
-      opts:G.opts||{autoReturnSkip:false},chars:{}};
+      opts:G.opts||{autoReturnSkip:false,autoMidSkip:false,autoFCSkip:false,autoReturnFloor:0},chars:{}};
     for(var id in G.chars){var c=G.chars[id];s.chars[id]={lv:c.lv,exp:c.exp,en:c.en,ul:c.ul};}
     localStorage.setItem('dt6',JSON.stringify(s));
   }catch(e){}
@@ -1205,7 +1209,7 @@ function load(){
     G.shopBuff=s.shopBuff||{type:null,val:null};
     G.leader=s.leader||null;
     G.mats=s.mats||{reroll:0,mat3:0,mat4:0,mat5:0};
-    G.opts=s.opts||{autoReturnSkip:false};
+    G.opts=Object.assign({autoReturnSkip:false,autoMidSkip:false,autoFCSkip:false,autoReturnFloor:0},s.opts||{});
     var vi={};for(var i=0;i<CD.length;i++)vi[CD[i].id]=true;
     G.party=(s.party||[]).map(function(id){return (id&&vi[id])?id:null;});
     while(G.party.length>0&&!G.party[G.party.length-1])G.party.pop();
@@ -1433,6 +1437,13 @@ function eTick(){
     G.medals=Math.min(10,G.medals+5);
     var gained=G.medals-before;
     updH();save();
+    // オートモード中 & 中間スキップ有効 → 自動続行
+    if(G.dun.auto&&G.opts&&G.opts.autoMidSkip){
+      log('hl','🗿 女神の祝福! 加護+'+gained+' (自動続行)');
+      G.dun.phase='exploring';
+      if(!eT)eT=setInterval(eTick,200);
+      return;
+    }
     var midTxt=g('midctxt');
     if(midTxt)midTxt.innerHTML='🗿 <b>祝福の女神像</b> を発見!<br>加護が <b>+'+gained+'</b> 回復した ('+G.medals+'/10)<br><br>フロア半分を突破! このまま進む？';
     showEvFlash('🗿','女神の祝福! 加護+'+gained,'rgba(80,40,120,.75)');
@@ -1802,9 +1813,23 @@ function onFC(){
   updH();save();
   clearInterval(eT);eT=null;
   G.dun.phase='pend';
-  // オートモード中 & 帰還確認スキップ有効 → 自動帰還
-  if(G.dun.auto&&G.opts&&G.opts.autoReturnSkip){
-    log('sy',f+'F クリア! (オート帰還)');
+  var _opts=G.opts||{};
+  // 指定フロアに達したら自動帰還
+  if(G.dun.auto&&_opts.autoReturnFloor>0&&nf>_opts.autoReturnFloor){
+    log('sy',f+'F クリア! ('+_opts.autoReturnFloor+'F設定のため自動帰還)');
+    setTimeout(function(){returnToBase();},400);
+    return;
+  }
+  // フロアクリアスキップ → 次の階へ
+  if(G.dun.auto&&_opts.autoFCSkip){
+    log('sy',f+'F クリア! (自動続行)');
+    G.dun._pendNextFloor=nf;
+    setTimeout(function(){advanceNextFloor();},400);
+    return;
+  }
+  // 帰還スキップ → 自動帰還
+  if(G.dun.auto&&_opts.autoReturnSkip){
+    log('sy',f+'F クリア! (自動帰還)');
     setTimeout(function(){returnToBase();},400);
     return;
   }
@@ -3163,39 +3188,65 @@ function consumeShopBuff(){
 on('optsClose',function(){var o=g('optsOvl');if(o)o.classList.add('hidden');});
 
 function openOpts(){
-  if(!G.opts)G.opts={autoReturnSkip:false};
+  if(!G.opts)G.opts={autoReturnSkip:false,autoMidSkip:false,autoFCSkip:false,autoReturnFloor:0};
   var list=g('optsList');if(!list)return;
   list.innerHTML='';
 
-  var optDefs=[
-    {
-      key:'autoReturnSkip',
-      nm:'オート時: フロアクリア後 自動帰還',
-      dc:'オートモード中、フロアクリアの確認ダイアログをスキップして自動で拠点に帰還します（周回効率化）',
-    }
+  var toggleDefs=[
+    {key:'autoMidSkip', nm:'中間地点スキップ',    dc:'オート時: 女神像の確認なしで探索続行'},
+    {key:'autoFCSkip',  nm:'フロアクリア時: 次の階へ', dc:'オート時: クリア後確認なしで次の階へ進む'},
+    {key:'autoReturnSkip',nm:'フロアクリア時: 自動帰還', dc:'オート時: クリア後確認なしで拠点へ帰還\n（上の「次の階へ」より優先度低）'},
   ];
 
-  for(var i=0;i<optDefs.length;i++){
+  for(var i=0;i<toggleDefs.length;i++){
     (function(od){
-      var row=mk('div','shop-item');
-      row.style.cssText='cursor:pointer;margin-bottom:10px;';
+      var row=mk('div','shop-item');row.style.cssText='cursor:pointer;margin-bottom:8px;';
       var inf=mk('div','shop-item-info');
       inf.appendChild(mk('div','shop-item-nm',od.nm));
-      inf.appendChild(mk('div','shop-item-dc',od.dc));
+      var dcEl=mk('div','shop-item-dc',od.dc);dcEl.style.whiteSpace='pre-line';
+      inf.appendChild(dcEl);
       row.appendChild(inf);
       var val=G.opts[od.key];
       var tog=mk('div',null,val?'ON':'OFF');
       tog.style.cssText='font-size:13px;font-weight:bold;white-space:nowrap;padding:4px 10px;border-radius:4px;border:1px solid;'
         +(val?'color:#60c060;border-color:#306040;background:rgba(20,60,20,.5)':'color:#a0a0c0;border-color:#3a3a5a;background:rgba(20,20,40,.5)');
       row.appendChild(tog);
-      row.addEventListener('click',function(){
-        G.opts[od.key]=!G.opts[od.key];
-        save();
-        openOpts(); // 再描画
-      });
+      row.addEventListener('click',function(){G.opts[od.key]=!G.opts[od.key];save();openOpts();});
       list.appendChild(row);
-    })(optDefs[i]);
+    })(toggleDefs[i]);
   }
+
+  // 自動帰還フロア設定
+  var floorRow=mk('div',null,'');
+  floorRow.style.cssText='margin-bottom:12px;padding:10px;background:var(--bg3);border:1px solid var(--brd2);border-radius:5px;';
+  var flLbl=mk('div','shop-item-nm','自動帰還フロア設定');
+  var flDc=mk('div','shop-item-dc','指定フロアをクリアしたらオート時に自動帰還\n0 = 無効');
+  flDc.style.whiteSpace='pre-line';
+  floorRow.appendChild(flLbl);
+  floorRow.appendChild(flDc);
+  var flCtrl=mk('div',null,'');
+  flCtrl.style.cssText='display:flex;align-items:center;gap:8px;margin-top:8px;';
+  var flMinus=mk('button','cbtn','－');
+  flMinus.style.cssText='width:40px;padding:6px;';
+  var flVal=mk('div',null,(G.opts.autoReturnFloor||0)+'F');
+  flVal.style.cssText='font-size:16px;font-weight:bold;color:var(--gold);min-width:48px;text-align:center;';
+  var flPlus=mk('button','cbtn','＋');
+  flPlus.style.cssText='width:40px;padding:6px;';
+  flMinus.addEventListener('click',function(){
+    G.opts.autoReturnFloor=Math.max(0,(G.opts.autoReturnFloor||0)-1);
+    flVal.textContent=G.opts.autoReturnFloor===0?'無効':G.opts.autoReturnFloor+'F';
+    save();
+  });
+  flPlus.addEventListener('click',function(){
+    G.opts.autoReturnFloor=Math.min(99,(G.opts.autoReturnFloor||0)+1);
+    flVal.textContent=G.opts.autoReturnFloor+'F';
+    save();
+  });
+  flVal.textContent=G.opts.autoReturnFloor===0?'無効':G.opts.autoReturnFloor+'F';
+  flCtrl.appendChild(flMinus);flCtrl.appendChild(flVal);flCtrl.appendChild(flPlus);
+  floorRow.appendChild(flCtrl);
+  list.appendChild(floorRow);
+  var o=g('optsOvl');if(o)o.classList.remove('hidden');
 }
 on('marketCancel',function(){var o=g('marketOvl');if(o)o.classList.add('hidden');});
 on('knight-confirm-ok',function(){
