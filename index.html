@@ -1142,8 +1142,8 @@ var LS={
 var LV_CAP=40;
 function expN(lv){
   if(lv>=LV_CAP)return Infinity;
-  // 序盤緩め・後半やや重めの自然な成長曲線
-  return Math.floor(18*Math.pow(lv,1.65)+10*lv);
+  // Lv1→2: 30EXP / Lv10→11: 955EXP / Lv20→21: 2815EXP
+  return Math.floor(22*Math.pow(lv,1.60)+8*lv);
 }
 var G={
   gold:200,medals:5,cf:0,hf:1,fl:1,leader:null,shopBuff:{type:null,val:null},
@@ -2432,11 +2432,20 @@ function openEQ(it,idx){
       }
     }
     var cmpEl2=mk('div','drsub');cmpEl2.innerHTML=cmpTxt;
+    inf.appendChild(cmpEl2);
+    // 新装備のオプションをタグで表示
+    if(it.opts&&it.opts.length){
+      var optRow2=mk('div',null,'');
+      optRow2.style.cssText='display:flex;flex-wrap:wrap;gap:2px;margin-top:2px;';
+      for(var _oi3=0;_oi3<it.opts.length;_oi3++){
+        optRow2.appendChild(mk('span','ceq-opt'+(it.opts[_oi3].tier===3?' ceq-opt-rare':''),'◆'+optLabel(it.opts[_oi3])));
+      }
+      inf.appendChild(optRow2);
+    }
     if(isInPartyDun){
       var lockNote=mk('div','drsub');lockNote.style.color='#c04040';lockNote.textContent='⚔ 探索中は変更不可';
       inf.appendChild(lockNote);
     }
-    inf.appendChild(cmpEl2);
     row.appendChild(inf);
     if(!isInPartyDun)(function(cid,sl,itm){
       row.addEventListener('click',function(){doEQ(cid,sl,itm);});
@@ -2458,25 +2467,38 @@ function showCmp(charId,newItemD,newItem){
   var cur=eq[newItemD.t];
   cmpEl.style.display='grid';
   cmpEl.innerHTML='';
+  // NEW列
   var nc=mk('div','cmp-col');
+  var newSmith=newItem.smith?(' '+'⭐'.repeat(newItem.smith)):'';
   nc.appendChild(mk('div','cmp-title','NEW'));
-  nc.appendChild(mk('div','cmp-nm',newItemD.name+(newItem.plus>0?' +'+newItem.plus:'')));
+  nc.appendChild(mk('div','cmp-nm',newItemD.name+(newItem.plus>0?' +'+newItem.plus:'')+newSmith));
   var ns=getStatTotals(newItemD,newItem.plus,newItem.q);
   var ks=Object.keys(newItemD.stats);
   for(var i=0;i<ks.length;i++){
     var k=ks[i];var nv=ns[k]||0;
     var ov2=0;if(cur){var od=gid(cur.id2);if(od&&od.stats[k])ov2=cs(od.stats[k],cur.plus,cur.q);}
     var cls='cmp-stat '+(nv>ov2?'cmp-up':nv<ov2?'cmp-dn':'cmp-eq');
-    // ── fix 8: 同値なら (同値) 表示 ──
     var eqSuffix=(nv===ov2&&ov2>0)?' (同値)':'';
     nc.appendChild(mk('div',cls,k.toUpperCase()+': '+nv+eqSuffix));
   }
+  // NEWのオプション
+  if(newItem.opts&&newItem.opts.length){
+    var newOptDiv=mk('div',null,'');
+    newOptDiv.style.cssText='margin-top:5px;display:flex;flex-direction:column;gap:2px;';
+    for(var oi=0;oi<newItem.opts.length;oi++){
+      var ob=mk('div','ceq-opt'+(newItem.opts[oi].tier===3?' ceq-opt-rare':''),'◆'+optLabel(newItem.opts[oi]));
+      newOptDiv.appendChild(ob);
+    }
+    nc.appendChild(newOptDiv);
+  }
   cmpEl.appendChild(nc);
+  // 現在列
   var oc=mk('div','cmp-col');
   oc.appendChild(mk('div','cmp-title','現在'));
   if(cur){
     var cd=gid(cur.id2);
-    oc.appendChild(mk('div','cmp-nm',cd?(cd.name+(cur.plus>0?' +'+cur.plus:'')):'なし'));
+    var curSmith=cur.smith?(' '+'⭐'.repeat(cur.smith)):'';
+    oc.appendChild(mk('div','cmp-nm',cd?(cd.name+(cur.plus>0?' +'+cur.plus:'')+curSmith):'なし'));
     if(cd){
       var os=getStatTotals(cd,cur.plus,cur.q);
       var ks2=Object.keys(cd.stats);
@@ -2486,6 +2508,16 @@ function showCmp(charId,newItemD,newItem){
         var cls2='cmp-stat '+(ov3<nv2?'cmp-dn':ov3>nv2?'cmp-up':'cmp-eq');
         var eqSuffix2=(ov3===nv2&&nv2>0)?' (同値)':'';
         oc.appendChild(mk('div',cls2,k2.toUpperCase()+': '+ov3+eqSuffix2));
+      }
+      // 現在装備のオプション
+      if(cur.opts&&cur.opts.length){
+        var curOptDiv=mk('div',null,'');
+        curOptDiv.style.cssText='margin-top:5px;display:flex;flex-direction:column;gap:2px;';
+        for(var oi2=0;oi2<cur.opts.length;oi2++){
+          var ob2=mk('div','ceq-opt'+(cur.opts[oi2].tier===3?' ceq-opt-rare':''),'◆'+optLabel(cur.opts[oi2]));
+          curOptDiv.appendChild(ob2);
+        }
+        oc.appendChild(curOptDiv);
       }
     }
   } else {
