@@ -2135,8 +2135,8 @@ function renderChars(){
     if(d.id===G.leader){nr.appendChild(mk('span','ldr-badge','★ LEADER'));}
     det.appendChild(nr);
     // ── fix 3: 次Lv EXP表示追加 ──
-    var expNext=c.lv>=LV_CAP?'MAX':((c.en-c.exp).toLocaleString());
-    det.appendChild(mk('div','clv','Lv.'+c.lv+(c.lv>=LV_CAP?' [MAX]':'')+' (次Lv: EXP '+expNext+')'));
+    var expNext=c.lv>=LV_CAP?'MAX':(c.en-c.exp).toLocaleString()+' / '+c.en.toLocaleString()+' EXP';
+    det.appendChild(mk('div','clv','Lv.'+c.lv+(c.lv>=LV_CAP?' [MAX]':'')+' (残り '+expNext+')'));
     // ── fix 2: ステータス段ずれ修正済み (.cst/.st に align-items:baseline) ──
     var sv=mk('div','cst');
     var sti=[['HP',st.hp],['ATK',st.at],['DEF',st.df],['技量',Math.floor(d.b.dex+d.gr.dex*(c.lv-1))]];
