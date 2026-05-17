@@ -878,9 +878,9 @@ function buildEn(f,tp){
   var pool=[];for(var i=0;i<tierD.pool.length;i++){if(!tierD.pool[i].rare)pool.push(tierD.pool[i]);}
   var base=pool[rnd(0,pool.length-1)];
   var lv=rnd(Math.max(1,f-1),f+2);
-  var bHP=Math.floor((60+f*35)*base.hm);
-  var bAT=Math.floor((8+f*5)*base.am);
-  var bDF=Math.floor((5+f*3)*base.dm);
+  var bHP=Math.floor((180+f*120)*base.hm);
+  var bAT=Math.floor((22+f*16)*base.am);
+  var bDF=Math.floor((12+f*9)*base.dm);
   var bSP=Math.floor(55*base.sm);
   var hm=1,am=1,dm=1,isE=false,isB=false,isR=false,isEl=false;
   var nm=base.nm,em=base.em;
@@ -1004,76 +1004,75 @@ function fcfg(f){return{dist:200+f*13,enc:Math.max(14,Math.floor((200+f*13)/8)),
 // ── CHARACTERS ───────────────────────────────────────
 var CD=[
   {id:'gladius',nm:'グラディウス',fn:'断鎖のグラディウス',cls:'パラディン',em:'[Gd]',ul:0,
-   b:{hp:145,at:10,df:14,dex:55},gr:{hp:11,at:.9,df:1.1,dex:.14},
+   b:{hp:130,at:12,df:14,dex:55},gr:{hp:13,at:2.2,df:2.3,dex:.10},
    sk:{nm:'鉄鎖の拘束',rt:.18,cd:4,dc:'0.8倍+敵ATK/DEF 30%ダウン+麻痺2T',
     ex:function(a,e,al){var d=Math.floor(a.at*0.8);e.hp=Math.max(0,e.hp-d);e.ad*=.7;e.dd*=.7;e.par=rnd(1,3);return{tp:'sk',tx:a.nm+'の[鉄鎖の拘束]! '+d+'+麻痺('+e.par+'T)!'};}}},
   {id:'valeria',nm:'ヴァレリア',fn:'蒼雷のヴァレリア',cls:'ソードマスター',em:'[Va]',ul:2,
-   b:{hp:90,at:15,df:8,dex:112},gr:{hp:6,at:1.5,df:.7,dex:.36},
+   b:{hp:90,at:18,df:9,dex:112},gr:{hp:8,at:3.5,df:1.4,dex:.28},
    sk:{nm:'蒼雷斬',rt:.20,cd:3,dc:'2.0倍の電撃一閃',
     ex:function(a,e,al){var d=Math.floor(a.at*2.0);e.hp=Math.max(0,e.hp-d);return{tp:'sk',tx:a.nm+'の[蒼雷斬]! '+e.nm+'に'+d+'!'};}}},
   {id:'bald',nm:'バルド',fn:'灰燼のバルド',cls:'バーサーカー',em:'[Ba]',ul:6,
-   b:{hp:110,at:17,df:6,dex:78},gr:{hp:8,at:1.6,df:.5,dex:.20},
+   b:{hp:110,at:20,df:7,dex:78},gr:{hp:10,at:3.8,df:1.0,dex:.16},
    sk:{nm:'不死の咆哮',rt:.18,cd:4,dc:'HP低=倍率大(最大3.5倍)',
     ex:function(a,e,al){var m=1+2.5*(1-a.hp/Math.max(1,a.mhp));var d=Math.floor(a.at*m);e.hp=Math.max(0,e.hp-d);return{tp:'sk',tx:a.nm+'の[不死の咆哮]! '+d+'(x'+m.toFixed(1)+')!'};}}},
   {id:'serene',nm:'セレネ',fn:'白刃のセレネ',cls:'デュアルブレイド',em:'[Se]',ul:12,
-   b:{hp:80,at:15,df:7,dex:118},gr:{hp:5,at:1.4,df:.6,dex:.33},
+   b:{hp:80,at:17,df:8,dex:118},gr:{hp:7,at:3.2,df:1.2,dex:.26},
    sk:{nm:'双月の舞',rt:.22,cd:3,dc:'2連撃(各0.95倍)',
     ex:function(a,e,al){var t=0;for(var i=0;i<2;i++){var d=Math.floor(a.at*.95);t+=d;e.hp=Math.max(0,e.hp-d);}return{tp:'sk',tx:a.nm+'の[双月の舞]! 計'+t+'!'};}}},
   {id:'reith',nm:'レイス',fn:'影縫いのレイス',cls:'シーフ',em:'[Re]',ul:10,
-   b:{hp:70,at:13,df:5,dex:132},gr:{hp:4,at:1.2,df:.4,dex:.42},
+   b:{hp:70,at:15,df:6,dex:132},gr:{hp:6,at:2.8,df:0.9,dex:.33},
    sk:{nm:'影縫い',rt:.20,cd:3,dc:'1.5倍+敵DEF30%ダウン',
     ex:function(a,e,al){var d=Math.floor(a.at*1.5);e.hp=Math.max(0,e.hp-d);e.dd*=.7;return{tp:'sk',tx:a.nm+'の[影縫い]! '+d+'+拘束!'};}}},
   {id:'ryuka',nm:'リュカ',fn:'翠弓のリュカ',cls:'アーチャー',em:'[Ry]',ul:8,
-   b:{hp:75,at:14,df:5,dex:106},gr:{hp:5,at:1.3,df:.4,dex:.30},
+   b:{hp:75,at:16,df:6,dex:106},gr:{hp:7,at:3.0,df:1.0,dex:.24},
    sk:{nm:'必中の矢',rt:.18,cd:3,dc:'防御無視1.8倍',
     ex:function(a,e,al){var d=Math.floor(a.at*1.8);e.hp=Math.max(0,e.hp-d);return{tp:'sk',tx:a.nm+'の[必中の矢]! '+d+'貫通!'};}}},
   {id:'albert',nm:'アルベルト',fn:'残光のアルベルト',cls:'デュエリスト',em:'[Al]',ul:14,
-   b:{hp:85,at:16,df:8,dex:102},gr:{hp:6,at:1.5,df:.7,dex:.28},
+   b:{hp:85,at:18,df:9,dex:102},gr:{hp:8,at:3.5,df:1.4,dex:.22},
    sk:{nm:'残像突き',rt:.18,cd:3,dc:'2.2倍の鋭い一撃',
     ex:function(a,e,al){var d=Math.floor(a.at*2.2);e.hp=Math.max(0,e.hp-d);return{tp:'sk',tx:a.nm+'の[残像突き]! '+d+'!'};}}},
   {id:'kaede',nm:'カエデ',fn:'紅蓮舞のカエデ',cls:'ファイター',em:'[Ka]',ul:18,
-   b:{hp:90,at:15,df:7,dex:92},gr:{hp:6,at:1.4,df:.6,dex:.25},
+   b:{hp:90,at:17,df:8,dex:92},gr:{hp:8,at:3.2,df:1.2,dex:.20},
    sk:{nm:'紅蓮の舞',rt:.18,cd:4,dc:'1.6倍+毒3T',
     ex:function(a,e,al){var d=Math.floor(a.at*1.6);e.hp=Math.max(0,e.hp-d);e.psn=rnd(1,3);return{tp:'sk',tx:a.nm+'の[紅蓮の舞]! '+d+'+毒('+e.psn+'T)!'};}}},
   {id:'zeek',nm:'ジーク',fn:'虚空詠みのジーク',cls:'ウィザード',em:'[Ze]',ul:22,
-   b:{hp:60,at:18,df:4,dex:80},gr:{hp:4,at:1.8,df:.3,dex:.20},
+   b:{hp:65,at:21,df:5,dex:80},gr:{hp:5,at:4.0,df:0.7,dex:.16},
    sk:{nm:'虚空崩壊',rt:.14,cd:5,dc:'2.5倍の大魔法',
     ex:function(a,e,al){var d=Math.floor(a.at*2.5);e.hp=Math.max(0,e.hp-d);return{tp:'sk',tx:a.nm+'の[虚空崩壊]! '+d+'!'};}}},
-  // ── fix 5: エリアの回復を40%に上方修正 ──
   {id:'elia',nm:'エリア',fn:'星祈りのエリア',cls:'クレリック',em:'[El]',ul:4,
-   b:{hp:75,at:7,df:8,dex:84},gr:{hp:5,at:.6,df:.7,dex:.22},
+   b:{hp:80,at:8,df:10,dex:84},gr:{hp:8,at:1.4,df:1.6,dex:.17},
    sk:{nm:'星降りの祈り',rt:.16,cd:4,dc:'全味方HP40%回復',
     ex:function(a,e,al){var av=[];for(var i=0;i<al.length;i++){if(al[i].hp>0)av.push(al[i]);}for(var i=0;i<av.length;i++){var h=Math.floor(av[i].mhp*.4);av[i].hp=Math.min(av[i].mhp,av[i].hp+h);}return{tp:'hl',tx:a.nm+'の[星降りの祈り]! 全員HP40%回復!'};}}},
   {id:'raoul',nm:'ラウル',fn:'禁書のラウル',cls:'ソーサラー',em:'[Ra]',ul:25,
-   b:{hp:60,at:17,df:4,dex:74},gr:{hp:4,at:1.7,df:.3,dex:.18},
+   b:{hp:65,at:20,df:5,dex:74},gr:{hp:5,at:3.8,df:0.7,dex:.14},
    sk:{nm:'禁断呪法',rt:.15,cd:4,dc:'1.8倍+混乱2T',
     ex:function(a,e,al){var d=Math.floor(a.at*1.8);e.hp=Math.max(0,e.hp-d);e.cnf=rnd(1,3);return{tp:'sk',tx:a.nm+'の[禁断呪法]! '+d+'+混乱('+e.cnf+'T)!'};}}},
   {id:'mira',nm:'ミラ',fn:'幻晶のミラ',cls:'サポート',em:'[Mi]',ul:30,
-   b:{hp:80,at:8,df:10,dex:90},gr:{hp:5,at:.7,df:.9,dex:.26},
+   b:{hp:85,at:9,df:12,dex:90},gr:{hp:8,at:1.6,df:1.8,dex:.20},
    sk:{nm:'幻晶の加護',rt:.18,cd:4,dc:'全味方HP25%回復',
     ex:function(a,e,al){var av=[];for(var i=0;i<al.length;i++){if(al[i].hp>0)av.push(al[i]);}for(var i=0;i<av.length;i++){var h=Math.floor(av[i].mhp*.25);av[i].hp=Math.min(av[i].mhp,av[i].hp+h);}return{tp:'hl',tx:a.nm+'の[幻晶の加護]! 全員守護!'};}}},
   {id:'kiriga',nm:'キリガ',fn:'無音のキリガ',cls:'アサシン',em:'[Ki]',ul:20,
-   b:{hp:65,at:16,df:5,dex:128},gr:{hp:4,at:1.5,df:.4,dex:.40},
+   b:{hp:68,at:19,df:6,dex:128},gr:{hp:6,at:3.6,df:0.9,dex:.32},
    sk:{nm:'無音の刃',rt:.20,cd:4,dc:'2.0倍+10%即死+15%睡眠',
     ex:function(a,e,al){var d=Math.floor(a.at*2.0);e.hp=Math.max(0,e.hp-d);if(Math.random()<.1&&!e.isB){e.hp=0;return{tp:'sk',tx:a.nm+'の[無音の刃]! 即死!'};} if(Math.random()<.15)e.slp=rnd(1,3);return{tp:'sk',tx:a.nm+'の[無音の刃]! '+d+(e.slp?' +睡眠':'')+'!'};}}},
   {id:'lilith',nm:'リリス',fn:'毒華のリリス',cls:'アサシン',em:'[Li]',ul:38,
-   b:{hp:65,at:16,df:5,dex:122},gr:{hp:4,at:1.5,df:.4,dex:.37},
+   b:{hp:68,at:18,df:6,dex:122},gr:{hp:6,at:3.4,df:0.9,dex:.29},
    sk:{nm:'毒華の誘惑',rt:.18,cd:4,dc:'1.5倍+猛毒5T',
     ex:function(a,e,al){var d=Math.floor(a.at*1.5);e.hp=Math.max(0,e.hp-d);e.psn=rnd(1,3);return{tp:'sk',tx:a.nm+'の[毒華の誘惑]! '+d+'+毒('+e.psn+'T)!'};}}},
   {id:'zein',nm:'ゼイン',fn:'夜喰いのゼイン',cls:'ダークナイト',em:'[Zn]',ul:32,
-   b:{hp:100,at:14,df:9,dex:82},gr:{hp:7,at:1.3,df:.8,dex:.22},
+   b:{hp:100,at:16,df:10,dex:82},gr:{hp:9,at:3.1,df:1.6,dex:.17},
    sk:{nm:'夜喰い',rt:.18,cd:4,dc:'1.8倍+40%吸収',
     ex:function(a,e,al){var d=Math.floor(a.at*1.8);e.hp=Math.max(0,e.hp-d);var h=Math.floor(d*.4);a.hp=Math.min(a.mhp,a.hp+h);return{tp:'sk',tx:a.nm+'の[夜喰い]! '+d+' HP+'+h+'!'};}}},
   {id:'izana',nm:'イザナ',fn:'血契のイザナ',cls:'ブラッドナイト',em:'[Iz]',ul:45,
-   b:{hp:95,at:16,df:8,dex:108},gr:{hp:6,at:1.6,df:.7,dex:.32},
+   b:{hp:95,at:19,df:9,dex:108},gr:{hp:9,at:3.6,df:1.4,dex:.25},
    sk:{nm:'血の契約',rt:.18,cd:4,dc:'2.0倍+50%吸収',
     ex:function(a,e,al){var d=Math.floor(a.at*2.0);e.hp=Math.max(0,e.hp-d);var h=Math.floor(d*.5);a.hp=Math.min(a.mhp,a.hp+h);return{tp:'sk',tx:a.nm+'の[血の契約]! '+d+' HP+'+h+'!'};}}},
   {id:'gil',nm:'ギル',fn:'機装のギル',cls:'ガンナー',em:'[Gi]',ul:52,
-   b:{hp:85,at:19,df:6,dex:72},gr:{hp:5,at:1.9,df:.5,dex:.18},
+   b:{hp:88,at:22,df:7,dex:72},gr:{hp:8,at:4.2,df:1.0,dex:.14},
    sk:{nm:'重砲撃',rt:.14,cd:5,dc:'3.0倍の大火力',
     ex:function(a,e,al){var d=Math.floor(a.at*3.0);e.hp=Math.max(0,e.hp-d);return{tp:'sk',tx:a.nm+'の[重砲撃]! '+d+'!'};}}},
   {id:'chrono',nm:'クロノ',fn:'時渡りのクロノ',cls:'タイムメイジ',em:'[Ch]',ul:62,
-   b:{hp:75,at:13,df:7,dex:98},gr:{hp:5,at:1.2,df:.6,dex:.28},
+   b:{hp:78,at:15,df:8,dex:98},gr:{hp:7,at:2.8,df:1.2,dex:.22},
    sk:{nm:'時間操作',rt:.16,cd:5,dc:'1.2倍ダメージ+全味方2T技量+50%',
     ex:function(a,e,al){
       var d=Math.floor(a.at*1.2);e.hp=Math.max(0,e.hp-d);
@@ -1085,11 +1084,11 @@ var CD=[
       }
       return{tp:'sk',tx:a.nm+'の[時間操作]! '+d+'+全員技量+50%(2T)!'};}}},
   {id:'fiona',nm:'フィオナ',fn:'竜憑きのフィオナ',cls:'ドラグーン',em:'[Fi]',ul:72,
-   b:{hp:110,at:17,df:9,dex:88},gr:{hp:7,at:1.7,df:.8,dex:.24},
+   b:{hp:110,at:20,df:10,dex:88},gr:{hp:10,at:3.8,df:1.5,dex:.19},
    sk:{nm:'竜槍突撃',rt:.16,cd:4,dc:'2.8倍の竜撃',
     ex:function(a,e,al){var d=Math.floor(a.at*2.8);e.hp=Math.max(0,e.hp-d);return{tp:'sk',tx:a.nm+'の[竜槍突撃]! '+d+'!'};}}},
   {id:'abel',nm:'アベル',fn:'零界のアベル',cls:'イレイザー',em:'[Ab]',ul:82,
-   b:{hp:70,at:22,df:5,dex:92},gr:{hp:4,at:2.2,df:.4,dex:.26},
+   b:{hp:70,at:26,df:6,dex:92},gr:{hp:6,at:5.0,df:0.9,dex:.20},
    sk:{nm:'零点消滅',rt:.12,cd:6,dc:'3.5倍の消去魔法',
     ex:function(a,e,al){var d=Math.floor(a.at*3.5);e.hp=Math.max(0,e.hp-d);return{tp:'sk',tx:a.nm+'の[零点消滅]! '+d+'!'};}}},
 ];
@@ -1149,7 +1148,8 @@ var G={
   gold:200,medals:5,cf:0,hf:1,fl:1,leader:null,shopBuff:{type:null,val:null},
   party:[],chars:{},eq:{},inv:[],
   mats:{reroll:0,mat3:0,mat4:0,mat5:0},
-  opts:{autoReturnSkip:false,autoMidSkip:false,autoFCSkip:false,autoReturnFloor:0},
+  opts:{autoReturnSkip:false,autoMidSkip:false,autoFCSkip:false,autoReturnFloor:0,
+    autoSell:{enabled:false,minRarity:0,minQuality:0}},
   dun:{
     active:false,auto:true,fast:false,dist:0,phase:'idle',enemy:null,pend:null,bp:[],
     pendingLoot:[],
@@ -1209,7 +1209,9 @@ function load(){
     G.shopBuff=s.shopBuff||{type:null,val:null};
     G.leader=s.leader||null;
     G.mats=s.mats||{reroll:0,mat3:0,mat4:0,mat5:0};
-    G.opts=Object.assign({autoReturnSkip:false,autoMidSkip:false,autoFCSkip:false,autoReturnFloor:0},s.opts||{});
+    G.opts=Object.assign({autoReturnSkip:false,autoMidSkip:false,autoFCSkip:false,autoReturnFloor:0,
+      autoSell:{enabled:false,minRarity:0,minQuality:0}},s.opts||{});
+    if(!G.opts.autoSell)G.opts.autoSell={enabled:false,minRarity:0,minQuality:0};
     var vi={};for(var i=0;i<CD.length;i++)vi[CD[i].id]=true;
     G.party=(s.party||[]).map(function(id){return (id&&vi[id])?id:null;});
     while(G.party.length>0&&!G.party[G.party.length-1])G.party.pop();
@@ -1240,11 +1242,33 @@ function dropPending(ct,f){
 }
 function awardPendingLoot(){
   var items=G.dun.pendingLoot.slice();
-  for(var i=0;i<items.length;i++){G.inv.push(items[i]);}
-  var cnt=items.length;
+  var kept=[],sold=[];
+  var as=G.opts&&G.opts.autoSell;
+  for(var i=0;i<items.length;i++){
+    var it=items[i];
+    if(as&&as.enabled){
+      var itPlus=it.plus||0;
+      var itQ=it.q||0;
+      // 設定より低いレアリティ OR 設定より低い品質なら自動売却
+      if(itPlus<as.minRarity||itQ<as.minQuality){
+        var sv=calcSellPrice(it);
+        G.gold+=sv;
+        var d=gid(it.id2);
+        sold.push((d?d.name:'装備')+(itPlus>0?' +'+itPlus:'')+'  +'+sv+'G');
+        continue;
+      }
+    }
+    G.inv.push(it);
+    kept.push(it);
+  }
+  if(sold.length>0){
+    log('sy','⚡ 自動売却 ('+sold.length+'個) +'+sold.reduce(function(s,_){return s;},0)+'G');
+    updH();
+  }
+  var cnt=kept.length;
   G.dun.pendingLoot=[];
   updLootCount();
-  return{cnt:cnt,items:items};
+  return{cnt:cnt,items:kept};
 }
 function loseAllLoot(){
   G.dun.pendingLoot=[];
@@ -1797,15 +1821,18 @@ function onKill(){
   updH();renderB();renderPC();save();
 }
 function onFC(){
-  var f=G.fl;if(f>G.cf)G.cf=f;
+  var f=G.fl;
+  var isFirstClear=(f>G.cf); // 初回クリアかどうか
+  if(f>G.cf)G.cf=f;
   log('lv',f+'F クリア!');
-  if(f%3===0){
+  // 3層刻みで初回クリア時のみ仲間追加
+  if(isFirstClear&&f%3===0){
     var locked=[];
     for(var i=0;i<CD.length;i++){if(!G.chars[CD[i].id].ul)locked.push(CD[i]);}
     if(locked.length>0){
       var pick=locked[rnd(0,locked.length-1)];
       G.chars[pick.id].ul=true;
-      log('lv',pick.fn+' が仲間に加わった!');
+      log('lv','✨ '+pick.fn+' が仲間に加わった!');
       var vc2=g('vc');if(vc2&&vc2.classList.contains('active'))renderChars();
     }
   }
@@ -3278,6 +3305,55 @@ function openOpts(){
   flCtrl.appendChild(flMinus);flCtrl.appendChild(flVal);flCtrl.appendChild(flPlus);
   floorRow.appendChild(flCtrl);
   list.appendChild(floorRow);
+  // 自動売却設定
+  var as=G.opts.autoSell||(G.opts.autoSell={enabled:false,minRarity:0,minQuality:0});
+  var sellSec=mk('div',null,'');
+  sellSec.style.cssText='margin-bottom:12px;padding:10px;background:var(--bg3);border:1px solid var(--brd2);border-radius:5px;';
+  var sellTitleRow=mk('div',null,'');
+  sellTitleRow.style.cssText='display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;';
+  sellTitleRow.appendChild(mk('div','shop-item-nm','⚡ 自動売却'));
+  var sellTog=mk('div',null,as.enabled?'ON':'OFF');
+  sellTog.style.cssText='font-size:13px;font-weight:bold;padding:4px 10px;border-radius:4px;border:1px solid;cursor:pointer;'
+    +(as.enabled?'color:#60c060;border-color:#306040;background:rgba(20,60,20,.5)':'color:#a0a0c0;border-color:#3a3a5a;background:rgba(20,20,40,.5)');
+  sellTog.addEventListener('click',function(){as.enabled=!as.enabled;save();openOpts();});
+  sellTitleRow.appendChild(sellTog);
+  sellSec.appendChild(sellTitleRow);
+  sellSec.appendChild(mk('div','shop-item-dc','設定基準未満のレアリティ・品質の装備を自動で売却します'));
+
+  // レアリティ設定（+0〜+4）
+  var rarLabels=['なし(+0)','アンコモン(+1)','レア(+2)','エピック(+3)','レジェンド(+4)'];
+  var rarRow=mk('div',null,'');
+  rarRow.style.cssText='margin-top:10px;';
+  rarRow.appendChild(mk('div','shop-item-dc','取得するレアリティ (これ以上を保持)'));
+  var rarCtrl=mk('div',null,'');
+  rarCtrl.style.cssText='display:flex;align-items:center;gap:6px;margin-top:4px;';
+  var rarM=mk('button','cbtn','－');rarM.style.cssText='width:36px;padding:5px;';
+  var rarV=mk('div',null,rarLabels[as.minRarity]||'+'+as.minRarity);
+  rarV.style.cssText='font-size:12px;font-weight:bold;color:var(--gold);min-width:120px;text-align:center;';
+  var rarP=mk('button','cbtn','＋');rarP.style.cssText='width:36px;padding:5px;';
+  rarM.addEventListener('click',function(){as.minRarity=Math.max(0,as.minRarity-1);rarV.textContent=rarLabels[as.minRarity]||'+'+as.minRarity;save();});
+  rarP.addEventListener('click',function(){as.minRarity=Math.min(4,as.minRarity+1);rarV.textContent=rarLabels[as.minRarity]||'+'+as.minRarity;save();});
+  rarCtrl.appendChild(rarM);rarCtrl.appendChild(rarV);rarCtrl.appendChild(rarP);
+  rarRow.appendChild(rarCtrl);
+  sellSec.appendChild(rarRow);
+
+  // 品質設定（0〜100%）
+  var qRow=mk('div',null,'');
+  qRow.style.cssText='margin-top:10px;';
+  qRow.appendChild(mk('div','shop-item-dc','取得する品質 (これ以上を保持)'));
+  var qCtrl=mk('div',null,'');
+  qCtrl.style.cssText='display:flex;align-items:center;gap:6px;margin-top:4px;';
+  var qM=mk('button','cbtn','－');qM.style.cssText='width:36px;padding:5px;';
+  var qV=mk('div',null,as.minQuality+'%以上');
+  qV.style.cssText='font-size:13px;font-weight:bold;color:var(--gold);min-width:80px;text-align:center;';
+  var qP=mk('button','cbtn','＋');qP.style.cssText='width:36px;padding:5px;';
+  qM.addEventListener('click',function(){as.minQuality=Math.max(0,as.minQuality-10);qV.textContent=as.minQuality+'%以上';save();});
+  qP.addEventListener('click',function(){as.minQuality=Math.min(100,as.minQuality+10);qV.textContent=as.minQuality+'%以上';save();});
+  qCtrl.appendChild(qM);qCtrl.appendChild(qV);qCtrl.appendChild(qP);
+  qRow.appendChild(qCtrl);
+  sellSec.appendChild(qRow);
+  list.appendChild(sellSec);
+
   var o=g('optsOvl');if(o)o.classList.remove('hidden');
 }
 on('marketCancel',function(){var o=g('marketOvl');if(o)o.classList.add('hidden');});
