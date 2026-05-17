@@ -1220,7 +1220,7 @@ function load(){
     for(var id in sc){
       if(!G.chars[id])continue;
       G.chars[id].lv=sc[id].lv||1;G.chars[id].exp=sc[id].exp||0;
-      G.chars[id].en=sc[id].en||expN(sc[id].lv||1);G.chars[id].ul=!!sc[id].ul;
+      G.chars[id].en=expN(sc[id].lv||1);G.chars[id].ul=!!sc[id].ul;
     }
   }catch(e){initNewGame();}
 }
